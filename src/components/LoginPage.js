@@ -37,8 +37,8 @@ export default function LoginPage(props) {
       <Header
         absolute
         color="transparent"
-        brand="Material Kit React"
-        rightLinks={<HeaderLinks />}
+        brand="CS130"
+        // rightLinks={<HeaderLinks />}
         {...rest}
       />
       <div
@@ -55,7 +55,7 @@ export default function LoginPage(props) {
               <Card className={classes[cardAnimaton]}>
                 <form className={classes.form}>
                   <CardHeader color="primary" className={classes.cardHeader}>
-                    <h4>Login</h4>
+                    <h1>XBoard</h1>
                     <div className={classes.socialLine}>
                       <Button
                         justIcon
@@ -86,10 +86,10 @@ export default function LoginPage(props) {
                       </Button>
                     </div>
                   </CardHeader>
-                  <p className={classes.divider}>Or Be Classical</p>
+                  <p className={classes.divider}>By Team 5X4</p>
                   <CardBody>
                     <CustomInput
-                      labelText="First Name..."
+                      labelText="Name..."
                       id="first"
                       formControlProps={{
                         fullWidth: true
@@ -104,7 +104,7 @@ export default function LoginPage(props) {
                       }}
                     />
                     <CustomInput
-                      labelText="Email..."
+                      labelText="Room Number..."
                       id="email"
                       formControlProps={{
                         fullWidth: true
@@ -118,7 +118,7 @@ export default function LoginPage(props) {
                         )
                       }}
                     />
-                    <CustomInput
+                    {/* <CustomInput
                       labelText="Password"
                       id="pass"
                       formControlProps={{
@@ -135,7 +135,7 @@ export default function LoginPage(props) {
                         ),
                         autoComplete: "off"
                       }}
-                    />
+                    /> */}
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
                     <Button simple color="primary" size="lg">
