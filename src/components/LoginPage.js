@@ -97,7 +97,10 @@ export default function LoginPage(props) {
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
                     <Button simple color="primary" size="lg">
-                      Get started
+                      Create Room
+                    </Button>
+                    <Button simple color="primary" size="lg">
+                      Join Room
                     </Button>
                   </CardFooter>
                 </form>
