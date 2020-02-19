@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -28,6 +28,20 @@ import image from "./pictures/bg7.jpg";
 const useStyles = makeStyles(styles);
 
 export default function LoginPage(props) {
+  function handleClick(e) {
+  }
+
+  function handleChange(e, field) {
+    switch(field) {
+      case 'name':
+        setName(e.target.value);
+        break;
+      case 'room':
+        setRoom(e.target.value);
+        break;
+    }
+  }
+
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
   setTimeout(function() {
     setCardAnimation("");
@@ -37,7 +51,6 @@ export default function LoginPage(props) {
   const [room, setRoom] = React.useState(0);
   const { ...rest } = props;
   return (
-    <Router>
     <div>
       <Header
         absolute
@@ -76,7 +89,8 @@ export default function LoginPage(props) {
                           <InputAdornment position="end">
                             <People className={classes.inputIconsColor} />
                           </InputAdornment>
-                        )
+                        ),
+                        onChange: (e) => handleChange(e, "name")
                       }}
                     />
                     <CustomInput
@@ -91,16 +105,20 @@ export default function LoginPage(props) {
                           <InputAdornment position="end">
                             <MeetingRoomIcon className={classes.inputIconsColor} />
                           </InputAdornment>
-                        )
+                        ),
+                        onChange: (e) => handleChange(e, "room")
                       }}
                     />
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg">
-                      Create Room
-                    </Button>
-                    <Button simple color="primary" size="lg">
-                      Join Room
+                    <Button
+                      onClick={handleClick}
+                      component={Link}
+                      to={`/createRoom/name=${name}&room=${room}`}
+                      simple
+                      color="primary"
+                      size="lg">
+                      Get Started
                     </Button>
                   </CardFooter>
                 </form>
@@ -110,6 +128,5 @@ export default function LoginPage(props) {
         </div>
       </div>
     </div>
-    </Router>
   );
 }
