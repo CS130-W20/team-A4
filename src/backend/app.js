@@ -10,27 +10,23 @@ db_config = {
 	database: 'devdb'
 }
 
-var create_text_table = "CREATE TABLE IF NOT EXISTS text_table (\
+var create_table = "CREATE TABLE IF NOT EXISTS app_content (\
 							component_id UUID PRIMARY KEY, \
 							room_id UUID NOT NULL, \
 							location BOX NOT NULL, \
-							content TEXT \
+							data VARCHAR \
 						);"
 
-var create_web_table = "CREATE TABLE IF NOT EXISTS web_table (\
-							component_id UUID PRIMARY KEY, \
-							room_id UUID NOT NULL, \
-							location BOX NOT NULL, \
-							link VARCHAR \
-						);"
-						
-var create_text_component = "INSERT INTO text_table VALUES($1, $2, '((0, 0), (100, 100))', 'Enter text here');"
-var create_web_component = "INSERT INTO web_table VALUES($1, $2, '((0, 0), (100, 100))', 'http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com');"
+default_data = {
+	'text' : 'Enter text here',
+	'web'  : 'http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com'
+	// 'image': 'images/default_image.jpg'
+}
+// TODO: How to send image back
 
 var client = new Client(db_config)
 client.connect()
-client.query(create_text_table)
-client.query(create_web_table)
+client.query(create_table)
 
 var index_path = '/home/ubuntu/team-A4/public/index.html'
 server.listen(80)
@@ -45,14 +41,22 @@ app.post('/create_room', function (req, res) {
 })
 
 app.post('/create_component', function (req, res) {
-	component_queries = {
-		'text' : create_text_component,
-		'web'  : create_web_component
-	}
-	if (req.query.component_type in component_queries){
+	
+	if (req.query.component_type in default_data){
+		
 		current_component_id = uuidv4()
-		client.query(component_queries[req.query.component_type], [current_component_id, req.query.room_id])
-		res.send({component_id: current_component_id})
+		client.query("INSERT INTO web_table VALUES($1, $2, '((0, 0), (100, 100))', $3);", 
+					[current_component_id, req.query.room_id, default_data[req.query.component_type]])
+		
+		if (req.query.component_type == 'image'){
+			// TODO: How to send image back
+		}else{
+			res.send({
+				component_id: current_component_id,
+				component_data: default_data[req.query.component_type]
+			})
+		}
+
 	}else{
 		console.error("ERROR: Unrecognized component type")
 		res.send("Please send valid request")
