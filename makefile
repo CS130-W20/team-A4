@@ -1,3 +1,2 @@
-SHELL:=/bin/bash   
 server_up:
-	"$(which node)" ./src/backend/app
+	/home/ubuntu/.nvm/versions/node/v13.9.0/bin/node ./src/backend/app.js
