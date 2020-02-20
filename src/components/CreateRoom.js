@@ -112,15 +112,9 @@ export default function CreateRoom() {
     setOpen(false);
   };
 
-  const room = (props) => {
-    return (
-      props.eyeColor
-      // <div style={{backgroundColor: props.eyeColor}} />
-    )
-  }
+  //TODO: pass room and name
 
   return (
-    console.log("room: ", {room}),
     <div className={classes.root}>
       <CssBaseline />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
