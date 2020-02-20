@@ -1,3 +1,3 @@
-SHELL:=/bin/bash   # HERE: this is setting the shell for b only
+SHELL:=/bin/bash   
 server_up:
-	@"$(which node)" ./src/backend/app
+	"$(which node)" ./src/backend/app
