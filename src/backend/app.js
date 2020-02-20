@@ -4,10 +4,10 @@ var io = require('socket.io')(server);
 
 server.listen(80);
 
-var index_path = '~/team-A4/public/index.html'
+var index_path = '/../../public/index.html'
 
 app.get('/', function (req, res) {
-  res.sendFile(index_path);
+  res.sendFile(__dirname + index_path);
 });
 
 io.on('connection', function (socket) {
