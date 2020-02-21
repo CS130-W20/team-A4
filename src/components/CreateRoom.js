@@ -101,17 +101,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function CreateRoom() {
+export default function CreateRoom(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const { name, room } = props.match.params;
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+  
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  //TODO: pass room and name
 
   return (
     <div className={classes.root}>
@@ -128,7 +129,7 @@ export default function CreateRoom() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Welcome to XBoard Room
+            Room {room}
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
@@ -152,12 +153,10 @@ export default function CreateRoom() {
         <Divider />
         <List><ListItems /></List>
         <Divider />
-        {/* <List>{secondaryListItems}</List> */}
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          {/* <Grid container spacing={3}> */}
           <Grid>
             <DraggableWhiteboard />
             <DraggableVideo />

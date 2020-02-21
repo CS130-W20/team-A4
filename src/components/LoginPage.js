@@ -33,7 +33,7 @@ export default function LoginPage(props) {
       switch(field) {
         case 'create':
           setButtonStatus(1);
-          setRoom(['1', '2', '3', '4', '5']);
+          setRoom("12345");
           break;
         case 'join':
           setButtonStatus(2);
@@ -49,7 +49,7 @@ export default function LoginPage(props) {
         setName(e.target.value);
         break;
       case 'room':
-        setRoom(e.split("")); // room has type List, e is String
+        setRoom(e);
         break;
     }
   }
@@ -60,7 +60,7 @@ export default function LoginPage(props) {
   }, 700);
   const classes = useStyles();
   const [name, setName] = React.useState("");
-  const [room, setRoom] = React.useState([]);
+  const [room, setRoom] = React.useState("");
   const [blank, setBlank] = React.useState(false);
   const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom
   const { ...rest } = props;
@@ -114,7 +114,7 @@ export default function LoginPage(props) {
                       <ReactCodeInput
                         fields={5}
                         type='number'
-                        values={room}
+                        values={room.split('')}
                         onChange={(e) => handleChange(e, "room")}
                       />
                     }
