@@ -14,7 +14,8 @@ var create_table = "CREATE TABLE IF NOT EXISTS app_content (\
 							component_id UUID PRIMARY KEY, \
 							room_id UUID NOT NULL, \
 							location BOX NOT NULL, \
-							data VARCHAR \
+							data VARCHAR, \
+							type VARCHAR\
 						);"
 
 default_data = {
@@ -40,8 +41,8 @@ function create_component(socket, component_type, room_id){
 	if (component_type in default_data){
 		
 		current_component_id = uuidv4()
-		client.query("INSERT INTO app_content VALUES($1, $2, '((0, 0), (100, 100))', $3);", 
-					[current_component_id, room_id, default_data[component_type]])
+		client.query("INSERT INTO app_content VALUES($1, $2, '((0, 0), (100, 100))', $3, $4);", 
+					[current_component_id, room_id, default_data[component_type], component_type])
 		
 		if (component_type == "image"){
 			// TODO: How to send image back
@@ -60,26 +61,26 @@ function create_component(socket, component_type, room_id){
 
 function update_component(socket, room_id, curr_component_id, update_type, curr_update_info){
 
-		socket.broadcast.to(room_id).emit("updated_component", {
+		socket.broadcast.to(room_id).emit("update_component", {
 			component_id: curr_component_id,
 			update_info: curr_update_info
 		})
 
 		if(update_type == "update_finished"){
-			client.query("UPDATE web_table SET location=$1, data=$2 WHERE component_id=$3;", 
+			client.query("UPDATE app_content SET location=$1, data=$2 WHERE component_id=$3;", 
 						[curr_update_info.location, curr_update_info.data, curr_component_id])
 			// Don"t need speical handler for image?
 		}
 }
 
-function delete_component(socket, component_id, room_id){
+function delete_component(socket, component_id, room_id, component_type){
 	
 	client.query("DELETE FROM app_content WHERE component_id=$1;", [component_id])
 	
 	if (component_type == "image"){
 		// TODO: How to delete image
 	}
-	socket.broadcast.to(room_id).emit("updated_component",component_id)
+	socket.broadcast.to(room_id).emit("updated_component", component_id)
 }
 
 io.on("connection", function (socket) {
@@ -90,10 +91,14 @@ io.on("connection", function (socket) {
 		socket.emit("create_success", current_uuid)
 	})
 
-	socket.on("join", function(room_id) {
-		socket.join(room_id)
-		var res = client.query("SELECT * WHERE app_content room_id=$1;", [room_id])
-		socket.emit("create_success", res.row)
+	socket.on("join", function(data) {
+		socket.join(data.room_id)
+		client.query("SELECT * FROM app_content WHERE room_id=$1;", [data.room_id])
+		.then(
+			function(data){
+				socket.emit("create_success", data.rows)
+			}
+		)
 	})
 
 	socket.on("create_component", function (data) {
@@ -106,6 +111,6 @@ io.on("connection", function (socket) {
 	})
 
 	socket.on("delete_component", function (data) {
-		delete_component(socket, data.component_id, data.room_id)
+		delete_component(socket, data.component_id, data.room_id, data.component_type)
 	})
 })
