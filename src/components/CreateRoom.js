@@ -133,6 +133,8 @@ export default function CreateRoom(props) {
     setComponents(newComponents);
   }
 
+  console.log(props);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -172,25 +174,25 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} />
         <Divider />
-        <AttendeeList />
+        <AttendeeList attendees={props.location.state.data.user_name} />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
-              {components.map((key) => {
-                switch (key.split(',')[0]) {
-                  case 'video':
-                    return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
-                  case 'text':
-                    return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
-                  case 'whiteboard':
-                    return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
-                }
-              })}
-            </Grid>
-          </Container>
-        </main>
-      </div>
-    );
+            {components.map((key) => {
+              switch (key.split(',')[0]) {
+                case 'video':
+                  return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                case 'text':
+                  return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                case 'whiteboard':
+                  return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+              }
+            })}
+          </Grid>
+        </Container>
+      </main>
+    </div>
+  );
 }

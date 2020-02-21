@@ -33,16 +33,12 @@ export default function LoginPage(props) {
       setBlank(false);
       switch(field) {
         case 'create':
-          setButtonStatus(1);
-          //const socket = socketIOClient(endpoint);
           socket.emit("create", {
             "user_name": name
           });
           socket.on("create_result", (data) => {
-            console.log("data is:");
-            console.log(data);
-
-            setRoom(data.room_id);
+            console.log("data:", data);
+            props.history.push(`/createRoom/name=${name}&room=${data.room_id}`, { data: data });
           });
           break;
         case 'join':
@@ -58,9 +54,8 @@ export default function LoginPage(props) {
             console.log("data is:", data, typeof(data));
             if (data === "invalid input") {
               props.history.push('/');
-            }
-            else {
-              props.history.push(`/createRoom/name=${name}&room=${room}`);
+            } else {
+              props.history.push(`/createRoom/name=${name}&room=${room}`, { data: data });
             }
           });
       }
@@ -74,7 +69,7 @@ export default function LoginPage(props) {
         setName(e.target.value);
         break;
       case 'room':
-        setRoom(e);
+        setRoom(e.target.value);
         break;
     }
   }
