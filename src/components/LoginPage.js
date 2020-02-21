@@ -132,8 +132,8 @@ export default function LoginPage(props) {
                         </Button>,
                         <Button
                           onClick={e => handleClick(e, "join")}
-                          // component={Link}
-                          // to={`/createRoom/name=${name}&room=${room}`}
+                          component={Link}
+                          to={`/createRoom/name=${name}&room=${room}`}
                           simple
                           color="primary"
                           size="lg"
