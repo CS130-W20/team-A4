@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Rnd } from "react-rnd";
 import {Whiteboard, EventStream, EventStore} from '@ohtomi/react-whiteboard';
-import CardHeader from '@material-ui/core/CardHeader';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';

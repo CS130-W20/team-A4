@@ -4,9 +4,7 @@ import ReactCodeInput from 'react-verification-code-input';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import People from "@material-ui/icons/People";
 // core components
 import Header from "./Header/Header.js";
@@ -134,7 +132,7 @@ export default function LoginPage(props) {
                     <h1>XBoard</h1>
                   </CardHeader>
                   <CardBody>
-                    {buttonStatus == 0 ?
+                    {buttonStatus === 0 ?
                       <CustomInput
                         labelText="Name..."
                         id="name"
@@ -160,7 +158,7 @@ export default function LoginPage(props) {
                       //   values={room.split('')}
                       //   onChange={(e) => handleChange(e, "room")}
                       // />
-                      (buttonStatus == 1 ?
+                      (buttonStatus === 1 ?
                         (
                           <CustomInput
                             labelText="Room ID"
@@ -200,7 +198,7 @@ export default function LoginPage(props) {
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
                     {/* Only show Create Room button when no button clicked */}
-                    {buttonStatus == 0 ?
+                    {buttonStatus === 0 ?
                         [<Button
                           onClick={e => handleClick(e, "create")}
                           simple
