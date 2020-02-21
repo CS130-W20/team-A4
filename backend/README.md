@@ -11,5 +11,7 @@ It is used for testing the join of a room with an invalid uuid.
 ## create_text_component
 It is used for testing the creation of text components.
 
+[link to test cases file](https://github.com/CS130-W20/team-A4/blob/master/backend/test.js)
+[link to makefile](https://github.com/CS130-W20/team-A4/blob/master/makefile)
 
 
