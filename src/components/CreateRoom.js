@@ -109,9 +109,6 @@ export default function CreateRoom(props) {
   const [components, setComponents] = React.useState([]);
   const { name, room } = props.match.params;
 
-  React.useEffect = () => {
-  }
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
