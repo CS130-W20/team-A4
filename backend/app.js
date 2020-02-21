@@ -2,6 +2,7 @@ var app = require("express")()
 var server = require("http").Server(app)
 var io = require("socket.io")(server)
 var uuidv4 = require("uuid/v4")
+var validator = require('validator');
 var { Client } = require("pg")
 
 db_config = {
@@ -10,12 +11,17 @@ db_config = {
 	database: "devdb"
 }
 
-var create_table = "CREATE TABLE IF NOT EXISTS app_content (\
+var create_content_table = "CREATE TABLE IF NOT EXISTS app_content (\
 							component_id UUID PRIMARY KEY, \
 							room_id UUID NOT NULL, \
 							location BOX NOT NULL, \
 							data VARCHAR, \
 							type VARCHAR\
+						);"
+
+var create_user_table = "CREATE TABLE IF NOT EXISTS user_table (\
+							room_id UUID NOT NULL, \
+							user_name VARCHAR\
 						);"
 
 default_data = {
@@ -27,7 +33,8 @@ default_data = {
 
 var client = new Client(db_config)
 client.connect()
-client.query(create_table)
+client.query(create_content_table)
+client.query(create_user_table)
 
 var index_path = "/home/ubuntu/team-A4/public/index.html"
 server.listen(8080)
@@ -36,8 +43,47 @@ app.get("/", function (req, res) {
     res.sendFile(index_path)
 })
 
+function create_room(socket, current_user_name){
+	if (typeof current_user_name === "string" && current_user_name.match("^[A-Za-z0-9]+$")){
+		current_room_id = uuidv4()
+		socket.join(current_room_id)
+		client.query("INSERT INTO user_table VALUES($1, $2);", [current_room_id, current_user_name])
+		socket.emit("create_result", {
+			room_id: current_room_id,
+			user_name: current_user_name
+		})
+	}else
+		socket.emit("create_result", "invalid input")
+}
+
+function join_room(socket, room_id, user_name){
+	if (typeof room_id === "string" && validator.isUUID(room_id) &&
+		typeof user_name === "string" && user_name.match("^[A-Za-z0-9]+$")){
+		
+			res = {
+			component : [],
+			user: []
+		}
+
+		client.query("SELECT * FROM app_content WHERE room_id=$1;", [room_id])
+		.then((data) => {res.component = data.rows})
+		.then(() => {
+			client.query("SELECT * FROM user_table WHERE room_id=$1;", [room_id])
+			.then((data) => {res.user = data.rows})
+			.then(()=>{
+				if(res.user.length){
+					res.user.push(user_name)
+					socket.emit("join_result", res)
+					client.query("INSERT INTO user_table VALUES($1, $2);", [room_id, user_name])
+				}else
+					socket.emit("join_result", "invalid input")
+			})
+		})
+	}else
+		socket.emit("join_result", "invalid input")
+}
+
 function create_component(socket, component_type, room_id){
-	
 	if (component_type in default_data){
 		
 		current_component_id = uuidv4()
@@ -52,10 +98,6 @@ function create_component(socket, component_type, room_id){
 				component_data: default_data[component_type]
 			})
 		}
-
-	}else{
-		console.error("ERROR: Unrecognized component type")
-		socket.broadcast.to(room_id).emit("invalid_component", "Please send valid request")
 	}
 }	
 
@@ -84,24 +126,12 @@ function delete_component(socket, component_id, room_id, component_type){
 }
 
 io.on("connection", function (socket) {
-	socket.on("create", function() {
-		current_uuid = uuidv4()
-		socket.join(current_uuid)
-		// might not need to send back
-		socket.emit("create_success", current_uuid)
+	socket.on("create", function(data) {
+		create_room(socket, data.user_name)
 	})
 
 	socket.on("join", function(data) {
-		socket.join(data.room_id)
-		client.query("SELECT * FROM app_content WHERE room_id=$1;", [data.room_id])
-		.then(
-			function(data){
-				if (data.rows.length)
-					socket.emit("join_success", data.rows)
-				else
-					socket.emit("join_success", "invalid room_id")
-			}
-		)
+		join_room(socket, data.room_id, data.user_name)
 	})
 
 	socket.on("create_component", function (data) {
