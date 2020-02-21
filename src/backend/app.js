@@ -63,6 +63,25 @@ app.post('/create_component', function (req, res) {
 	}	
 })
 
+function update_component(socket, component_type, room_id, curr_component_id, update_type, curr_update_info){
+	if(component_type in default_data){
+		// Broadcast to room
+		socket.broadcast.to(room_id).emit( 'component_updated', {
+			component_id: curr_component_id,
+			update_info: curr_update_info
+		})
+		// Update DB if its in the finished state
+		if(update_type == "update_finished"){
+			// TODO: Finish query 
+			client.query()
+			// Don't need speical handler for image?
+		} 
+	} else{
+		console.error("ERROR: Unrecognized component type")
+		socket.broadcast.to(room_id).emit("Please send valid request")
+	}
+}
+
 app.post('/update_component', function (req, res){
 	if (req.query.component_type in default_data){
 
