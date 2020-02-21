@@ -50,7 +50,8 @@ function create_room(socket, current_user_name){
 		client.query("INSERT INTO user_table VALUES($1, $2);", [current_room_id, current_user_name])
 		socket.emit("create_result", {
 			room_id: current_room_id,
-			user_name: current_user_name
+			component : [],
+			user_name: [current_user_name]
 		})
 	}else
 		socket.emit("create_result", "invalid input")
@@ -60,21 +61,26 @@ function join_room(socket, room_id, user_name){
 	if (typeof room_id === "string" && validator.isUUID(room_id) &&
 		typeof user_name === "string" && user_name.match("^[A-Za-z0-9 ]+$")){
 		
-			res = {
+		res = {
+			room_id: room_id,
 			component : [],
-			user: []
+			user_name: []
 		}
 
 		client.query("SELECT * FROM app_content WHERE room_id=$1;", [room_id])
 		.then((data) => {res.component = data.rows})
 		.then(() => {
-			client.query("SELECT * FROM user_table WHERE room_id=$1;", [room_id])
-			.then((data) => {res.user = data.rows})
+			client.query("SELECT user_name FROM user_table WHERE room_id=$1;", [room_id])
+			.then((data) => {res.user_name = data.rows.map(o => o.user_name)})
 			.then(()=>{
-				if(res.user.length){
-					res.user.push(user_name)
-					socket.emit("join_result", res)
+				if(res.user_name.length){
 					client.query("INSERT INTO user_table VALUES($1, $2);", [room_id, user_name])
+
+					res.user_name.push(user_name)
+					socket.emit("join_result", res)
+
+					socket.join(room_id)
+					socket.broadcast.to(room_id).emit("join_result", res)
 				}else
 					socket.emit("join_result", "invalid input")
 			})
