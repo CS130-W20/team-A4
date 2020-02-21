@@ -15,7 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import ListItems from './ListItems';
+import MenuList from './MenuList';
+import AttendeeList from './AttendeeList';
 import DraggableText from './DraggableText';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
@@ -151,8 +152,9 @@ export default function CreateRoom(props) {
           </IconButton>
         </div>
         <Divider />
-        <List><ListItems /></List>
+        <MenuList />
         <Divider />
+        <AttendeeList />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
