@@ -26,11 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-<<<<<<< HEAD
 export default function MenuList(props) {
-=======
-export default function MenuList() {
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -38,12 +34,6 @@ export default function MenuList() {
     setOpen(!open);
   };
 
-<<<<<<< HEAD
-  // console.log("props.handleAddElement:", props.handleAddElement, typeof(handleAddElement));
-  // console.log("props.handleAddComponent:", props);
-
-=======
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
   return (
     <List>
       <ListItem button component={Link} to={'/'}>
@@ -61,31 +51,19 @@ export default function MenuList() {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-<<<<<<< HEAD
           <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("video")}>
-=======
-          <ListItem button className={classes.nested}>
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
             <ListItemIcon>
               <MovieIcon />
             </ListItemIcon>
             <ListItemText primary="Video" />
           </ListItem>
-<<<<<<< HEAD
           <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("text")}>
-=======
-          <ListItem button className={classes.nested}>
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
             <ListItemIcon>
               <TextFieldsIcon />
             </ListItemIcon>
             <ListItemText primary="Text" />
           </ListItem>
-<<<<<<< HEAD
           <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("whiteboard")}>
-=======
-          <ListItem button className={classes.nested}>
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
             <ListItemIcon>
               <BrushIcon />
             </ListItemIcon>
