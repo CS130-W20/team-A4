@@ -96,7 +96,10 @@ io.on("connection", function (socket) {
 		client.query("SELECT * FROM app_content WHERE room_id=$1;", [data.room_id])
 		.then(
 			function(data){
-				socket.emit("create_success", data.rows)
+				if (data.rows.length)
+					socket.emit("join_success", data.rows)
+				else
+					socket.emit("join_success", "invalid room_id")
 			}
 		)
 	})
