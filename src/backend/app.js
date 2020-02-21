@@ -67,7 +67,7 @@ function update_component(socket, room_id, curr_component_id, update_type, curr_
 		// Update DB if its in the finished state
 		if(update_type == "update_finished"){
 			// TODO: Finish query 
-			client.query("UPDATE web_table SET location=$1, data=$2 WHERE component_id=$3", 
+			client.query("UPDATE web_table SET location=$1, data=$2 WHERE component_id=$3;", 
 						[curr_update_info.location, curr_update_info.data, curr_component_id])
 			// Don't need speical handler for image?
 		}
@@ -75,7 +75,7 @@ function update_component(socket, room_id, curr_component_id, update_type, curr_
 
 function delete_component(socket, component_id, room_id){
 	
-	client.query("DELETE FROM app_content WHERE component_id=$1", [component_id])
+	client.query("DELETE FROM app_content WHERE component_id=$1;", [component_id])
 	
 	if (component_type == 'image'){
 		// TODO: How to delete image
@@ -88,6 +88,12 @@ io.on('connection', function (socket) {
 		socket.join(current_uuid)
 		// might not need to send back
 		socket.emit(current_uuid)
+	})
+
+	socket.on('join', function(room_id) {
+		socket.join(room_id)
+		var res = client.query("SELECT * WHERE app_content component_id=$1;", [room_id])
+		socket.emit(res.row)
 	})
 
 	socket.on('create_component', function (data) {
