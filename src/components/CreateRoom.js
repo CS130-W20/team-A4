@@ -108,12 +108,8 @@ export default function CreateRoom(props) {
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const { name, room } = props.match.params;
-  const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
 
   React.useEffect = () => {
-    socket.on("join_result", (data) => {
-      console.log("data:", data);
-    });
   }
 
   const handleDrawerOpen = () => {

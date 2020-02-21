@@ -96,7 +96,6 @@ export default function LoginPage(props) {
         absolute
         color="transparent"
         brand="CS130"
-        // rightLinks={<HeaderLinks />}
         {...rest}
       />
       <div
@@ -172,10 +171,6 @@ export default function LoginPage(props) {
                       :
                       <Button
                         onClick={e => handleClick(e, "start")}
-                        component={Link}
-                        to={path}
-                        //to={`/loginPage/`}
-                        //TODO: add items to whiteboard
                         simple
                         color="primary"
                         size="lg">
