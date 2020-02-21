@@ -1,34 +1,43 @@
 import React, { Component } from 'react'
 import { Rnd } from "react-rnd";
-import Iframe from 'react-iframe'
-
+import Iframe from 'react-iframe';
 import style from "../assets/jss/draggableStyle";
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { Icon } from '@material-ui/core';
 
 export default class DraggableVideo extends Component {
-    render() {
-        return (
-            <div>
-                <Rnd
-                style={style}
-                default={{
-                  x: 0,
-                  y: 0,
-                  width: 500,
-                  height: 500,
-                }}
-                >
-                  <div>
-                    <Iframe
-                      url="http://www.youtube.com/embed/xDMP3i36naA"
-                      width="450px"
-                      height="450px"
-                      id="myId"
-                      className="myClassname"
-                      display="initial"
-                      position="relative"/>
-                  </div>
-                </Rnd>
-            </div>
-        )
-    }
+  render() {
+    return (
+      <Rnd
+        style={style}
+        default={{
+          x: 0,
+          y: 0,
+          width: 500,
+          height: 400,
+        }}
+      >
+        <Card style={{ width: '100%', height: '100%' }} >
+          <CardHeader
+            action={
+              <IconButton aria-label="delete">
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            }
+          />
+          <Iframe
+            url="http://www.youtube.com/embed/xDMP3i36naA"
+            width="100%"
+            height="70%"
+          />
+        </Card>
+      </Rnd>
+    )
+  }
 }

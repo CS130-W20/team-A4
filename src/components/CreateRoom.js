@@ -162,6 +162,7 @@ export default function CreateRoom(props) {
           <Grid>
             <DraggableWhiteboard />
             <DraggableVideo />
+            <DraggableText />
           </Grid>
         </Container>
       </main>
