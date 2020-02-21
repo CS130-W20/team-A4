@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/styles';
@@ -6,7 +6,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,7 +17,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MenuList from './MenuList';
 import AttendeeList from './AttendeeList';
-import DraggableText from './DraggableText';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 
@@ -108,11 +106,11 @@ export default function CreateRoom(props) {
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const { name, room } = props.match.params;
-  
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -131,6 +129,8 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
   }
+
+  console.log(props);
 
   return (
     <div className={classes.root}>
@@ -171,25 +171,25 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} />
         <Divider />
-        <AttendeeList />
+        <AttendeeList attendees={props.location.state.data.user_name} />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
-              {components.map((key) => {
-                switch (key.split(',')[0]) {
-                  case 'video':
-                    return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
-                  case 'text':
-                    return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
-                  case 'whiteboard':
-                    return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
-                }
-              })}
-            </Grid>
-          </Container>
-        </main>
-      </div>
-    );
+            {components.map((key) => {
+              switch (key.split(',')[0]) {
+                case 'video':
+                  return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                case 'text':
+                  return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                case 'whiteboard':
+                  return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+              }
+            })}
+          </Grid>
+        </Container>
+      </main>
+    </div>
+  );
 }

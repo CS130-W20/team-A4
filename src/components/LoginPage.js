@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link, useHistory } from "react-router-dom";
-import ReactCodeInput from 'react-verification-code-input';
+import React from 'react';
+import { BrowserRouter as Link } from "react-router-dom";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -18,7 +17,6 @@ import CardFooter from "./Card/CardFooter.js";
 import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
-
 import io from "socket.io-client";
 
 const useStyles = makeStyles(styles);
@@ -31,16 +29,12 @@ export default function LoginPage(props) {
       setBlank(false);
       switch(field) {
         case 'create':
-          setButtonStatus(1);
-          //const socket = socketIOClient(endpoint);
           socket.emit("create", {
             "user_name": name
           });
           socket.on("create_result", (data) => {
-            console.log("data is:");
-            console.log(data);
-
-            setRoom(data.room_id);
+            console.log("data:", data);
+            props.history.push(`/createRoom/name=${name}&room=${data.room_id}`, { data: data });
           });
           break;
         case 'join':
@@ -56,11 +50,13 @@ export default function LoginPage(props) {
             console.log("data is:", data, typeof(data));
             if (data === "invalid input") {
               props.history.push('/');
-            }
-            else {
-              props.history.push(`/createRoom/name=${name}&room=${room}`);
+            } else {
+              props.history.push(`/createRoom/name=${name}&room=${room}`, { data: data });
             }
           });
+          break;
+        default:
+          break;
       }
     }
   }
@@ -72,17 +68,17 @@ export default function LoginPage(props) {
         setName(e.target.value);
         break;
       case 'room':
-        setRoom(e);
+        setRoom(e.target.value);
+        break;
+      default:
         break;
     }
   }
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
-  const [response, setResponse] = React.useState("");
   //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
   const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
-  const [items, setItems] = React.useState("");
-  const [path, setPath] = React.useState("");
+  const path = React.useState("");
 
   setTimeout(function() {
     setCardAnimation("");
