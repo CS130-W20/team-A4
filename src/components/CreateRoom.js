@@ -28,18 +28,9 @@ export default class CreateRoom extends Component {
           height: 200,
         }}
         >
-          <Draggable
-            axis="both"
-            handle=".handle"
-            defaultPosition={{x: 0, y: 0}}
-            position={null}
-            grid={[25, 25]}
-            scale={1}>
-            <div className="handle" style={{backgroundColor: 'lightgreen', width: '30%', cursor: 'grab'}}>
-              Drag from here
-              <h1>name: {name}, room: {room}</h1>
-            </div>
-          </Draggable>
+          <div>
+            <h1>name: {name}, room: {room}</h1>
+          </div>
         </Rnd>
 
         <Button>Add Text</Button>
@@ -50,28 +41,16 @@ export default class CreateRoom extends Component {
         default={{
           x: 0,
           y: 0,
-          width: 320,
-          height: 200,
+          width: 500,
+          height: 500,
         }}
         >
-          <Draggable
-            axis="both"
-            handle=".handle"
-            defaultPosition={{x: 0, y: 0}}
-            position={null}
-            grid={[25, 25]}
-            scale={1}>
-            <div>
-              <div className="handle" style={{backgroundColor: 'lightgreen', width: '30%', cursor: 'grab'}}>
-                Drag from here
-              </div>
-              <Whiteboard
-                events={new EventStream()} eventStore={new EventStore()}
-                style={{backgroundColor: 'lightyellow'}}
-              />
-            </div>
-
-          </Draggable>
+          <div>
+            <Whiteboard
+              events={new EventStream()} eventStore={new EventStore()}
+              style={{backgroundColor: 'lightyellow'}}
+            />
+          </div>
         </Rnd>
 
         <Rnd
@@ -79,19 +58,11 @@ export default class CreateRoom extends Component {
         default={{
           x: 0,
           y: 0,
-          width: 320,
-          height: 200,
+          width: 500,
+          height: 500,
         }}
         >
-        <Draggable
-          axis="both"
-          handle=".handle"
-          defaultPosition={{x: 0, y: 0}}
-          position={null}
-          grid={[25, 25]}
-          scale={1}>
-          <div className="handle" style={{backgroundColor: 'lightgreen', width: '30%', cursor: 'grab'}}>
-            <p>Drag from here</p>
+          <div>
             <Iframe
               url="http://www.youtube.com/embed/xDMP3i36naA"
               width="450px"
@@ -101,7 +72,6 @@ export default class CreateRoom extends Component {
               display="initial"
               position="relative"/>
           </div>
-        </Draggable>
         </Rnd>
 
       </div>
