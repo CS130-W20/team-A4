@@ -11,10 +11,15 @@
     "@testing-library/user-event": "^7.2.1",
     "classnames": "^2.2.6",
     "react": "^16.12.0",
+    "react-doc-generator": "^1.2.5",
     "react-dom": "^16.12.0",
     "react-draggable": "^4.2.0",
+    "react-iframe": "^1.8.0",
+    "react-rnd": "^10.1.6",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "react-verification-code-input": "^1.2.3",
+    "socket.io-client": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,6 +45,7 @@
   "devDependencies": {
     "@craco/craco": "^5.6.3",
     "@semantic-ui-react/craco-less": "^1.2.1",
+    "react-docgen": "^5.2.1",
     "react-kawaii": "^0.16.0",
     "semantic-ui-less": "^2.4.1"
   }

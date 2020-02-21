@@ -1,7 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Login from './components/Login';
 import CreateRoom from './components/CreateRoom';
 import LoginPage from './components/LoginPage';
 import { BrowserRouter as Router, Route, useLocation, Switch } from "react-router-dom";

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import ReactCodeInput from 'react-verification-code-input';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -9,8 +10,6 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import People from "@material-ui/icons/People";
 // core components
 import Header from "./Header/Header.js";
-import HeaderLinks from "./Header/HeaderLinks.js";
-import Footer from "./Footer/Footer.js";
 import GridContainer from "./Grid/GridContainer.js";
 import GridItem from "./Grid/GridItem.js";
 import Button from "./CustomButtons/Button.js";
@@ -19,37 +18,60 @@ import CardBody from "./Card/CardBody.js";
 import CardHeader from "./Card/CardHeader.js";
 import CardFooter from "./Card/CardFooter.js";
 import CustomInput from "./CustomInput/CustomInput.js";
-import Start from "./Start.js";
-
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
-
 import image from "./pictures/bg7.jpg";
+
+import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles(styles);
 
 export default function LoginPage(props) {
-  function handleClick(e) {
+  function handleClick(e, field) {
+    if (name === "") {
+      setBlank(true);
+    } else {
+      setBlank(false);
+      switch(field) {
+        case 'create':
+          setButtonStatus(1);
+          const socket = socketIOClient(endpoint);
+          socket.on("create", (data) => {
+            setRoom(data);
+            console.log(data);
+          });
+          break;
+        case 'join':
+          setButtonStatus(2);
+          break;
+      }
+    }
   }
 
   function handleChange(e, field) {
     switch(field) {
       case 'name':
+        setBlank(e.target.value === "");
         setName(e.target.value);
         break;
       case 'room':
-        setRoom(e.target.value);
+        setRoom(e);
         break;
     }
   }
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
+  const [response, setResponse] = React.useState("");
+  const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
   setTimeout(function() {
     setCardAnimation("");
   }, 700);
   const classes = useStyles();
   const [name, setName] = React.useState("");
-  const [room, setRoom] = React.useState(0);
+  const [room, setRoom] = React.useState("");
+  const [blank, setBlank] = React.useState(false);
+  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom
   const { ...rest } = props;
+
   return (
     <div>
       <Header
@@ -75,51 +97,67 @@ export default function LoginPage(props) {
                   <CardHeader color="primary" className={classes.cardHeader}>
                     <h1>XBoard</h1>
                   </CardHeader>
-                  <p className={classes.divider}>By Team 5X4</p>
                   <CardBody>
-                    <CustomInput
-                      labelText="Name..."
-                      id="first"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "text",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <People className={classes.inputIconsColor} />
-                          </InputAdornment>
-                        ),
-                        onChange: (e) => handleChange(e, "name")
-                      }}
-                    />
-                    <CustomInput
-                      labelText="Room Number..."
-                      id="room"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "number",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <MeetingRoomIcon className={classes.inputIconsColor} />
-                          </InputAdornment>
-                        ),
-                        onChange: (e) => handleChange(e, "room")
-                      }}
-                    />
+                    {buttonStatus == 0 ?
+                      <CustomInput
+                        labelText="Name..."
+                        id="name"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        errorMessage={blank ? "Please enter your name" : undefined}
+                        inputProps={{
+                          type: "text",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <People className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          ),
+                          onChange: (e) => handleChange(e, "name"),
+                          error: blank,
+                        }}
+                      />
+                    :
+                      <ReactCodeInput
+                        fields={5}
+                        type='number'
+                        values={room.split('')}
+                        onChange={(e) => handleChange(e, "room")}
+                      />
+                    }
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button
-                      onClick={handleClick}
-                      component={Link}
-                      to={`/createRoom/name=${name}&room=${room}`}
-                      simple
-                      color="primary"
-                      size="lg">
-                      Get Started
-                    </Button>
+                    {/* Only show Create Room button when no button clicked */}
+                    {buttonStatus == 0 ?
+                        [<Button
+                          onClick={e => handleClick(e, "create")}
+                          simple
+                          color="primary"
+                          size="lg"
+                          key="create">
+                          Create Room
+                        </Button>,
+                        <Button
+                          onClick={e => handleClick(e, "join")}
+                          component={Link}
+                          to={`/createRoom/name=${name}&room=${room}`}
+                          simple
+                          color="primary"
+                          size="lg"
+                          key="join">
+                          Join Room
+                        </Button>]
+                      :
+                      <Button
+                        onClick={e => console.log("START!!!")}
+                        component={Link}
+                        to={`/createRoom/name=${name}&room=${room}`}
+                        simple
+                        color="primary"
+                        size="lg">
+                        Start
+                      </Button>
+                    }
                   </CardFooter>
                 </form>
               </Card>

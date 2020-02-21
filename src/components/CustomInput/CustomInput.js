@@ -8,6 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 import styles from "../../assets/jss/material-kit-react/components/customInputStyle.js";
 
@@ -17,6 +18,7 @@ export default function CustomInput(props) {
   const classes = useStyles();
   const {
     formControlProps,
+    errorMessage,
     labelText,
     id,
     labelProps,
@@ -74,12 +76,16 @@ export default function CustomInput(props) {
         id={id}
         {...inputProps}
       />
+      {errorMessage !== undefined ? (
+        <FormHelperText style={{ color: 'red' }}>{errorMessage}</FormHelperText>
+      ) : null}
     </FormControl>
   );
 }
 
 CustomInput.propTypes = {
   labelText: PropTypes.node,
+  errorMessage: PropTypes.string,
   labelProps: PropTypes.object,
   id: PropTypes.string,
   inputProps: PropTypes.object,
