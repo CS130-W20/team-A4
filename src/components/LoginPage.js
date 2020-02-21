@@ -33,11 +33,9 @@ export default function LoginPage(props) {
         case 'create':
           setButtonStatus(1);
           //const socket = socketIOClient(endpoint);
-          socket.emit("create",
-            {
-              "user_name": name
-            }
-          );
+          socket.emit("create", {
+            "user_name": name
+          });
           socket.on("create_result", (data) => {
             console.log("data is:");
             console.log(data);
@@ -50,26 +48,16 @@ export default function LoginPage(props) {
           break;
         case 'start':
           // pass room number into socket.emit
-          console.log("room is:");
-          console.log(room);
-          // const history = useHistory();
-          socket.emit("join",
-             {
-               "user_name": name,
-                "room_id": room
-             }
-          );
+          socket.emit("join", {
+              "user_name": name,
+              "room_id": room
+          });
           socket.on("join_result", (data) => {
             console.log("data is:", data, typeof(data));
-            // console.log(data);
-            if (data === "invalid room_id") {
-              // setPath("/loginPage/");
-              // history.push('/')
+            if (data === "invalid input") {
               props.history.push('/');
             }
             else {
-              // setPath(`/createRoom/name=${name}&room=${room}`);
-              // history.push(`/createRoom/name=${name}&room=${room}`);
               props.history.push(`/createRoom/name=${name}&room=${room}`);
             }
           });
@@ -152,48 +140,18 @@ export default function LoginPage(props) {
                         }}
                       />
                     :
-                      // <ReactCodeInput
-                      //   fields={}
-                      //   type='string'
-                      //   values={room.split('')}
-                      //   onChange={(e) => handleChange(e, "room")}
-                      // />
-                      (buttonStatus === 1 ?
-                        (
-                          <CustomInput
-                            labelText="Room ID"
-                            id="room_id"
-                            formControlProps={{
-                              fullWidth: true
-                            }}
-                            inputProps={{
-                              type: "text",
-                              value: room,
-                              onChange: (e) => handleChange(e, "room"),
-                            }}
-                          />
-                        )
-                        :
-                        (
-                          <CustomInput
-                            labelText="Room ID"
-                            id="room_id"
-                            formControlProps={{
-                              fullWidth: true
-                            }}
-                            inputProps={{
-                              type: "text",
-                              onChange: (e) => handleChange(e, "room"),
-                            }}
-                          />
-                        )
-
-
-                        // <input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
-                        //  :
-                        // <input type="text" onChange={(e) => handleChange(e, "room")}/>
-                      )
-                      //<input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
+                      <CustomInput
+                        labelText="Room ID"
+                        id="room_id"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          value: room,
+                          onChange: (e) => handleChange(e, "room"),
+                        }}
+                      />
                     }
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>

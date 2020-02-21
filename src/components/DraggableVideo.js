@@ -7,7 +7,6 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import style from "../assets/jss/draggableStyle";
-
 export default class DraggableVideo extends Component {
   state = {
     videoUrl: "",
@@ -32,7 +31,7 @@ export default class DraggableVideo extends Component {
         }}
         enableUserSelectHack={false}
       >
-      <Card style={{ width: '100%', height: '100%' }} >
+        <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
           <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
             <DeleteIcon fontSize="small" />
@@ -61,9 +60,9 @@ export default class DraggableVideo extends Component {
               className="btn"
               style={{flex: '1', padding: '5px', width: '200px' }}
             />
-          </form>)
-        }
-      </Card>
+          </form>
+        )}
+        </Card>
 
 
       </Rnd>
