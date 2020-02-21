@@ -16,7 +16,7 @@ const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {
 
 // 1.1: 2/20/2020, 10:43:25 PM
 socket.emit("create", 
-   ""
+   {"user_name": "Dad Terry"}
 );
 
 /**
