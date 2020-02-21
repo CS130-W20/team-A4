@@ -8,5 +8,5 @@ const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {
 var test_case = process.argv
 
 switch(test_case){
-    case create_room
+    case create_room:
 }
