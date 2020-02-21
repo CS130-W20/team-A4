@@ -106,7 +106,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CreateRoom(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const { name, room } = props.match.params;
   
