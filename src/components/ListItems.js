@@ -1,19 +1,22 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link } from "react-router-dom";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import PeopleIcon from '@material-ui/icons/People';
 import ImageIcon from '@material-ui/icons/Image';
 import AddIcon from '@material-ui/icons/Add';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import MovieIcon from '@material-ui/icons/Movie';
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import BrushIcon from '@material-ui/icons/Brush';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
+import StarBorder from '@material-ui/icons/StarBorder';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,11 +29,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-<<<<<<< HEAD
-export default function MenuList(props) {
-=======
-export default function MenuList() {
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
+export default function ListItems() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -38,19 +37,19 @@ export default function MenuList() {
     setOpen(!open);
   };
 
-<<<<<<< HEAD
-  // console.log("props.handleAddElement:", props.handleAddElement, typeof(handleAddElement));
-  // console.log("props.handleAddComponent:", props);
-
-=======
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
   return (
-    <List>
-      <ListItem button component={Link} to={'/'}>
+    <div>
+      <ListItem button>
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
-        <ListItemText primary="Home" />
+        <ListItemText primary="Home Page" />
+      </ListItem>
+      <ListItem button>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Attendees" />
       </ListItem>
       <ListItem button onClick={handleClick}>
         <ListItemIcon>
@@ -61,31 +60,19 @@ export default function MenuList() {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-<<<<<<< HEAD
-          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("video")}>
-=======
           <ListItem button className={classes.nested}>
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
             <ListItemIcon>
               <MovieIcon />
             </ListItemIcon>
             <ListItemText primary="Video" />
           </ListItem>
-<<<<<<< HEAD
-          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("text")}>
-=======
           <ListItem button className={classes.nested}>
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
             <ListItemIcon>
               <TextFieldsIcon />
             </ListItemIcon>
             <ListItemText primary="Text" />
           </ListItem>
-<<<<<<< HEAD
-          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("whiteboard")}>
-=======
           <ListItem button className={classes.nested}>
->>>>>>> 3d85352c97ea0584283b49671b168ab5d4bf7a7b
             <ListItemIcon>
               <BrushIcon />
             </ListItemIcon>
@@ -99,6 +86,6 @@ export default function MenuList() {
           </ListItem>
         </List>
       </Collapse>
-    </List>
+    </div>
   );
 }

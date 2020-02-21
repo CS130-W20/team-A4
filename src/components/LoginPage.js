@@ -21,7 +21,7 @@ import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
 
-import socketIOClient from "socket.io-client";
+import io from "socket.io-client";
 
 const useStyles = makeStyles(styles);
 
@@ -34,15 +34,24 @@ export default function LoginPage(props) {
       switch(field) {
         case 'create':
           setButtonStatus(1);
-          const socket = socketIOClient(endpoint);
-          socket.on("create", (data) => {
+          //const socket = socketIOClient(endpoint);
+          socket.emit("create", "");
+          socket.on("create_success", (data) => {
             setRoom(data);
-            console.log(data);
           });
           break;
         case 'join':
           setButtonStatus(2);
           break;
+        case 'start':
+          // pass room number into socket.emit
+          console.log("room is:");
+          console.log(room);
+          socket.emit("join", room);
+          socket.on("join_success", (data) => {
+            // Parse JSON data
+            setItems = JSON.parse(data);
+          })
       }
     }
   }
@@ -61,7 +70,10 @@ export default function LoginPage(props) {
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
   const [response, setResponse] = React.useState("");
-  const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
+  //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
+  const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
+  const [items, setItems] = React.useState("");
+
   setTimeout(function() {
     setCardAnimation("");
   }, 700);
@@ -69,7 +81,7 @@ export default function LoginPage(props) {
   const [name, setName] = React.useState("");
   const [room, setRoom] = React.useState("");
   const [blank, setBlank] = React.useState(false);
-  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom
+  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start
   const { ...rest } = props;
 
   return (
@@ -118,12 +130,18 @@ export default function LoginPage(props) {
                         }}
                       />
                     :
-                      <ReactCodeInput
-                        fields={5}
-                        type='number'
-                        values={room.split('')}
-                        onChange={(e) => handleChange(e, "room")}
-                      />
+                      // <ReactCodeInput
+                      //   fields={}
+                      //   type='string'
+                      //   values={room.split('')}
+                      //   onChange={(e) => handleChange(e, "room")}
+                      // />
+                      (buttonStatus == 1 ?
+                        <input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
+                         :
+                        <input type="text" onChange={(e) => handleChange(e, "room")}/>
+                      )
+                      //<input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
                     }
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
@@ -149,9 +167,10 @@ export default function LoginPage(props) {
                         </Button>]
                       :
                       <Button
-                        onClick={e => console.log("START!!!")}
+                        onClick={e => handleClick(e, "start")}
                         component={Link}
                         to={`/createRoom/name=${name}&room=${room}`}
+                        //TODO: add items to whiteboard
                         simple
                         color="primary"
                         size="lg">
