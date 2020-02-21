@@ -18,7 +18,8 @@
     "react-rnd": "^10.1.6",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
-    "react-verification-code-input": "^1.2.3"
+    "react-verification-code-input": "^1.2.3",
+    "socket.io-client": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
