@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -7,7 +7,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,7 +18,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MenuList from './MenuList';
 import AttendeeList from './AttendeeList';
-import DraggableText from './DraggableText';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 
@@ -109,11 +107,11 @@ export default function CreateRoom(props) {
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const { name, room } = props.match.params;
-  
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  
+
   const handleDrawerClose = () => {
     setOpen(false);
   };

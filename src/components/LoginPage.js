@@ -1,12 +1,9 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link, useHistory } from "react-router-dom";
-import ReactCodeInput from 'react-verification-code-input';
+import React from 'react';
+import { BrowserRouter as Link } from "react-router-dom";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import People from "@material-ui/icons/People";
 // core components
 import Header from "./Header/Header.js";
@@ -20,7 +17,6 @@ import CardFooter from "./Card/CardFooter.js";
 import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
-
 import io from "socket.io-client";
 
 const useStyles = makeStyles(styles);
@@ -58,6 +54,9 @@ export default function LoginPage(props) {
               props.history.push(`/createRoom/name=${name}&room=${room}`, { data: data });
             }
           });
+          break;
+        default:
+          break;
       }
     }
   }
@@ -71,15 +70,15 @@ export default function LoginPage(props) {
       case 'room':
         setRoom(e.target.value);
         break;
+      default:
+        break;
     }
   }
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
-  const [response, setResponse] = React.useState("");
   //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
   const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
-  const [items, setItems] = React.useState("");
-  const [path, setPath] = React.useState("");
+  const path = React.useState("");
 
   setTimeout(function() {
     setCardAnimation("");
@@ -117,7 +116,7 @@ export default function LoginPage(props) {
                     <h1>XBoard</h1>
                   </CardHeader>
                   <CardBody>
-                    {buttonStatus == 0 ?
+                    {buttonStatus === 0 ?
                       <CustomInput
                         labelText="Name..."
                         id="name"
@@ -153,7 +152,7 @@ export default function LoginPage(props) {
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
                     {/* Only show Create Room button when no button clicked */}
-                    {buttonStatus == 0 ?
+                    {buttonStatus === 0 ?
                         [<Button
                           onClick={e => handleClick(e, "create")}
                           simple

@@ -44,7 +44,7 @@ app.get("/", function (req, res) {
 })
 
 function create_room(socket, current_user_name){
-	if (typeof current_user_name === "string" && current_user_name.match("^[A-Za-z0-9]+$")){
+	if (typeof current_user_name === "string" && current_user_name.match("^[A-Za-z0-9 ]+$")){
 		current_room_id = uuidv4()
 		socket.join(current_room_id)
 		client.query("INSERT INTO user_table VALUES($1, $2);", [current_room_id, current_user_name])
@@ -58,7 +58,7 @@ function create_room(socket, current_user_name){
 
 function join_room(socket, room_id, user_name){
 	if (typeof room_id === "string" && validator.isUUID(room_id) &&
-		typeof user_name === "string" && user_name.match("^[A-Za-z0-9]+$")){
+		typeof user_name === "string" && user_name.match("^[A-Za-z0-9 ]+$")){
 		
 			res = {
 			component : [],
