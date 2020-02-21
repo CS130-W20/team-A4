@@ -120,7 +120,16 @@ export default function CreateRoom(props) {
 
   const handleAddComponent = (type) => {
     let newComponents = [...components];
-    newComponents.push(type);
+    let index = newComponents.length;
+    let key = [type, index].join(',');
+    newComponents.push(key);
+    setComponents(newComponents);
+  }
+
+  const handleDeleteComponent = (key) => {
+    let newComponents = [...components];
+    let index = newComponents.indexOf(key);
+    newComponents.splice(index, 1);
     setComponents(newComponents);
   }
 
@@ -169,14 +178,14 @@ export default function CreateRoom(props) {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
-              {components.map(type => {
-                switch (type) {
+              {components.map((key) => {
+                switch (key.split(',')[0]) {
                   case 'video':
-                    return (<DraggableVideo />);
+                    return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                   case 'text':
-                    return (<DraggableText />);
+                    return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                   case 'whiteboard':
-                    return (<DraggableWhiteboard />);
+                    return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                 }
               })}
             </Grid>

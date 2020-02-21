@@ -11,7 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Icon } from '@material-ui/core';
 
-export default function DraggableText() {
+export default function DraggableText(props) {
   const handleChange = event => {
     setValue(event.target.value);
   };
@@ -31,14 +31,13 @@ export default function DraggableText() {
     >
       <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
-          <IconButton aria-label="delete">
+          <IconButton aria-label="delete" onClick={() => props.handleDeleteComponent(props.k)} >
             <DeleteIcon fontSize="small" />
           </IconButton>
         </CardActions>
         <CardContent>
           <TextField
             value={value}
-            // label="Multiline"
             multiline
             rows="4"
             rowsMax="10"

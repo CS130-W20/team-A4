@@ -24,7 +24,7 @@ export default class DraggableWhiteboard extends Component {
       >
         <Card style={{ width: '100%', height: '100%' }} >
           <CardActions>
-            <IconButton aria-label="delete">
+            <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
               <DeleteIcon fontSize="small" />
             </IconButton>
           </CardActions>
