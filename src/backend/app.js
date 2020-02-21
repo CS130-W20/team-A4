@@ -79,6 +79,7 @@ function delete_component(socket, component_id, room_id){
 	if (component_type == 'image'){
 		// TODO: How to delete image
 	}
+	socket.broadcast.to(room_id).emit(component_id)
 }
 
 io.on('connection', function (socket) {
