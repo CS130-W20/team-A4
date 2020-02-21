@@ -35,15 +35,6 @@ app.get('/', function (req, res) {
     res.sendFile(index_path)
 })
 
-app.post('/update_component', function (req, res){
-	if (req.query.component_type in default_data){
-
-	}else{
-		console.error("ERROR: Unrecognized component type")
-		res.send("Please send valid request")
-	}
-})
-
 function create_component(socket, component_type, room_id){
 	
 	if (component_type in default_data){
@@ -64,7 +55,22 @@ function create_component(socket, component_type, room_id){
 	}else{
 		console.error("ERROR: Unrecognized component type")
 		socket.broadcast.to(room_id).emit("Please send valid request")
-	}	
+	}
+}	
+
+function update_component(socket, room_id, curr_component_id, update_type, curr_update_info){
+		// Broadcast to room
+		socket.broadcast.to(room_id).emit( 'component_updated', {
+			component_id: curr_component_id,
+			update_info: curr_update_info
+		})
+		// Update DB if its in the finished state
+		if(update_type == "update_finished"){
+			// TODO: Finish query 
+			client.query("UPDATE web_table SET location=$1, data=$2 WHERE component_id=$3", 
+						[curr_update_info.location, curr_update_info.data, curr_component_id])
+			// Don't need speical handler for image?
+		}
 }
 
 function delete_component(socket, component_id, room_id){
@@ -90,7 +96,7 @@ io.on('connection', function (socket) {
 
 	socket.on('update_component', function (data) {
 		// might not need to get room_id from frotend
-		socket.broadcast.to(data.room_id).emit("component_update", data)
+		update_component(socket, data.room_id, data.component_id, data.update_type, data.update_info)
 	})
 
 	socket.on('delete_component', function (data) {
