@@ -3,6 +3,7 @@ import { Rnd } from "react-rnd";
 import style from "../assets/jss/draggableStyle";
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
+import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -29,13 +30,11 @@ export default function DraggableText() {
       enableUserSelectHack={false}
     >
       <Card style={{ width: '100%', height: '100%' }} >
-        <CardHeader
-          action={
-            <IconButton aria-label="delete">
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          }
-        />
+        <CardActions>
+          <IconButton aria-label="delete">
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </CardActions>
         <CardContent>
           <TextField
             value={value}

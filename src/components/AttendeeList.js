@@ -49,7 +49,7 @@ export default function AttendeeList() {
       </ListItem>
       <ListItem button>
         <ListItemAvatar>
-          <Avatar alt="Feilan Wang" src="https://blog.bigbigwork.com/upload/2019/9/timg-8fa713226f3a474794b1c22a8a066d70.jpg" />
+          <Avatar alt="Feilan Wang" src="https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png" />
         </ListItemAvatar>
         <ListItemText primary="Feilan Wang" />
       </ListItem>

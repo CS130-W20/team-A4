@@ -24,13 +24,11 @@ export default class DraggableVideo extends Component {
         }}
       >
         <Card style={{ width: '100%', height: '100%' }} >
-          <CardHeader
-            action={
-              <IconButton aria-label="delete">
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            }
-          />
+          <CardActions>
+            <IconButton aria-label="delete">
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </CardActions>
           <Iframe
             url="http://www.youtube.com/embed/xDMP3i36naA"
             width="100%"

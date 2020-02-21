@@ -107,7 +107,7 @@ const useStyles = makeStyles(theme => ({
 export default function CreateRoom(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [components, setComponents] = React.useState(['video', 'text']);
+  const [components, setComponents] = React.useState([]);
   const { name, room } = props.match.params;
   
   const handleDrawerOpen = () => {
@@ -117,6 +117,12 @@ export default function CreateRoom(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleAddComponent = (type) => {
+    let newComponents = [...components];
+    newComponents.push(type);
+    setComponents(newComponents);
+  }
 
   return (
     <div className={classes.root}>
@@ -155,7 +161,7 @@ export default function CreateRoom(props) {
           </IconButton>
         </div>
         <Divider />
-        <MenuList />
+        <MenuList handleAddComponent={handleAddComponent} />
         <Divider />
         <AttendeeList />
       </Drawer>

@@ -34,7 +34,8 @@ export default function MenuList(props) {
     setOpen(!open);
   };
 
-  console.log("props:", props);
+  // console.log("props.handleAddElement:", props.handleAddElement, typeof(handleAddElement));
+  // console.log("props.handleAddComponent:", props);
 
   return (
     <List>
@@ -53,22 +54,19 @@ export default function MenuList(props) {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          {/* <ListItem button className={classes.nested} onClick={props.handleAddElement("video")}> */}
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("video")}>
             <ListItemIcon>
               <MovieIcon />
             </ListItemIcon>
             <ListItemText primary="Video" />
           </ListItem>
-          {/* <ListItem button className={classes.nested} onClick={props.handleAddElement("text")}> */}
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("text")}>
             <ListItemIcon>
               <TextFieldsIcon />
             </ListItemIcon>
             <ListItemText primary="Text" />
           </ListItem>
-          {/* <ListItem button className={classes.nested} onClick={props.handleAddElement("whiteboard")}> */}
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("whiteboard")}>
             <ListItemIcon>
               <BrushIcon />
             </ListItemIcon>

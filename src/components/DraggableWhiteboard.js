@@ -22,13 +22,11 @@ export default class DraggableWhiteboard extends Component {
         }}
       >
         <Card style={{ width: '100%', height: '100%' }} >
-          <CardHeader
-            action={
-              <IconButton aria-label="delete">
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            }
-          />
+          <CardActions>
+            <IconButton aria-label="delete">
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </CardActions>
           <Whiteboard
             events={new EventStream()} eventStore={new EventStore()}
             width={'100%'}
