@@ -35,34 +35,6 @@ app.get('/', function (req, res) {
     res.sendFile(index_path)
 })
 
-app.post('/create_room', function (req, res) {
-    current_uuid = uuidv4()
-    res.send({uuid: current_uuid})
-})
-
-app.post('/create_component', function (req, res) {
-	
-	if (req.query.component_type in default_data){
-		
-		current_component_id = uuidv4()
-		client.query("INSERT INTO web_table VALUES($1, $2, '((0, 0), (100, 100))', $3);", 
-					[current_component_id, req.query.room_id, default_data[req.query.component_type]])
-		
-		if (req.query.component_type == 'image'){
-			// TODO: How to send image back
-		}else{
-			res.send({
-				component_id: current_component_id,
-				component_data: default_data[req.query.component_type]
-			})
-		}
-
-	}else{
-		console.error("ERROR: Unrecognized component type")
-		res.send("Please send valid request")
-	}	
-})
-
 app.post('/update_component', function (req, res){
 	if (req.query.component_type in default_data){
 
@@ -72,18 +44,56 @@ app.post('/update_component', function (req, res){
 	}
 })
 
-app.post('/delete_component', function (req, res){
-	if (req.query.component_type in default_data){
+function create_component(socket, component_type, room_id){
+	
+	if (component_type in default_data){
+		
+		current_component_id = uuidv4()
+		client.query("INSERT INTO app_content VALUES($1, $2, '((0, 0), (100, 100))', $3);", 
+					[current_component_id, room_id, default_data[component_type]])
+		
+		if (component_type == 'image'){
+			// TODO: How to send image back
+		}else{
+			socket.broadcast.to(room_id).emit("component_data", {
+				component_id: current_component_id,
+				component_data: default_data[component_type]
+			})
+		}
 
 	}else{
 		console.error("ERROR: Unrecognized component type")
-		res.send("Please send valid request")
+		socket.broadcast.to(room_id).emit("Please send valid request")
+	}	
+}
+
+function delete_component(socket, component_id, room_id){
+	
+	client.query("DELETE FROM app_content WHERE component_id=$1", [component_id])
+	
+	if (component_type == 'image'){
+		// TODO: How to delete image
 	}
-})
+}
 
 io.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' })
-    socket.on('my other event', function (data) {
-        console.log(data)
-    })
+	socket.on('create', function() {
+		current_uuid = uuidv4()
+		socket.join(current_uuid)
+		// might not need to send back
+		socket.emit(current_uuid)
+	})
+
+	socket.on('create_component', function (data) {
+		create_component(socket, data.component_type, data.room_id)
+	})
+
+	socket.on('update_component', function (data) {
+		// might not need to get room_id from frotend
+		socket.broadcast.to(data.room_id).emit("component_update", data)
+	})
+
+	socket.on('delete_component', function (data) {
+		delete_component(socket, data.component_id, data.room_id)
+	})
 })
