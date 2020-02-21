@@ -74,10 +74,13 @@ function join_room(socket, room_id, user_name){
 			.then((data) => {res.user_name = data.rows.map(o => o.user_name)})
 			.then(()=>{
 				if(res.user_name.length){
+					client.query("INSERT INTO user_table VALUES($1, $2);", [room_id, user_name])
+
 					res.user_name.push(user_name)
 					socket.emit("join_result", res)
+
+					socket.join(room_id)
 					socket.broadcast.to(room_id).emit("join_result", res)
-					client.query("INSERT INTO user_table VALUES($1, $2);", [room_id, user_name])
 				}else
 					socket.emit("join_result", "invalid input")
 			})
