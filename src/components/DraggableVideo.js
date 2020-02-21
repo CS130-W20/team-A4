@@ -36,6 +36,7 @@ export default class DraggableVideo extends Component {
           width: 500,
           height: 400,
         }}
+        enableUserSelectHack={false}
       >
       enter video link
       <form onSubmit={this.onSubmit} style={{ display: 'flex' }}>
