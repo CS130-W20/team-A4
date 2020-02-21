@@ -87,7 +87,7 @@ io.on('connection', function (socket) {
 		current_uuid = uuidv4()
 		socket.join(current_uuid)
 		// might not need to send back
-		socket.emit(current_uuid)
+		socket.emit('room_create_success', current_uuid)
 	})
 
 	socket.on('join', function(room_id) {
