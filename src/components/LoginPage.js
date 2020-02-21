@@ -21,7 +21,7 @@ import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
 
-import socketIOClient from "socket.io-client";
+import io from "socket.io-client";
 
 const useStyles = makeStyles(styles);
 
@@ -34,10 +34,12 @@ export default function LoginPage(props) {
       switch(field) {
         case 'create':
           setButtonStatus(1);
-          const socket = socketIOClient(endpoint);
-          socket.on("create", (data) => {
-            setRoom(data);
+          //const socket = socketIOClient(endpoint);
+          socket.emit("create", "");
+          socket.on("create_success", (data) => {
+            console.log("data is:");
             console.log(data);
+            setRoom(data);
           });
           break;
         case 'join':
@@ -61,7 +63,9 @@ export default function LoginPage(props) {
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
   const [response, setResponse] = React.useState("");
-  const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
+  //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
+  const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
+
   setTimeout(function() {
     setCardAnimation("");
   }, 700);
@@ -118,12 +122,13 @@ export default function LoginPage(props) {
                         }}
                       />
                     :
-                      <ReactCodeInput
-                        fields={5}
-                        type='number'
-                        values={room.split('')}
-                        onChange={(e) => handleChange(e, "room")}
-                      />
+                      // <ReactCodeInput
+                      //   fields={}
+                      //   type='string'
+                      //   values={room.split('')}
+                      //   onChange={(e) => handleChange(e, "room")}
+                      // />
+                      <input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
                     }
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
