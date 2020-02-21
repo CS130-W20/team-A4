@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
 
 	socket.on('join', function(room_id) {
 		socket.join(room_id)
-		var res = client.query("SELECT * WHERE app_content component_id=$1;", [room_id])
+		var res = client.query("SELECT * WHERE app_content room_id=$1;", [room_id])
 		socket.emit(res.row)
 	})
 
