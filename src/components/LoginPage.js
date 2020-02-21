@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, useHistory } from "react-router-dom";
 import ReactCodeInput from 'react-verification-code-input';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -35,9 +35,16 @@ export default function LoginPage(props) {
         case 'create':
           setButtonStatus(1);
           //const socket = socketIOClient(endpoint);
-          socket.emit("create", "");
-          socket.on("create_success", (data) => {
-            setRoom(data);
+          socket.emit("create",
+            {
+              "user_name": name
+            }
+          );
+          socket.on("create_result", (data) => {
+            console.log("data is:");
+            console.log(data);
+
+            setRoom(data.room_id);
           });
           break;
         case 'join':
@@ -47,11 +54,27 @@ export default function LoginPage(props) {
           // pass room number into socket.emit
           console.log("room is:");
           console.log(room);
-          socket.emit("join", room);
-          socket.on("join_success", (data) => {
-            // Parse JSON data
-            setItems = JSON.parse(data);
-          })
+          // const history = useHistory();
+          socket.emit("join",
+             {
+               "user_name": name,
+                "room_id": room
+             }
+          );
+          socket.on("join_result", (data) => {
+            console.log("data is:", data, typeof(data));
+            // console.log(data);
+            if (data === "invalid room_id") {
+              // setPath("/loginPage/");
+              // history.push('/')
+              props.history.push('/');
+            }
+            else {
+              // setPath(`/createRoom/name=${name}&room=${room}`);
+              // history.push(`/createRoom/name=${name}&room=${room}`);
+              props.history.push(`/createRoom/name=${name}&room=${room}`);
+            }
+          });
       }
     }
   }
@@ -73,6 +96,7 @@ export default function LoginPage(props) {
   //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
   const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
   const [items, setItems] = React.useState("");
+  const [path, setPath] = React.useState("");
 
   setTimeout(function() {
     setCardAnimation("");
@@ -137,9 +161,39 @@ export default function LoginPage(props) {
                       //   onChange={(e) => handleChange(e, "room")}
                       // />
                       (buttonStatus == 1 ?
-                        <input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
-                         :
-                        <input type="text" onChange={(e) => handleChange(e, "room")}/>
+                        (
+                          <CustomInput
+                            labelText="Room ID"
+                            id="room_id"
+                            formControlProps={{
+                              fullWidth: true
+                            }}
+                            inputProps={{
+                              type: "text",
+                              value: room,
+                              onChange: (e) => handleChange(e, "room"),
+                            }}
+                          />
+                        )
+                        :
+                        (
+                          <CustomInput
+                            labelText="Room ID"
+                            id="room_id"
+                            formControlProps={{
+                              fullWidth: true
+                            }}
+                            inputProps={{
+                              type: "text",
+                              onChange: (e) => handleChange(e, "room"),
+                            }}
+                          />
+                        )
+
+
+                        // <input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
+                        //  :
+                        // <input type="text" onChange={(e) => handleChange(e, "room")}/>
                       )
                       //<input type="text" value={room} onChange={(e) => handleChange(e, "room")}/>
                     }
@@ -169,7 +223,8 @@ export default function LoginPage(props) {
                       <Button
                         onClick={e => handleClick(e, "start")}
                         component={Link}
-                        to={`/createRoom/name=${name}&room=${room}`}
+                        to={path}
+                        //to={`/loginPage/`}
                         //TODO: add items to whiteboard
                         simple
                         color="primary"
