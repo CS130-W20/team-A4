@@ -21,6 +21,7 @@ import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
 
+import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles(styles);
 
@@ -33,7 +34,11 @@ export default function LoginPage(props) {
       switch(field) {
         case 'create':
           setButtonStatus(1);
-          setRoom("12345");
+          const socket = socketIOClient(endpoint);
+          socket.on("create", (data) => {
+            setRoom(data);
+            console.log(data);
+          });
           break;
         case 'join':
           setButtonStatus(2);
@@ -55,6 +60,8 @@ export default function LoginPage(props) {
   }
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
+  const [response, setResponse] = React.useState("");
+  const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
   setTimeout(function() {
     setCardAnimation("");
   }, 700);
@@ -91,7 +98,7 @@ export default function LoginPage(props) {
                     <h1>XBoard</h1>
                   </CardHeader>
                   <CardBody>
-                    {buttonStatus == 0 ? 
+                    {buttonStatus == 0 ?
                       <CustomInput
                         labelText="Name..."
                         id="name"
