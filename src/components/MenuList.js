@@ -26,13 +26,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function MenuList() {
+export default function MenuList(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
   };
+
+  console.log("props:", props);
 
   return (
     <List>
@@ -51,18 +53,21 @@ export default function MenuList() {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
+          {/* <ListItem button className={classes.nested} onClick={props.handleAddElement("video")}> */}
           <ListItem button className={classes.nested}>
             <ListItemIcon>
               <MovieIcon />
             </ListItemIcon>
             <ListItemText primary="Video" />
           </ListItem>
+          {/* <ListItem button className={classes.nested} onClick={props.handleAddElement("text")}> */}
           <ListItem button className={classes.nested}>
             <ListItemIcon>
               <TextFieldsIcon />
             </ListItemIcon>
             <ListItemText primary="Text" />
           </ListItem>
+          {/* <ListItem button className={classes.nested} onClick={props.handleAddElement("whiteboard")}> */}
           <ListItem button className={classes.nested}>
             <ListItemIcon>
               <BrushIcon />

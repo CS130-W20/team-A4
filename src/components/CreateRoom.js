@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -105,6 +107,7 @@ const useStyles = makeStyles(theme => ({
 export default function CreateRoom(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [components, setComponents] = React.useState(['video', 'text']);
   const { name, room } = props.match.params;
   
   const handleDrawerOpen = () => {
@@ -160,12 +163,19 @@ export default function CreateRoom(props) {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
-            <DraggableWhiteboard />
-            <DraggableVideo />
-            <DraggableText />
-          </Grid>
-        </Container>
-      </main>
-    </div>
-  );
+              {components.map(type => {
+                switch (type) {
+                  case 'video':
+                    return (<DraggableVideo />);
+                  case 'text':
+                    return (<DraggableText />);
+                  case 'whiteboard':
+                    return (<DraggableWhiteboard />);
+                }
+              })}
+            </Grid>
+          </Container>
+        </main>
+      </div>
+    );
 }
