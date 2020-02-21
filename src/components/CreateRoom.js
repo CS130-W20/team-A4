@@ -110,9 +110,9 @@ export default function CreateRoom(props) {
   const { name, room } = props.match.params;
   const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
 
-  React.useEffect() {
+  React.useEffect = () => {
     socket.on("join_result", (data) => {
-      
+      console.log("data:", data);
     });
   }
 
@@ -138,8 +138,6 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
   }
-
-  console.log(props);
 
   return (
     <div className={classes.root}>

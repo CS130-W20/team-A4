@@ -153,24 +153,22 @@ export default function LoginPage(props) {
                   <CardFooter className={classes.cardFooter}>
                     {/* Only show Create Room button when no button clicked */}
                     {buttonStatus === 0 ?
-                        [<Button
-                          onClick={e => handleClick(e, "create")}
-                          simple
-                          color="primary"
-                          size="lg"
-                          key="create">
-                          Create Room
-                        </Button>,
-                        <Button
-                          onClick={e => handleClick(e, "join")}
-                          component={Link}
-                          to={`/createRoom/name=${name}&room=${room}`}
-                          simple
-                          color="primary"
-                          size="lg"
-                          key="join">
-                          Join Room
-                        </Button>]
+                      [<Button
+                        onClick={e => handleClick(e, "create")}
+                        simple
+                        color="primary"
+                        size="lg"
+                        key="create">
+                        Create Room
+                      </Button>,
+                      <Button
+                        onClick={e => handleClick(e, "join")}
+                        simple
+                        color="primary"
+                        size="lg"
+                        key="join">
+                        Join Room
+                      </Button>]
                       :
                       <Button
                         onClick={e => handleClick(e, "start")}
