@@ -63,6 +63,24 @@ app.post('/create_component', function (req, res) {
 	}	
 })
 
+app.post('/update_component', function (req, res){
+	if (req.query.component_type in default_data){
+
+	}else{
+		console.error("ERROR: Unrecognized component type")
+		res.send("Please send valid request")
+	}
+})
+
+app.post('/delete_component', function (req, res){
+	if (req.query.component_type in default_data){
+
+	}else{
+		console.error("ERROR: Unrecognized component type")
+		res.send("Please send valid request")
+	}
+})
+
 io.on('connection', function (socket) {
     socket.emit('news', { hello: 'world' })
     socket.on('my other event', function (data) {
