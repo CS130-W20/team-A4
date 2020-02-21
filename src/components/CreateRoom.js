@@ -19,6 +19,7 @@ import MenuList from './MenuList';
 import AttendeeList from './AttendeeList';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
+import DraggableText from './DraggableText';
 
 const drawerWidth = 240;
 
