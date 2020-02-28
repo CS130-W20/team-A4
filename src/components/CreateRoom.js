@@ -20,6 +20,8 @@ import AttendeeList from './AttendeeList';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
+import DraggableImage from './DraggableImage';
+import io from "socket.io-client";
 
 const drawerWidth = 240;
 
@@ -186,6 +188,8 @@ export default function CreateRoom(props) {
                   return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                 case 'whiteboard':
                   return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                case 'image':
+                  return (<DraggableImage key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
               }
             })}
           </Grid>
