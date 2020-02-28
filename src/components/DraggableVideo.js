@@ -14,9 +14,9 @@ export default class DraggableVideo extends Component {
   }
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({show: true});
+    this.setState({ show: true });
   }
-  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
+  onChange = (e) => this.setState({ videoUrl: e.target.value });
 
   render() {
     const show = this.state.show;
