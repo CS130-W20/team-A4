@@ -20,10 +20,7 @@ import AttendeeList from './AttendeeList';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
-<<<<<<< HEAD
 import DraggableImage from './DraggableImage';
-=======
->>>>>>> 2567e5f23f0f86d2fdee7f829625bbea41488d99
 import io from "socket.io-client";
 
 const drawerWidth = 240;
