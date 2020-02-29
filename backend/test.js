@@ -28,8 +28,9 @@ switch(test_case){
         console.log(join_bad_room(room_uuid_obj))
         break;
     case "create_text_component":
+        console.log(create_text_component(room_uuid_obj))
         break;
-    case "create_text_component":
+    case "create_invalid_component":
         break;
     case "update_component_inprogress":
         break;
