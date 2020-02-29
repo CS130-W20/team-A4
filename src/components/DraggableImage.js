@@ -43,7 +43,11 @@ export default class DraggableImage extends Component {
           </IconButton>
         </CardActions>
         {show ?
-            <img src={this.state.selectedImage}/> 
+            <img 
+                src={this.state.selectedImage} 
+                width="90%" 
+                height="80%"
+            /> 
         :
             <input type="file" onChange={this.imageSelectedHandler}/>
         }
