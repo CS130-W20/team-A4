@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import CreateRoom from './components/CreateRoom';
+import Room from './components/Room';
 import LoginPage from './components/LoginPage';
 import { BrowserRouter as Router, Route, useLocation, Switch } from "react-router-dom";
 
@@ -10,7 +10,7 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/createRoom/name=:name&room=:room&roomName=:roomName" component={CreateRoom} />
+          <Route path="/room/name=:name&roomID=:room&roomName=:roomName" component={Room} />
           <Route path="/" component={LoginPage} />
         </Switch>
       </Router>

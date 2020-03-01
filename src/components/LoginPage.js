@@ -1,5 +1,4 @@
 import React from 'react';
-import { BrowserRouter as Link } from "react-router-dom";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -38,7 +37,7 @@ export default function LoginPage(props) {
           });
           socket.on("create_result", (data) => {
             console.log("data:", data);
-            props.history.push(`/createRoom/name=${name}&room=${data.room_id}&roomName=${roomName}`, { data: data });
+            props.history.push(`/room/name=${name}&roomID=${data.room_id}&roomName=${roomName}`, { data: data });
           });
           break;
         case 'join':
@@ -48,14 +47,14 @@ export default function LoginPage(props) {
           // pass room number into socket.emit
           socket.emit("join", {
               "user_name": name,
-              "room_id": room
+              "room_id": roomID
           });
           socket.on("join_result", (data) => {
             console.log("data is:", data, typeof(data));
             if (data === "invalid input") {
               props.history.push('/');
             } else {
-              props.history.push(`/createRoom/name=${name}&room=${room}&roomName=${data.room_name}`, { data: data });
+              props.history.push(`/room/name=${name}&roomID=${roomID}&roomName=${data.room_name}`, { data: data });
             }
           });
           break;
@@ -71,8 +70,8 @@ export default function LoginPage(props) {
         setBlank(e.target.value === "");
         setName(e.target.value);
         break;
-      case 'room':
-        setRoom(e.target.value);
+      case 'roomID':
+        setRoomID(e.target.value);
         break;
       case 'roomName':
         setRoomName(e.target.value);
@@ -92,7 +91,7 @@ export default function LoginPage(props) {
   }, 700);
   const classes = useStyles();
   const [name, setName] = React.useState("");
-  const [room, setRoom] = React.useState("");
+  const [roomID, setRoomID] = React.useState("");
   const [roomName, setRoomName] = React.useState("");
   const [blank, setBlank] = React.useState(false);
   const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
@@ -164,8 +163,8 @@ export default function LoginPage(props) {
                         }}
                         inputProps={{
                           type: "text",
-                          value: room,
-                          onChange: (e) => handleChange(e, "room"),
+                          value: roomID,
+                          onChange: (e) => handleChange(e, "roomID"),
                         }}
                       />
                     }

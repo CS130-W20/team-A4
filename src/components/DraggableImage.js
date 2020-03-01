@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Rnd } from "react-rnd";
-import Iframe from 'react-iframe';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
@@ -12,19 +11,23 @@ export default class DraggableImage extends Component {
 
   state = {
       selectedImage : null,
-      show : false
+      show : false,
+      imageFile : null
   }
 
   imageSelectedHandler = e => {
       this.setState({
-          selectedImage : URL.createObjectURL(e.target.files[0])
+          selectedImage : URL.createObjectURL(e.target.files[0]),
+          imageFile : e.target.files[0]
       });
       this.setState({ show: true });
+
   }
 
   render() {
     const show = this.state.show;
-    console.log("image selected:", this.state.selectedImage)
+    console.log("image selected:", this.state.selectedImage);
+    console.log("image file: ", this.state.imageFile);
     return (
       <Rnd
         style={style}
@@ -47,6 +50,7 @@ export default class DraggableImage extends Component {
                 src={this.state.selectedImage} 
                 width="90%" 
                 height="80%"
+                alt="image cannot be displayed"
             /> 
         :
             <input type="file" onChange={this.imageSelectedHandler}/>
