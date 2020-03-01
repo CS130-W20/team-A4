@@ -1,4 +1,5 @@
 var app = require("express")()
+var fs = require("fs")
 var server = require("http").Server(app)
 var io = require("socket.io")(server)
 var uuidv4 = require("uuid/v4")
@@ -24,17 +25,22 @@ var create_user_table = "CREATE TABLE IF NOT EXISTS user_table (\
 							user_name VARCHAR\
 						);"
 
+var create_room_table = "CREATE TABLE IF NOT EXISTS room_table (\
+							room_id UUID PRIMARY KEY, \
+							room_name VARCHAR\
+						);"
+
 default_data = {
 	"text" : "Enter text here",
-	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com"
-	// "image": "images/default_image.jpg"
+	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com",
+	"image": "/home/ubuntu/team-A4/backend/images/default_image.jpg"
 }
-// TODO: How to send image back
 
 var client = new Client(db_config)
 client.connect()
 client.query(create_content_table)
 client.query(create_user_table)
+client.query(create_room_table)
 
 var index_path = "/home/ubuntu/team-A4/public/index.html"
 server.listen(8080)
@@ -43,13 +49,19 @@ app.get("/", function (req, res) {
     res.sendFile(index_path)
 })
 
-function create_room(socket, current_user_name){
-	if (typeof current_user_name === "string" && current_user_name.match("^[A-Za-z0-9 ]+$")){
+function validate_name(check_name){
+	return typeof check_name === "string" && check_name.match("^[A-Za-z0-9 ]+$")
+}
+
+function create_room(socket, current_user_name, current_room_name){
+	if (validate_name(current_room_name) && validate_name(current_user_name)){
 		current_room_id = uuidv4()
 		socket.join(current_room_id)
 		client.query("INSERT INTO user_table VALUES($1, $2);", [current_room_id, current_user_name])
+		client.query("INSERT INTO room_table VALUES($1, $2);", [current_room_id, current_room_name])
 		socket.emit("create_result", {
 			room_id: current_room_id,
+			room_name: current_room_name,
 			component : [],
 			user_name: [current_user_name]
 		})
@@ -58,11 +70,10 @@ function create_room(socket, current_user_name){
 }
 
 function join_room(socket, room_id, user_name){
-	if (typeof room_id === "string" && validator.isUUID(room_id) &&
-		typeof user_name === "string" && user_name.match("^[A-Za-z0-9 ]+$")){
-		
+	if (typeof room_id === "string" && validator.isUUID(room_id) && validate_name(user_name)){
 		res = {
 			room_id: room_id,
+			room_name: "",
 			component : [],
 			user_name: []
 		}
@@ -72,18 +83,23 @@ function join_room(socket, room_id, user_name){
 		.then(() => {
 			client.query("SELECT user_name FROM user_table WHERE room_id=$1;", [room_id])
 			.then((data) => {res.user_name = data.rows.map(o => o.user_name)})
-			.then(()=>{
-				if(res.user_name.length){
-					client.query("INSERT INTO user_table VALUES($1, $2);", [room_id, user_name])
-
-					res.user_name.push(user_name)
-					socket.emit("join_result", res)
-
-					socket.join(room_id)
-					socket.broadcast.to(room_id).emit("join_result", res)
-				}else
-					socket.emit("join_result", "invalid input")
+			.then(() => {
+				client.query("SELECT room_name FROM room_table WHERE room_id=$1;", [room_id])
+				.then((data) => {res.room_name = data.rows[0].room_name})
+				.then(()=>{
+					if(res.user_name.length){
+						client.query("INSERT INTO user_table VALUES($1, $2);", [room_id, user_name])
+	
+						res.user_name.push(user_name)
+						socket.emit("join_result", res)
+	
+						socket.join(room_id)
+						socket.broadcast.to(room_id).emit("join_result", res)
+					}else
+						socket.emit("join_result", "invalid input")
+				})
 			})
+			
 		})
 	}else
 		socket.emit("join_result", "invalid input")
@@ -97,7 +113,17 @@ function create_component(socket, component_type, room_id){
 					[current_component_id, room_id, default_data[component_type], component_type])
 		
 		if (component_type == "image"){
-			// TODO: How to send image back
+			var read_stream = fs.createReadStream(default_data["image"], {encoding: "binary"})
+			read_stream.on("data", function(image_data){
+				socket.broadcast.to(room_id).emit("image_data", {
+					component_id: current_component_id,
+					component_data: image_data
+				})
+				socket.emit("image_data", {
+					component_id: current_component_id,
+					component_data: image_data
+				})
+			})
 		}else{
 			socket.broadcast.to(room_id).emit("create_component", {
 				component_id: current_component_id,
@@ -107,17 +133,17 @@ function create_component(socket, component_type, room_id){
 	}
 }	
 
-function update_component(socket, room_id, curr_component_id, update_type, curr_update_info){
+function update_component(socket, room_id, current_component_id, update_type, current_update_info){
+		// Handle update image
 
 		socket.broadcast.to(room_id).emit("update_component", {
-			component_id: curr_component_id,
-			update_info: curr_update_info
+			component_id: current_component_id,
+			update_info: current_update_info
 		})
 
 		if(update_type == "update_finished"){
 			client.query("UPDATE app_content SET location=$1, data=$2 WHERE component_id=$3;", 
-						[curr_update_info.location, curr_update_info.data, curr_component_id])
-			// Don"t need speical handler for image?
+						[current_update_info.location, current_update_info.data, current_component_id])
 		}
 }
 
@@ -133,7 +159,7 @@ function delete_component(socket, component_id, room_id, component_type){
 
 io.on("connection", function (socket) {
 	socket.on("create", function(data) {
-		create_room(socket, data.user_name)
+		create_room(socket, data.user_name, data.room_name)
 	})
 
 	socket.on("join", function(data) {
@@ -152,4 +178,8 @@ io.on("connection", function (socket) {
 	socket.on("delete_component", function (data) {
 		delete_component(socket, data.component_id, data.room_id, data.component_type)
 	})
+
+	socket.on('disconnect', function(){
+		
+	});
 })
