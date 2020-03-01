@@ -20,7 +20,13 @@ import AttendeeList from './AttendeeList';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
+<<<<<<< Updated upstream
 import io from "socket.io-client";
+=======
+import DraggableImage from './DraggableImage';
+//import io from "socket.io-client";
+import socket from "./SocketContext";
+>>>>>>> Stashed changes
 
 const drawerWidth = 240;
 
