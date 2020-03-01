@@ -17,11 +17,13 @@ import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
 import io from "socket.io-client";
+import socket from "./SocketContext";
 
 const useStyles = makeStyles(styles);
 
 export default function LoginPage(props) {
   function handleClick(e, field) {
+    //const socket = require('./SocketContext.js');
     if (name === "") {
       setBlank(true);
     } else {
@@ -37,7 +39,11 @@ export default function LoginPage(props) {
           });
           socket.on("create_result", (data) => {
             console.log("data:", data);
+<<<<<<< HEAD
             props.history.push(`/room/name=${name}&roomID=${data.room_id}&roomName=${roomName}`, { data: data });
+=======
+            props.history.push(`/createRoom/name=${name}&room=${data.room_id}&roomName=${roomName}`, { data: data });
+>>>>>>> master
           });
           break;
         case 'join':
@@ -54,7 +60,11 @@ export default function LoginPage(props) {
             if (data === "invalid input") {
               props.history.push('/');
             } else {
+<<<<<<< HEAD
               props.history.push(`/room/name=${name}&roomID=${roomID}&roomName=${data.room_name}`, { data: data });
+=======
+              props.history.push(`/createRoom/name=${name}&room=${room}&roomName=${data.room_name}`, { data: data });
+>>>>>>> master
             }
           });
           break;
@@ -76,6 +86,9 @@ export default function LoginPage(props) {
       case 'roomName':
         setRoomName(e.target.value);
         break;
+      case 'roomName':
+        setRoomName(e.target.value);
+        break;
       default:
         break;
     }
@@ -83,7 +96,7 @@ export default function LoginPage(props) {
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
   //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
-  const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
+  //const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
   const path = React.useState("");
 
   setTimeout(function() {
@@ -91,7 +104,11 @@ export default function LoginPage(props) {
   }, 700);
   const classes = useStyles();
   const [name, setName] = React.useState("");
+<<<<<<< HEAD
   const [roomID, setRoomID] = React.useState("");
+=======
+  const [room, setRoom] = React.useState("");
+>>>>>>> master
   const [roomName, setRoomName] = React.useState("");
   const [blank, setBlank] = React.useState(false);
   const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
