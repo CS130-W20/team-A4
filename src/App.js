@@ -10,7 +10,7 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/createRoom/name=:name&room=:room" component={CreateRoom} />
+          <Route path="/createRoom/name=:name&room=:room&roomName=:roomName" component={CreateRoom} />
           <Route path="/" component={LoginPage} />
         </Switch>
       </Router>
