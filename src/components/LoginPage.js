@@ -18,11 +18,13 @@ import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
 import io from "socket.io-client";
+import socket from "./SocketContext";
 
 const useStyles = makeStyles(styles);
 
 export default function LoginPage(props) {
   function handleClick(e, field) {
+    //const socket = require('./SocketContext.js');
     if (name === "") {
       setBlank(true);
     } else {
@@ -84,7 +86,7 @@ export default function LoginPage(props) {
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
   //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
-  const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
+  //const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
   const path = React.useState("");
 
   setTimeout(function() {
