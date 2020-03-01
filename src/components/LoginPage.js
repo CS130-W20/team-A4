@@ -39,11 +39,7 @@ export default function LoginPage(props) {
           });
           socket.on("create_result", (data) => {
             console.log("data:", data);
-<<<<<<< HEAD
             props.history.push(`/room/name=${name}&roomID=${data.room_id}&roomName=${roomName}`, { data: data });
-=======
-            props.history.push(`/createRoom/name=${name}&room=${data.room_id}&roomName=${roomName}`, { data: data });
->>>>>>> master
           });
           break;
         case 'join':
@@ -60,11 +56,7 @@ export default function LoginPage(props) {
             if (data === "invalid input") {
               props.history.push('/');
             } else {
-<<<<<<< HEAD
               props.history.push(`/room/name=${name}&roomID=${roomID}&roomName=${data.room_name}`, { data: data });
-=======
-              props.history.push(`/createRoom/name=${name}&room=${room}&roomName=${data.room_name}`, { data: data });
->>>>>>> master
             }
           });
           break;
@@ -104,11 +96,7 @@ export default function LoginPage(props) {
   }, 700);
   const classes = useStyles();
   const [name, setName] = React.useState("");
-<<<<<<< HEAD
   const [roomID, setRoomID] = React.useState("");
-=======
-  const [room, setRoom] = React.useState("");
->>>>>>> master
   const [roomName, setRoomName] = React.useState("");
   const [blank, setBlank] = React.useState(false);
   const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
