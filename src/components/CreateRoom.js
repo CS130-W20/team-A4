@@ -20,6 +20,7 @@ import AttendeeList from './AttendeeList';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
+import DraggableImage from './DraggableImage';
 import io from "socket.io-client";
 
 const drawerWidth = 240;
@@ -107,7 +108,7 @@ export default function CreateRoom(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
-  const { name, room } = props.match.params;
+  const { name, roomID, roomName } = props.match.params;
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -131,7 +132,8 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
   }
-
+  console.log("name: ", name, " roomID: ", roomID, " roomName: ", roomName);
+  console.log("props: ", props);
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -147,7 +149,7 @@ export default function CreateRoom(props) {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Room {room}
+            Room {roomName}
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
@@ -185,6 +187,8 @@ export default function CreateRoom(props) {
                   return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                 case 'whiteboard':
                   return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                case 'image':
+                  return (<DraggableImage key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
               }
             })}
           </Grid>

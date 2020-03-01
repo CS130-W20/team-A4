@@ -69,7 +69,7 @@ export default function MenuList(props) {
             </ListItemIcon>
             <ListItemText primary="Whiteboard" />
           </ListItem>
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("image")}>
             <ListItemIcon>
               <ImageIcon />
             </ListItemIcon>
