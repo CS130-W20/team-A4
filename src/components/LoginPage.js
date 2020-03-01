@@ -31,12 +31,16 @@ export default function LoginPage(props) {
       setBlank(false);
       switch(field) {
         case 'create':
+          setButtonStatus(4);
+          break;
+        case 'createNamedRoom':
           socket.emit("create", {
-            "user_name": name
+            "user_name": name,
+            "room_name": roomName
           });
           socket.on("create_result", (data) => {
             console.log("data:", data);
-            props.history.push(`/createRoom/name=${name}&room=${data.room_id}`, { data: data });
+            props.history.push(`/createRoom/name=${name}&room=${data.room_id}&roomName=${roomName}`, { data: data });
           });
           break;
         case 'join':
@@ -53,7 +57,7 @@ export default function LoginPage(props) {
             if (data === "invalid input") {
               props.history.push('/');
             } else {
-              props.history.push(`/createRoom/name=${name}&room=${room}`, { data: data });
+              props.history.push(`/createRoom/name=${name}&room=${room}&roomName=${data.room_name}`, { data: data });
             }
           });
           break;
@@ -72,6 +76,9 @@ export default function LoginPage(props) {
       case 'room':
         setRoom(e.target.value);
         break;
+      case 'roomName':
+        setRoomName(e.target.value);
+        break;
       default:
         break;
     }
@@ -88,10 +95,11 @@ export default function LoginPage(props) {
   const classes = useStyles();
   const [name, setName] = React.useState("");
   const [room, setRoom] = React.useState("");
+  const [roomName, setRoomName] = React.useState("");
   const [blank, setBlank] = React.useState(false);
-  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start
+  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
   const { ...rest } = props;
-
+  console.log("button status ", buttonStatus);
   return (
     <div>
       <Header
@@ -136,6 +144,19 @@ export default function LoginPage(props) {
                           error: blank,
                         }}
                       />
+                    : buttonStatus === 4 ?
+                    <CustomInput
+                      labelText="Enter room name..."
+                      id="room_name"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        value: roomName,
+                        onChange: (e) => handleChange(e, "roomName")
+                      }}
+                    />
                     :
                       <CustomInput
                         labelText="Room ID"
@@ -171,6 +192,15 @@ export default function LoginPage(props) {
                         Join Room
                       </Button>]
                       :
+                      buttonStatus === 4 ? 
+                      <Button
+                      onClick={e => handleClick(e, "createNamedRoom")}
+                      simple
+                      color="primary"
+                      size="lg">
+                      Start
+                    </Button>
+                    :
                       <Button
                         onClick={e => handleClick(e, "start")}
                         simple
