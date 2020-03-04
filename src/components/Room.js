@@ -109,16 +109,22 @@ export default function CreateRoom(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
+  const [users, setUsers] = React.useState(props.location.state.data.user_name);
   const { name, roomID, roomName } = props.match.params;
 
   React.useEffect(() => {
     console.log("In useEffect");
-    socket.on("join_result", (data) => {
-      if (data === "invalid input") {
-        console.log("INVALID");
+
+    socket.on("join_result", (joinResultData) => {
+      if (joinResultData === "invalid input") {
+        console.log("INVALID joinResultData");
       } else {
-        console.log("VALID:", data);
+        setUsers(joinResultData.user_name);
       }
+    });
+
+    socket.on("remove_user", (data) => {
+      console.log("VALID remove_user:", data);
     });
   });
 
@@ -184,7 +190,7 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} />
         <Divider />
-        <AttendeeList attendees={props.location.state.data.user_name} />
+        <AttendeeList attendees={users} />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
