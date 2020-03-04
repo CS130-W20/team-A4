@@ -14,6 +14,7 @@ import BrushIcon from '@material-ui/icons/Brush';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import Modal from 'react-awesome-modal';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
@@ -74,7 +75,7 @@ export default function MenuList(props) {
       </ListItem>
       <ListItem button onClick={() => openModel()}>
         <ListItemIcon>
-          <DashboardIcon />
+          <VpnKeyIcon />
         </ListItemIcon>
         <ListItemText primary="Room ID" />
       </ListItem>
