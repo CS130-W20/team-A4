@@ -123,8 +123,8 @@ export default function CreateRoom(props) {
       }
     });
 
-    socket.on("remove_user", (data) => {
-      console.log("VALID remove_user:", data);
+    socket.on("remove_user", (removeUserData) => {
+      console.log("VALID remove_user:", removeUserData);
     });
   });
 

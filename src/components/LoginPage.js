@@ -48,8 +48,8 @@ export default function LoginPage(props) {
         case 'start':
           // pass room number into socket.emit
           socket.emit("join", {
-              "user_name": name,
-              "room_id": roomID
+            "user_name": name,
+            "room_id": roomID
           });
           socket.on("join_result", (data) => {
             console.log("data is:", data, typeof(data));
