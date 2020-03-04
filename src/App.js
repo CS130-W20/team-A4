@@ -14,7 +14,7 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/room/name=:name&roomID=:room&roomName=:roomName" component={Room} />
+          <Route path="/room/name=:name&roomID=:roomID&roomName=:roomName" component={Room} />
           <Route path="/" component={LoginPage} />
         </Switch>
       </Router>

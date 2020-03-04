@@ -14,6 +14,9 @@ import BrushIcon from '@material-ui/icons/Brush';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import Modal from 'react-awesome-modal';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,18 +32,52 @@ const useStyles = makeStyles(theme => ({
 export default function MenuList(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [popupVisible, setPopupVisible] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
   };
 
+  const openModel = () => {
+    setPopupVisible(true);
+  };
+
+  const closeModel = () => {
+    setPopupVisible(false);
+    setCopied(false)
+  }
+
+  const handleCopyClick = (e) => {
+    setCopied(e);
+  }
+
   return (
-    <List>
+    <div>
+      <Modal visible={popupVisible} width="400" height="300" effect="fadeInUp" onClickAway={() => closeModel()}>
+          <div>
+              <h1>Room ID</h1>
+              <p>{props.roomID}</p>
+              <CopyToClipboard text={props.roomID}
+                onCopy={() => handleCopyClick(true)}>
+                <button>Copy to clipboard</button>
+              </CopyToClipboard>
+              {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
+              <button onClick={() => closeModel()}>Close</button>
+          </div>
+      </Modal>
+      <List>
       <ListItem button component={Link} to={'/'}>
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
         <ListItemText primary="Home" />
+      </ListItem>
+      <ListItem button onClick={() => openModel()}>
+        <ListItemIcon>
+          <VpnKeyIcon />
+        </ListItemIcon>
+        <ListItemText primary="Room ID" />
       </ListItem>
       <ListItem button onClick={handleClick}>
         <ListItemIcon>
@@ -78,5 +115,7 @@ export default function MenuList(props) {
         </List>
       </Collapse>
     </List>
+
+    </div>
   );
 }
