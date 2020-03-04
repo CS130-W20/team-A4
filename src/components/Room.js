@@ -21,6 +21,7 @@ import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
 import DraggableImage from './DraggableImage';
+import io from "socket.io-client";
 import socket from "./SocketContext";
 
 const drawerWidth = 240;
