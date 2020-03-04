@@ -195,7 +195,7 @@ export default function CreateRoom(props) {
           </IconButton>
         </div>
         <Divider />
-        <MenuList handleAddComponent={handleAddComponent} />
+        <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
         <AttendeeList attendees={props.location.state.data.user_name} />
       </Drawer>
