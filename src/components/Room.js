@@ -111,6 +111,17 @@ export default function CreateRoom(props) {
   const [components, setComponents] = React.useState([]);
   const { name, roomID, roomName } = props.match.params;
 
+  React.useEffect(() => {
+    console.log("In useEffect");
+    socket.on("join_result", (data) => {
+      if (data === "invalid input") {
+        console.log("INVALID");
+      } else {
+        console.log("VALID:", data);
+      }
+    });
+  });
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -133,8 +144,7 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
   }
-  console.log("name: ", name, " roomID: ", roomID, " roomName: ", roomName);
-  console.log("props: ", props);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
