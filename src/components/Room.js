@@ -124,7 +124,11 @@ export default function CreateRoom(props) {
     });
 
     socket.on("remove_user", (removeUserData) => {
-      console.log("VALID remove_user:", removeUserData);
+      if (typeof(removeUserData) == "object") {
+        setUsers(removeUserData);
+      } else {
+        console.log("INVALID removeUserData");
+      }
     });
   });
 
