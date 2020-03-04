@@ -17,16 +17,35 @@ import Collapse from '@material-ui/core/Collapse';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import Modal from 'react-awesome-modal';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    maxWidth: 360,
+    // maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
   nested: {
     paddingLeft: theme.spacing(4),
   },
+  // root: {
+  //   minWidth: 275,
+  // },
+  bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  title: {
+    fontSize: 14,
+  },
+  pos: {
+    marginBottom: 12,
+  }
 }));
 
 export default function MenuList(props) {
@@ -52,10 +71,13 @@ export default function MenuList(props) {
     setCopied(e);
   }
 
+  const bull = <span className={classes.bullet}>•</span>;
+
+
   return (
     <div>
-      <Modal visible={popupVisible} width="400" height="300" effect="fadeInUp" onClickAway={() => closeModel()}>
-          <div>
+      <Modal visible={popupVisible} width="300" height="150" effect="fadeInUp" onClickAway={() => closeModel()}>
+          {/* <div>
               <h1>Room ID</h1>
               <p>{props.roomID}</p>
               <CopyToClipboard text={props.roomID}
@@ -64,7 +86,29 @@ export default function MenuList(props) {
               </CopyToClipboard>
               {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
               <button onClick={() => closeModel()}>Close</button>
-          </div>
+          </div> */}
+          <Card className={classes.root}>
+            <CardContent>
+              <Typography variant="h5" component="h2">
+                Room ID
+              </Typography>
+              <br />
+              <Typography variant="body2" component="p">
+                {props.roomID}
+              </Typography>
+            </CardContent>
+            <CardActions style={{ float: 'right' }}>
+              <CopyToClipboard text={props.roomID}
+                onCopy={() => handleCopyClick(true)}>
+                  {copied ? 
+                    <Button size="medium">Copied</Button>
+                  :
+                    <Button color="primary" size="medium">Copy</Button>
+                  }
+              </CopyToClipboard>
+              <Button color="primary" size="medium" onClick={() => closeModel()}>Close</Button>
+            </CardActions>
+          </Card>
       </Modal>
       <List>
       <ListItem button component={Link} to={'/'}>
