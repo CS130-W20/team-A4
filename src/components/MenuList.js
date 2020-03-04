@@ -45,7 +45,7 @@ export default function MenuList(props) {
 
   const closeModel = () => {
     setPopupVisible(false);
-    setCopied(false)
+    setCopied(false);
   }
 
   const handleCopyClick = (e) => {
