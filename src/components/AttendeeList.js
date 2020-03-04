@@ -8,7 +8,6 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Modal from 'react-awesome-modal';
-import AliceCarousel from 'react-alice-carousel';
 import CustomizedAvatars from './CustomizedAvatars';
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +64,7 @@ export default function AttendeeList(props) {
         <ListItem button>
           <ListItemAvatar>
           <IconButton onClick={openModel}>
-              <Avatar alt={name} src={avatars[index]}/>
+              <Avatar alt={name} src={avatars[currentIndex]}/>
           </IconButton>
           </ListItemAvatar>
           <ListItemText primary={name} />
