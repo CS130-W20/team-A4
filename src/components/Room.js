@@ -125,6 +125,13 @@ export default function CreateRoom(props) {
     let key = [type, index].join(',');
     newComponents.push(key);
     setComponents(newComponents);
+    console.log("create component of type: ", type, " and room id is: ", roomID);
+    socket.emit("create_component",
+       {
+          "room_id": roomID,
+          "component_type": type
+       }
+    );
   }
 
   const handleDeleteComponent = (key) => {
