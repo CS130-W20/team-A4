@@ -120,28 +120,44 @@ export default function CreateRoom(props) {
   };
 
   const handleAddComponent = (type) => {
-    let newComponents = [...components];
-    let index = newComponents.length;
-    let key = [type, index].join(',');
-    newComponents.push(key);
-    setComponents(newComponents);
-    console.log("create component of type: ", type, " and room id is: ", roomID);
+    // Inform server about adding component of type {type}
+    console.log("emit create_component of type: ", type, " and room id is: ", roomID);
     socket.emit("create_component",
        {
           "room_id": roomID,
           "component_type": type
        }
     );
+
+    // Retrive from server the component_id as {data}
+    socket.on("create_component", (data) => {
+      let newComponents = [...components];
+      let component_id = data.component_id;
+      console.log("on created_component of type: ", type, " and component_id is: ", component_id);
+      let key = [type, component_id].join(',');
+      newComponents.push(key);
+      setComponents(newComponents);
+    });
   }
 
   const handleDeleteComponent = (key) => {
     let newComponents = [...components];
     let index = newComponents.indexOf(key);
+    let parseObjects = key.split(",");
+    let type = parseObjects[0];
+    let component_id = parseObjects[1];
     newComponents.splice(index, 1);
     setComponents(newComponents);
+    console.log("emit delete_component of component_id: ", component_id, ", type is: ", type, " and room id is: ", roomID);
+    socket.emit("delete_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": type
+       }
+    );
   }
-  console.log("name: ", name, " roomID: ", roomID, " roomName: ", roomName);
-  console.log("props: ", props);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
