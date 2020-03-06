@@ -36,7 +36,6 @@ export default function AttendeeList(props) {
     "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
     "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
   ]
-  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   const openModel = () => {
     setPopupVisible(true);
@@ -45,17 +44,12 @@ export default function AttendeeList(props) {
   const closeModel = () => {
     setPopupVisible(false);
   }
-
-  const setAvatarIndex = (e) => {
-    setCurrentIndex(e);
-    console.log(e);
-  }
-  console.log("current index is: ", currentIndex);
+  console.log({props});
   return (
     <div>
     <Modal visible={popupVisible} width="400" height="220" effect="fadeInUp" onClickAway={() => closeModel()}>
       <div>
-          <CustomizedAvatars setAvatarIndex={setAvatarIndex}/>
+          <CustomizedAvatars userSetAvatar={props.userSetAvatar}/>
           <Button color="primary" onClick={() => closeModel()}>Choose</Button>
       </div>
     </Modal>
@@ -64,7 +58,7 @@ export default function AttendeeList(props) {
         <ListItem button>
           <ListItemAvatar>
           <IconButton onClick={openModel}>
-              <Avatar alt={name} src={avatars[currentIndex]}/>
+              <Avatar alt={name} src={props.currentAvatar}/>
           </IconButton>
           </ListItemAvatar>
           <ListItemText primary={name} />
