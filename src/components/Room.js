@@ -240,7 +240,7 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
-        <AttendeeList attendees={users} userSetAvatar={userSetAvatar} currentAvatar={currentAvatar}/>
+        <AttendeeList attendees={users} userSetAvatar={userSetAvatar} currentAvatar={currentAvatar} avatars={avatars}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
