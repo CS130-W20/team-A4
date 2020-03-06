@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/styles';
@@ -158,6 +158,21 @@ export default function CreateRoom(props) {
     );
   }
 
+  // Update components
+  useEffect(() => {
+    socket.on("create_component", (data) => {
+      console.log(data);
+      let newComponents = [...components];
+      let component_id = data.component_id;
+      let component_type = data.component_type;
+      let component_data = data.component_data;
+      console.log("on created_component of type: ", component_type, " and component_id is: ", component_id);
+      let key = [component_type, component_id].join(',');
+      newComponents.push(key);
+      setComponents(newComponents);
+    });
+  });
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -195,7 +210,7 @@ export default function CreateRoom(props) {
           </IconButton>
         </div>
         <Divider />
-        <MenuList handleAddComponent={handleAddComponent} />
+        <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
         <AttendeeList attendees={props.location.state.data.user_name} />
       </Drawer>
