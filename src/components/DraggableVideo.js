@@ -39,8 +39,8 @@ export default class DraggableVideo extends Component {
         default={{
           x: 0,
           y: 0,
-          width: 500,
-          height: 400,
+          width: 400,
+          height: 300,
         }}
         enableUserSelectHack={false}
       >

@@ -189,7 +189,6 @@ export default function CreateRoom(props) {
       let component_id = data.component_id;
       let component_type = data.component_type;
       let component_data = data.component_data;
-      console.log("on created_component of type: ", component_type, " and component_id is: ", component_id);
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
       setComponents(newComponents);
@@ -241,6 +240,7 @@ export default function CreateRoom(props) {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
+            <DraggableWhiteboard handleDeleteComponent={handleDeleteComponent} />
             {components.map((key) => {
               switch (key.split(',')[0]) {
                 case 'video':
