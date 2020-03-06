@@ -69,9 +69,6 @@ describe('Socket Connection', function(){
 			})
 
 		})
-
-		
-		
 	})
 })
 
