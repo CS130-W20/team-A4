@@ -12,4 +12,8 @@ Explain how to run your application
 - Working URL (if any)
 - anything else
 
+## Delopyment 
+[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/CS130-W20/team-A4)
+
+
 
