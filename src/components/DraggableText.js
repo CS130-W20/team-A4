@@ -13,36 +13,6 @@ import { Icon } from '@material-ui/core';
 import socket from "./SocketContext";
 
 export default function DraggableText(props) {
-  // const handleChange = event => {
-  //   props.handleContentTableChange(value, props.component_id);
-  //   setValue(event.target.value);
-  //
-  //   // Sync to other attendees
-  //   socket.emit("update_component",
-  //      {
-  //         "room_id": props.roomID,
-  //         "component_id": props.component_id,
-  //         "component_type": "text",
-  //         "update_type": "update_finished",
-  //         "update_info": {
-  //            "location": "(-1,-1),(-1,-1)", //-1 means no change in location
-  //            "data": value
-  //         }
-  //      }
-  //   );
-  //   console.log("update_component sync: room_id is: ", props.roomID, ", component_id is: ", props.component_id, "new value is: ", value);
-  // };
-
-  const [value, setValue] = React.useState("");
-
-  // React.useEffect(() => {
-  //   // if (props.update_content != undefined) {
-  //     // TODO: this logic is toxic, just for testing
-  //     setValue(props.update_content);
-  //     console.log("update value to: ", value);
-  //   // }
-  // })
-
   return (
     <Rnd
       style={style}
@@ -53,6 +23,12 @@ export default function DraggableText(props) {
         height: 250,
       }}
       enableUserSelectHack={false}
+      
+      // onDragStop={(e, d) => { 
+      //   console.log("In draggable, location is: ", d.x, ", ", d.y);
+      //   props.handleLocationChange(props.componentId, d.x, d.y);
+      //   // TODO: handleLocationChange要有四个参数
+      // }}
     >
       <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
