@@ -6,7 +6,7 @@ var io = require('socket.io-client');
 var room_uuid_obj = {room_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 var componet_obj = {component_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 
-var socketURL = 'http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8082'
+var socketURL = 'http://ec2-50-112-33-65.us-west-2.compute.amazonaws.com:8082'
 var options ={
 	transports: ['polling','websocket'],
 	'force new connection': false
@@ -61,17 +61,13 @@ describe('Socket Connection', function(){
 				client2.disconnect(),
 				client1.on('remove_user', (user_list) => {
 					user_list.should.not.be.empty(),
-					console.log("remove_user"),
-					console.log(user_list),
+					// console.log("remove_user"),
+					// console.log(user_list),
 					done()
 				})
-				
 			})
 
 		})
-
-		
-		
 	})
 })
 
@@ -257,8 +253,9 @@ describe('Basci Compoent Operation', function(){
 				"component_id": componet_obj.component_id,
 				"component_type": "text"
 			})
-			client1.on('delete_component', (component_id) => {
-				component_id.should.equal(componet_obj.component_id),
+			client1.on('delete_component', (return_info) => {
+				return_info.component_id.should.equal(componet_obj.component_id),
+				return_info.component_type.should.equal('text'),
 				done()
 			})
 		})
@@ -279,8 +276,9 @@ describe('Basci Compoent Operation', function(){
 				"component_id": componet_obj.component_id,
 				"component_type": "web"
 			})
-			client1.on('delete_component', (component_id) => {
-				component_id.should.equal(componet_obj.component_id),
+			client1.on('delete_component', (return_info) => {
+				return_info.component_id.should.equal(componet_obj.component_id),
+				return_info.component_type.should.equal('web'),
 				done()
 			})
 		})
@@ -320,6 +318,25 @@ describe('Complex Room Operation', function(){
 	});
 
 	it('Refresh Room with single user', function(done) {
+		client1.emit("create", {
+			"user_name": "UnitTesterRefresh", 
+			"room_name": "UnitTestRoomRefreshRoom"
+		})
+
+		client1.on("create_result", (room_info) =>{
+			room_info.room_name.should.equal("UnitTestRoomRefreshRoom"),
+			room_info.room_id.should.not.be.empty(), 
+			room_uuid_obj.room_id = room_info.room_id,
+			client1.emit("join", {
+				"user_name": "UnitTesterRefresh", 
+				"room_id": room_uuid_obj.room_id
+			}),
+			client1.on("join_result", (room_info) =>{
+				room_info.should.not.equal("invalid input"),
+				done()			
+			})
+
+		})
 		done()
 	})
 
