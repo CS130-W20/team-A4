@@ -104,36 +104,46 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function CreateRoom(props) {
+  console.log("props.location.state:", props.location.state);
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const [users, setUsers] = React.useState(props.location.state.data.user_name);
+  // const [users, setUsers] = React.useState([]);
   const { name, roomID, roomName } = props.match.params;
 
+  // window.onbeforeunload = (e) => {
+  //   // I'm about to refresh! do something...
+  //   // return "HIII";
+  // };
+
   React.useEffect(() => {
-    console.log("In useEffect");
+    socket.emit("join", {
+      "user_name": name,
+      "room_id": roomID
+    });
 
     socket.on("join_result", (joinResultData) => {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
+        console.log("joinResultData:", joinResultData);
         setUsers(joinResultData.user_name);
       }
     });
 
     socket.on("remove_user", (removeUserData) => {
       if (typeof(removeUserData) == "object") {
-        setUsers(removeUserData);
+        console.log("removeUserData:", removeUserData);
+        setUsers(removeUserData.user_name);
       } else {
         console.log("INVALID removeUserData");
       }
     });
 
-    socket.emit("get_info", {
-      "room_id": roomID
-    });
-
     socket.on("room_info", (roomInfoData) => {
+      console.log("roomInfoData:", roomInfoData);
       setUsers(roomInfoData.user_name);
     });
   }, []);
@@ -185,7 +195,8 @@ export default function CreateRoom(props) {
     );
   }
 
-  // Listen to any updates on create components
+  console.log("users:", users);
+
   useEffect(() => {
     socket.on("create_component", (data) => {
       console.log(data);
