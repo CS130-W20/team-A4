@@ -111,8 +111,6 @@ export default function CreateRoom(props) {
   const { name, roomID, roomName } = props.match.params;
 
   React.useEffect(() => {
-    console.log("In useEffect");
-
     socket.on("join_result", (joinResultData) => {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
@@ -149,11 +147,10 @@ export default function CreateRoom(props) {
   const handleAddComponent = (type) => {
     // Inform server about adding component of type {type}
     console.log("emit create_component of type: ", type, " and room id is: ", roomID);
-    socket.emit("create_component",
-       {
-          "room_id": roomID,
-          "component_type": type
-       }
+    socket.emit("create_component", {
+        "room_id": roomID,
+        "component_type": type
+      }
     );
 
     // Retrive from server the component_id as {data}
@@ -176,12 +173,11 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
     console.log("emit delete_component of component_id: ", component_id, ", type is: ", type, " and room id is: ", roomID);
-    socket.emit("delete_component",
-       {
-          "room_id": roomID,
-          "component_id": component_id,
-          "component_type": type
-       }
+    socket.emit("delete_component", {
+        "room_id": roomID,
+        "component_id": component_id,
+        "component_type": type
+      }
     );
   }
 
