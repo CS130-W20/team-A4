@@ -269,7 +269,6 @@ export default function CreateRoom(props) {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
-            <DraggableWhiteboard handleDeleteComponent={handleDeleteComponent} />
             {components.map((key) => {
               switch (key.split(',')[0]) {
                 case 'video':
