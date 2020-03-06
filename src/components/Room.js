@@ -104,10 +104,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function CreateRoom(props) {
+  console.log("props.location.state:", props.location.state);
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const [users, setUsers] = React.useState(props.location.state.data.user_name);
+  // const [users, setUsers] = React.useState([]);
   const { name, roomID, roomName } = props.match.params;
   const avatars = [
     "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
@@ -121,11 +124,22 @@ export default function CreateRoom(props) {
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
+  // window.onbeforeunload = (e) => {
+  //   // I'm about to refresh! do something...
+  //   // return "HIII";
+  // };
+
   React.useEffect(() => {
+    socket.emit("join", {
+      "user_name": name,
+      "room_id": roomID
+    });
+
     socket.on("join_result", (joinResultData) => {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
+        console.log("joinResultData:", joinResultData);
         setUsers(joinResultData.user_name);
         setUserAvatars(joinResultData.user_avatar);
       }
@@ -133,17 +147,15 @@ export default function CreateRoom(props) {
 
     socket.on("remove_user", (removeUserData) => {
       if (typeof(removeUserData) == "object") {
+        console.log("removeUserData:", removeUserData);
         setUsers(removeUserData.user_name);
       } else {
         console.log("INVALID removeUserData");
       }
     });
 
-    socket.emit("get_info", {
-      "room_id": roomID
-    });
-
     socket.on("room_info", (roomInfoData) => {
+      console.log("roomInfoData:", roomInfoData);
       setUsers(roomInfoData.user_name);
       setUserAvatars(roomInfoData.user_avatar);
     });
@@ -160,10 +172,11 @@ export default function CreateRoom(props) {
   const handleAddComponent = (type) => {
     // Inform server about adding component of type {type}
     console.log("emit create_component of type: ", type, " and room id is: ", roomID);
-    socket.emit("create_component", {
-        "room_id": roomID,
-        "component_type": type
-      }
+    socket.emit("create_component",
+       {
+          "room_id": roomID,
+          "component_type": type
+       }
     );
 
     // Retrive from server the component_id as {data}
@@ -186,11 +199,12 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
     console.log("emit delete_component of component_id: ", component_id, ", type is: ", type, " and room id is: ", roomID);
-    socket.emit("delete_component", {
-        "room_id": roomID,
-        "component_id": component_id,
-        "component_type": type
-      }
+    socket.emit("delete_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": type
+       }
     );
   }
 
@@ -204,6 +218,8 @@ export default function CreateRoom(props) {
   }
 
   // Update components
+  console.log("users:", users);
+
   useEffect(() => {
     socket.on("create_component", (data) => {
       console.log(data);
@@ -211,16 +227,26 @@ export default function CreateRoom(props) {
       let component_id = data.component_id;
       let component_type = data.component_type;
       let component_data = data.component_data;
-      console.log("on created_component of type: ", component_type, " and component_id is: ", component_id);
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
       setComponents(newComponents);
     });
   });
-  // console.log({props});
-  // console.log("currentAvatar: ", currentAvatar);
-  // console.log("userAvatars: ", userAvatars);
-  // console.log("users: ", users);
+
+  // Listen to any updates on delete components
+  useEffect(() => {
+    socket.on("delete_component", (data) => {
+      console.log("delete_component received, component_id is: ", data);
+      let newComponents = [...components];
+      let component_type = data.component_type;
+      let component_id = data.component_id;
+      let key = [component_type, component_id].join(',');
+      let index = newComponents.indexOf(key);
+      newComponents.splice(index, 1);
+      setComponents(newComponents);
+    });
+  });
+
   return (
     <div className={classes.root}>
       <CssBaseline />

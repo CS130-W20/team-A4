@@ -13,6 +13,7 @@
     "react": "^16.12.0",
     "react-alice-carousel": "^1.17.3",
     "react-awesome-modal": "^2.0.5",
+    "react-canvas-draw": "^1.1.0",
     "react-copy-to-clipboard": "^5.0.2",
     "react-doc-generator": "^1.2.5",
     "react-dom": "^16.12.0",
