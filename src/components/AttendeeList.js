@@ -59,7 +59,8 @@ export default function AttendeeList(props) {
         </Modal>
       }
       <List>
-        {props.attendees.map((name, index) => (
+        {props.attendees !== undefined &&
+          props.attendees.map((name, index) => (
           <ListItem key={index} button>
             <ListItemAvatar>
               <Avatar onClick={openModel} alt={name} src={avatars[currentIndex]}/>
