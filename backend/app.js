@@ -128,15 +128,20 @@ function join_room(socket, room_id, user_name, current_user_avatar){
 				.then((data) => {res.room_name = data.rows[0].room_name})
 				.then(()=>{
 					client.query("INSERT INTO user_table VALUES($1, $2, $3, $4);", [socket.id, user_name, current_user_avatar, room_id])
-
-					res.user_name.push(user_name)
-					res.user_avatar.push(current_user_avatar)
-					socket.emit("join_result", res)
-
-					socket.join(room_id)
-					socket.broadcast.to(room_id).emit("join_result", res)
-
-					log_data("Join room result", socket.id, res)
+					.then(()=>{
+						res.user_name.push(user_name)
+						res.user_avatar.push(current_user_avatar)
+						socket.join(room_id)
+						socket.emit("join_result", res)
+						socket.broadcast.to(room_id).emit("join_result", res)
+						log_data("Join room result", socket.id, res)
+					})
+					.catch((error)=>{
+						socket.join(room_id)
+						socket.emit("join_result", res)
+						socket.broadcast.to(room_id).emit("join_result", res)
+						log_data("Join room result", socket.id, res)
+					})					
 				})
 			})
 			
@@ -179,11 +184,12 @@ function create_component(socket, my_component_type, room_id){
 	}
 }	
 
-function update_component(socket, room_id, current_component_id, update_type, current_update_info){
+function update_component(socket, room_id, current_component_id, current_component_type, update_type, current_update_info){
 		// Handle update image
 
 		res = {
 			component_id: current_component_id,
+			component_type: current_component_type,
 			update_info: current_update_info
 		}
 		socket.broadcast.to(room_id).emit("update_component", res)
@@ -314,7 +320,7 @@ io.on("connection", function (socket) {
 
 	socket.on("update_component", function (data) {
 		log_data("Update component request", socket.id, data)
-		update_component(socket, data.room_id, data.component_id, data.update_type, data.update_info)
+		update_component(socket, data.room_id, data.component_id, data.component_type, data.update_type, data.update_info)
 	})
 
 	socket.on("delete_component", function (data) {
