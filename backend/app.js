@@ -23,7 +23,7 @@ var drop_room_table = "DROP TABLE IF EXISTS room_table;"
 var create_content_table = "CREATE TABLE IF NOT EXISTS app_content (\
 							component_id UUID PRIMARY KEY, \
 							room_id UUID NOT NULL, \
-							location BOX NOT NULL, \
+							location VARCHAR NOT NULL, \
 							data VARCHAR, \
 							type VARCHAR\
 						);"
@@ -44,7 +44,8 @@ default_data = {
 	"text" : "Enter text here",
 	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com",
 	"image": "/home/ubuntu/team-A4/backend/images/default_image.jpg",
-	"video": "https://youtu.be/zF9PdMVteOQ"
+	"video": "https://youtu.be/zF9PdMVteOQ",
+	"location": "300,400,100,100"
 }
 
 validator_regex = RegExp("^[A-Za-z0-9 ]+$")
@@ -70,7 +71,7 @@ function validate_name(check_name){
 }
 
 function log_data(log_name, socket_id, data){
-	res_data = log_name + " " + new Date() + "\n	data: " + JSON.stringify(data) + "\n	socket: " + socket_id + "\n"
+	res_data = log_name + " " + new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"}) + "\n	data: " + JSON.stringify(data) + "\n	socket: " + socket_id + "\n"
 	console.log(res_data)
 	fs.appendFileSync('/home/ubuntu/team-A4/logs/808' + dev_environment + '.log', res_data)
 }
@@ -156,8 +157,8 @@ function create_component(socket, my_component_type, room_id){
 	if (my_component_type in default_data){
 		
 		current_component_id = uuidv4()
-		client.query("INSERT INTO app_content VALUES($1, $2, '((0, 0), (100, 100))', $3, $4);", 
-					[current_component_id, room_id, default_data[my_component_type], my_component_type])
+		client.query("INSERT INTO app_content VALUES($1, $2, $3, $4, $5);", 
+					[current_component_id, room_id, default_data["location"], default_data[my_component_type], my_component_type])
 		
 		if (my_component_type == "image"){
 			var read_stream = fs.createReadStream(default_data["image"], {encoding: "binary"})
