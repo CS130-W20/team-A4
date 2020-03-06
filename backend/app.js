@@ -206,7 +206,7 @@ function delete_component(socket, my_component_id, room_id, my_component_type){
 		component_id: my_component_id,
 		component_type: my_component_type
 	}
-	socket.broadcast.to(room_id).emit(res)
+	socket.broadcast.to(room_id).emit("delete_component", res)
 	log_data("Delete component result", socket.id, res)
 }
 
@@ -288,7 +288,7 @@ function change_avatar(socket, user_avatar, room_id){
 				.then(()=>{
 					socket.emit("room_info", res)
 					socket.broadcast.to(room_id).emit("room_info", res)
-					log_data("Get room info result", socket.id, res)
+					log_data("Change avatar result", socket.id, res)
 				})
 			})
 		})
