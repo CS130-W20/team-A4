@@ -1,4 +1,5 @@
-import io from "socket.io-client";
+//import io from "socket.io-client";
+var io = require('socket.io-client');
 
 //Connection
 const socket_1 = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {
@@ -9,7 +10,7 @@ const socket_2 = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", 
   });
 
 var test_case = process.argv[2]
-var room_uuid_obj = {room_id = "3e11bb8b-ffea-4a40-b81b-635660994a88"}
+var room_uuid_obj = {room_id: "3e11bb8b-ffea-4a40-b81b-635660994a88"}
 
 default_data = {
 	"text" : "Enter text here",
@@ -47,14 +48,20 @@ switch(test_case){
 }
 
 function create_room(room_uuid_obj){
-    socket_1.emit("create", {"user_name": "Dad Terry"});
+    socket_1.emit("create", {
+        "user_name": "Dad Terry",
+        "room_name": "abcTEst"
+        });
     socket_1.on("create_success", (data) => {
         if(data === "") {
             return("FAILED: create_room")
         }
         room_uuid_obj.room_id = data
+        console.log("create success")
+        console.log("data")
+        console.log(room_uuid_obj.room_id)
     });
-    return("SUCCESSED: create_room")
+    //return("SUCCESSED: create_room")
 }
 
 function join_good_room(room_uuid_obj){

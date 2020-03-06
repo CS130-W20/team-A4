@@ -31,27 +31,30 @@ export default function LoginPage(props) {
         case 'createNamedRoom':
           socket.emit("create", {
             "user_name": name,
-            "room_name": roomName
+            "room_name": roomName,
+            "user_avatar": "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg"
           });
-          socket.on("create_result", (data) => {
-            console.log("data:", data);
-            props.history.push(`/room/name=${name}&roomID=${data.room_id}&roomName=${roomName}`, { data: data });
+          socket.on("create_result", (createResultData) => {
+            console.log("createResultData:", createResultData);
+            props.history.push(`/room/name=${name}&roomID=${createResultData.room_id}`, { data: createResultData });
           });
           break;
         case 'join':
           setButtonStatus(2);
           break;
         case 'start':
-          // pass room number into socket.emit
           socket.emit("join", {
             "user_name": name,
-            "room_id": roomID
+            "room_id": roomID,
+            "user_avatar": "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg"
           });
-          socket.on("join_result", (data) => {
-            if (data === "invalid input") {
+          socket.on("join_result", (joinResultData) => {
+            console.log("joinResultData:", joinResultData);
+            if (joinResultData === "invalid input") {
               props.history.push('/');
             } else {
-              props.history.push(`/room/name=${name}&roomID=${roomID}&roomName=${data.room_name}`, { data: data });
+              console.log("GET HERE!");
+              props.history.push(`/room/name=${name}&roomID=${roomID}`, { data: joinResultData });
             }
           });
           break;
@@ -102,7 +105,6 @@ export default function LoginPage(props) {
       <Header
         absolute
         color="transparent"
-        brand="CS130"
         {...rest}
       />
       <div

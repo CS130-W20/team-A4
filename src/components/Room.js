@@ -104,40 +104,63 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function CreateRoom(props) {
+  console.log("props.location.state:", props.location.state);
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const [users, setUsers] = React.useState(props.location.state.data.user_name);
+  // const [users, setUsers] = React.useState([]);
   const { name, roomID, roomName } = props.match.params;
   // let contentTable = {}; // <id, content>
   const [contentTable, setContentTable] = React.useState({});
   let locationTable = {}; // <id, location>
+  const avatars = [
+    "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
+    "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
+    "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
+    "https://listrick.com/wp-content/uploads/2019/11/Famous-Cartoon-Characters-with-Big-Noses-2.jpg",
+    "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
+    "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
+    "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
+  ]
+  const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
+  const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
+
+  // window.onbeforeunload = (e) => {
+  //   // I'm about to refresh! do something...
+  //   // return "HIII";
+  // };
 
   React.useEffect(() => {
-    console.log("In useEffect");
+    socket.emit("join", {
+      "user_name": name,
+      "room_id": roomID
+    });
 
     socket.on("join_result", (joinResultData) => {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
+        console.log("joinResultData:", joinResultData);
         setUsers(joinResultData.user_name);
+        setUserAvatars(joinResultData.user_avatar);
       }
     });
 
     socket.on("remove_user", (removeUserData) => {
       if (typeof(removeUserData) == "object") {
-        setUsers(removeUserData);
+        console.log("removeUserData:", removeUserData);
+        setUsers(removeUserData.user_name);
       } else {
         console.log("INVALID removeUserData");
       }
     });
 
-    socket.emit("get_info", {
-      "room_id": roomID
-    });
-
     socket.on("room_info", (roomInfoData) => {
+      console.log("roomInfoData:", roomInfoData);
       setUsers(roomInfoData.user_name);
+      setUserAvatars(roomInfoData.user_avatar);
     });
   }, []);
 
@@ -204,6 +227,18 @@ export default function CreateRoom(props) {
   }
 
   // Listen to any updates on create components
+  const userSetAvatar = (e) => {
+    setCurrentAvatar(e);
+    socket.emit("change_avatar", {
+      "room_id": roomID,
+      "user_name": name,
+      "user_avatar": e
+    })
+  }
+
+  // Update components
+  console.log("users:", users);
+
   useEffect(() => {
     socket.on("create_component", (data) => {
       let newComponents = [...components];
@@ -277,7 +312,12 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
-        <AttendeeList attendees={users} />
+        <AttendeeList
+          attendees={users}
+          userSetAvatar={userSetAvatar}
+          userAvatars={userAvatars}
+          avatars={avatars}
+          currentUser={name}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
