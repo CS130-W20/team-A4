@@ -109,6 +109,9 @@ export default function CreateRoom(props) {
   const [components, setComponents] = React.useState([]);
   const [users, setUsers] = React.useState(props.location.state.data.user_name);
   const { name, roomID, roomName } = props.match.params;
+  // let contentTable = {}; // <id, content>
+  const [contentTable, setContentTable] = React.useState({});
+  let locationTable = {}; // <id, location>
 
   React.useEffect(() => {
     console.log("In useEffect");
@@ -160,7 +163,6 @@ export default function CreateRoom(props) {
     socket.on("create_component", (data) => {
       let newComponents = [...components];
       let component_id = data.component_id;
-      console.log("on created_component of type: ", type, " and component_id is: ", component_id);
       let key = [type, component_id].join(',');
       newComponents.push(key);
       setComponents(newComponents);
@@ -175,7 +177,6 @@ export default function CreateRoom(props) {
     let component_id = parseObjects[1];
     newComponents.splice(index, 1);
     setComponents(newComponents);
-    console.log("emit delete_component of component_id: ", component_id, ", type is: ", type, " and room id is: ", roomID);
     socket.emit("delete_component",
        {
           "room_id": roomID,
@@ -185,25 +186,36 @@ export default function CreateRoom(props) {
     );
   }
 
+  const handleValueChange = (component_id, value) => {
+    let type = "text"; // TODO
+    contentTable[component_id] = value;
+    socket.emit("update_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": type,
+          "update_type": "update_finished",
+          "update_info": {
+             "location": "(-1,-1),(-1,-1)", //-1 means no change in location
+             "data": value
+          }
+       }
+    );
+  }
+
   // Listen to any updates on create components
   useEffect(() => {
     socket.on("create_component", (data) => {
-      console.log(data);
       let newComponents = [...components];
       let component_id = data.component_id;
       let component_type = data.component_type;
       let component_data = data.component_data;
-      console.log("on created_component of type: ", component_type, " and component_id is: ", component_id);
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
       setComponents(newComponents);
     });
-  });
 
-  // Listen to any updates on delete components
-  useEffect(() => {
     socket.on("delete_component", (data) => {
-      console.log("delete_component received, component_id is: ", data);
       let newComponents = [...components];
       let component_type = data.component_type;
       let component_id = data.component_id;
@@ -212,7 +224,19 @@ export default function CreateRoom(props) {
       newComponents.splice(index, 1);
       setComponents(newComponents);
     });
-  });
+
+    socket.on("update_component", (data) => {
+      let component_type = data.component_type;
+      let component_id = data.component_id;
+      let update_info = data.update_info;
+      let newComponents = [...components];
+      let key = [component_type, component_id].join(',');
+      locationTable[component_id] = update_info.location;
+      let newContentTable = {...contentTable};
+      newContentTable[component_id] = update_info.data;
+      setContentTable(newContentTable);
+    });
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -260,11 +284,21 @@ export default function CreateRoom(props) {
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
             {components.map((key) => {
+              let componentId = key.split(',')[1];
               switch (key.split(',')[0]) {
                 case 'video':
                   return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                 case 'text':
-                  return (<DraggableText key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (<DraggableText
+                            key={key}
+                            k={key}
+                            roomID={roomID}
+                            componentId={componentId}
+                            value={contentTable[componentId]}
+                            location={locationTable[componentId]}
+                            handleDeleteComponent={handleDeleteComponent}
+                            handleValueChange={handleValueChange}
+                          />);
                 case 'whiteboard':
                   return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
                 case 'image':
