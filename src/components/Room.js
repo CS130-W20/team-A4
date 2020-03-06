@@ -111,6 +111,8 @@ export default function CreateRoom(props) {
   const { name, roomID, roomName } = props.match.params;
 
   React.useEffect(() => {
+    console.log("In useEffect");
+
     socket.on("join_result", (joinResultData) => {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
@@ -147,10 +149,11 @@ export default function CreateRoom(props) {
   const handleAddComponent = (type) => {
     // Inform server about adding component of type {type}
     console.log("emit create_component of type: ", type, " and room id is: ", roomID);
-    socket.emit("create_component", {
-        "room_id": roomID,
-        "component_type": type
-      }
+    socket.emit("create_component",
+       {
+          "room_id": roomID,
+          "component_type": type
+       }
     );
 
     // Retrive from server the component_id as {data}
@@ -173,15 +176,16 @@ export default function CreateRoom(props) {
     newComponents.splice(index, 1);
     setComponents(newComponents);
     console.log("emit delete_component of component_id: ", component_id, ", type is: ", type, " and room id is: ", roomID);
-    socket.emit("delete_component", {
-        "room_id": roomID,
-        "component_id": component_id,
-        "component_type": type
-      }
+    socket.emit("delete_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": type
+       }
     );
   }
 
-  // Update components
+  // Listen to any updates on create components
   useEffect(() => {
     socket.on("create_component", (data) => {
       console.log(data);
@@ -192,6 +196,20 @@ export default function CreateRoom(props) {
       console.log("on created_component of type: ", component_type, " and component_id is: ", component_id);
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
+      setComponents(newComponents);
+    });
+  });
+
+  // Listen to any updates on delete components
+  useEffect(() => {
+    socket.on("delete_component", (data) => {
+      console.log("delete_component received, component_id is: ", data);
+      let newComponents = [...components];
+      let component_type = data.component_type;
+      let component_id = data.component_id;
+      let key = [component_type, component_id].join(',');
+      let index = newComponents.indexOf(key);
+      newComponents.splice(index, 1);
       setComponents(newComponents);
     });
   });
