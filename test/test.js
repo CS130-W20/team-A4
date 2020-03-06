@@ -289,3 +289,56 @@ describe('Basci Compoent Operation', function(){
 
 
 })
+
+describe('Complex Room Operation', function(){
+	beforeEach(function(done){
+		client1 = io.connect(socketURL, options)
+		client2 = io.connect(socketURL, options)
+		client1.emit("create", {
+			"user_name": "UnitTesterCreate", 
+			"room_name": "UnitTestRoomCreateComponent"
+		});
+		client1.on("create_result", (room_info) =>{
+			room_info.room_name.should.equal("UnitTestRoomCreateComponent"),
+			room_info.room_id.should.not.be.empty(),
+			room_uuid_obj.room_id = room_info.room_id,
+			client2.emit("join", {
+				"user_name": "UnitTesterJoin", 
+				"room_id": room_uuid_obj.room_id
+			})
+			done()	
+		})
+		
+	});
+
+	afterEach(function(done) {
+		client1.disconnect()
+		client2.disconnect()
+		//console.log(client1)
+		// TODO: Delete Room
+		done()
+	});
+
+	it('Refresh Room with single user', function(done) {
+		done()
+	})
+
+	it('Refresh Room with multiple users', function(done) {
+		done()
+	})
+
+	it('Join Nonexist Room', function(done){
+		done()
+	})
+
+	it('Join Room with Invalid Room Name', function(done){
+		done()
+	})
+
+	it('Creating multiple rooms with single users', function(done) {
+		done()
+	})
+
+
+
+})
