@@ -123,7 +123,7 @@ export default function LoginPage(props) {
                   <CardBody>
                     {buttonStatus === 0 ?
                       <CustomInput
-                        labelText="Enter User Name..."
+                        labelText="User Name..."
                         id="name"
                         formControlProps={{
                           fullWidth: true
@@ -142,7 +142,7 @@ export default function LoginPage(props) {
                       />
                     : buttonStatus === 4 ?
                     <CustomInput
-                      labelText="Enter Room Name..."
+                      labelText="Room Name..."
                       id="room_name"
                       formControlProps={{
                         fullWidth: true

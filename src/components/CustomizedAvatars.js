@@ -2,8 +2,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import Radio from '@material-ui/core/Radio';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
+import CardContent from '@material-ui/core/CardContent';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +38,12 @@ export default function CustomizedAvatars(props) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <Card variant="outlined" className={classes.root}>
+      <CardContent>
+        <Typography gutterBottom variant="h6" component="h6">
+          Choose Your Avatar
+        </Typography>
+      </CardContent>
       <GridList className={classes.gridList} cols={2.5}>
         {props.avatars.map((avatar, index) => (
           <GridListTile key={index}>
@@ -45,16 +55,19 @@ export default function CustomizedAvatars(props) {
               }}
               actionIcon={
                 <Radio
-                    checked={false}
-                    onChange={() => props.userSetAvatar(props.avatars[index])}
-                    name="radio-button-demo"
-                    inputProps={{ 'aria-label': 'A' }}
+                  checked={props.currentAvatar === props.avatars[index]}
+                  onChange={() => props.userSetAvatar(props.avatars[index])}
+                  name="radio-button-demo"
+                  inputProps={{ 'aria-label': 'A' }}
                 />
               }
             />
           </GridListTile>
         ))}
       </GridList>
-    </div>
+      <CardActions>
+        <Button color="primary" onClick={() => props.closeModel()}>Close</Button>
+      </CardActions>
+    </Card>
   );
 }
