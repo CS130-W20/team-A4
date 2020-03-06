@@ -133,7 +133,7 @@ export default function CreateRoom(props) {
 
     socket.on("remove_user", (removeUserData) => {
       if (typeof(removeUserData) == "object") {
-        setUsers(removeUserData);
+        setUsers(removeUserData.user_name);
       } else {
         console.log("INVALID removeUserData");
       }
@@ -196,7 +196,6 @@ export default function CreateRoom(props) {
 
   const userSetAvatar = (e) => {
     setCurrentAvatar(e);
-    console.log("userSetAvatar: ", currentAvatar);
     socket.emit("change_avatar", {
       "room_id": roomID,
       "user_name": name,
@@ -218,10 +217,10 @@ export default function CreateRoom(props) {
       setComponents(newComponents);
     });
   });
-  console.log({props});
-  console.log("currentAvatar: ", currentAvatar);
-  console.log("userAvatars: ", userAvatars);
-  console.log("users: ", users);
+  // console.log({props});
+  // console.log("currentAvatar: ", currentAvatar);
+  // console.log("userAvatars: ", userAvatars);
+  // console.log("users: ", users);
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -261,7 +260,12 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
-        <AttendeeList attendees={users} userSetAvatar={userSetAvatar} userAvatars={userAvatars} avatars={avatars}/>
+        <AttendeeList
+          attendees={users} 
+          userSetAvatar={userSetAvatar} 
+          userAvatars={userAvatars} 
+          avatars={avatars} 
+          currentUser={name}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CustomizedAvatars(props) {
   const classes = useStyles();
+  console.log("props.currentUser", props.currentUser);
 
   return (
     <Card variant="outlined" className={classes.root}>
@@ -55,7 +56,7 @@ export default function CustomizedAvatars(props) {
               }}
               actionIcon={
                 <Radio
-                  checked={props.currentIndex === index}
+                  checked={props.userAvatars[props.attendees.indexOf(props.currentUser)] === props.avatars[index]}
                   onChange={() => props.userSetAvatar(props.avatars[index])}
                   name="radio-button-demo"
                   inputProps={{ 'aria-label': 'A' }}
