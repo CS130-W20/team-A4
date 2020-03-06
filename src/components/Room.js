@@ -119,6 +119,7 @@ export default function CreateRoom(props) {
     "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
   ]
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
+  const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
   React.useEffect(() => {
     socket.on("join_result", (joinResultData) => {
@@ -126,6 +127,7 @@ export default function CreateRoom(props) {
         console.log("INVALID joinResultData");
       } else {
         setUsers(joinResultData.user_name);
+        setUserAvatars(joinResultData.user_avatar);
       }
     });
 
@@ -143,6 +145,7 @@ export default function CreateRoom(props) {
 
     socket.on("room_info", (roomInfoData) => {
       setUsers(roomInfoData.user_name);
+      setUserAvatars(roomInfoData.user_avatar);
     });
   }, []);
 
@@ -193,7 +196,12 @@ export default function CreateRoom(props) {
 
   const userSetAvatar = (e) => {
     setCurrentAvatar(e);
-    console.log("user avatar: ", currentAvatar);
+    console.log("userSetAvatar: ", currentAvatar);
+    socket.emit("change_avatar", {
+      "room_id": roomID,
+      "user_name": name,
+      "user_avatar": e
+    })
   }
 
   // Update components
@@ -210,7 +218,10 @@ export default function CreateRoom(props) {
       setComponents(newComponents);
     });
   });
-
+  console.log({props});
+  console.log("currentAvatar: ", currentAvatar);
+  console.log("userAvatars: ", userAvatars);
+  console.log("users: ", users);
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -250,7 +261,7 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
-        <AttendeeList attendees={users} userSetAvatar={userSetAvatar} currentAvatar={currentAvatar} avatars={avatars}/>
+        <AttendeeList attendees={users} userSetAvatar={userSetAvatar} userAvatars={userAvatars} avatars={avatars}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

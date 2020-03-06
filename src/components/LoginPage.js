@@ -31,7 +31,8 @@ export default function LoginPage(props) {
         case 'createNamedRoom':
           socket.emit("create", {
             "user_name": name,
-            "room_name": roomName
+            "room_name": roomName,
+            "user_avatar": "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg"
           });
           socket.on("create_result", (data) => {
             console.log("data:", data);
@@ -45,7 +46,8 @@ export default function LoginPage(props) {
           // pass room number into socket.emit
           socket.emit("join", {
             "user_name": name,
-            "room_id": roomID
+            "room_id": roomID,
+            "user_avatar": "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg"
           });
           socket.on("join_result", (data) => {
             if (data === "invalid input") {

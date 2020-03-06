@@ -23,9 +23,10 @@ export default function AttendeeList(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [popupVisible, setPopupVisible] = React.useState(false);
-
-  const openModel = () => {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const openModel = (e) => {
     setPopupVisible(true);
+    setCurrentIndex(e);
   }
 
   const closeModel = () => {
@@ -38,7 +39,7 @@ export default function AttendeeList(props) {
         <Modal visible={popupVisible} width="400" height="220" effect="fadeInUp" onClickAway={() => closeModel()}>
           <CustomizedAvatars 
             userSetAvatar={props.userSetAvatar} 
-            currentAvatar={props.currentAvatar} 
+            currentIndex={props.currentIndex} 
             avatars={props.avatars} 
             closeModel={closeModel} 
           />
@@ -48,7 +49,7 @@ export default function AttendeeList(props) {
         {props.attendees != undefined && props.attendees.map((name, index) => (
           <ListItem key={index} button>
             <ListItemAvatar>
-              <Avatar onClick={openModel} alt={name} src={props.currentAvatar}/>
+              <Avatar onClick={() => openModel(index)} alt={name} src={props.userAvatars[index]}/>
             </ListItemAvatar>
             <ListItemText primary={name} />
           </ListItem>

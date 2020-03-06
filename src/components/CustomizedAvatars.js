@@ -55,7 +55,7 @@ export default function CustomizedAvatars(props) {
               }}
               actionIcon={
                 <Radio
-                  checked={props.currentAvatar === props.avatars[index]}
+                  checked={props.currentIndex === index}
                   onChange={() => props.userSetAvatar(props.avatars[index])}
                   name="radio-button-demo"
                   inputProps={{ 'aria-label': 'A' }}
