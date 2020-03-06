@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -21,7 +20,6 @@ import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
 import DraggableImage from './DraggableImage';
-import io from "socket.io-client";
 import socket from "./SocketContext";
 
 const drawerWidth = 240;
@@ -109,7 +107,36 @@ export default function CreateRoom(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
+  const [users, setUsers] = React.useState(props.location.state.data.user_name);
   const { name, roomID, roomName } = props.match.params;
+
+  React.useEffect(() => {
+    console.log("In useEffect");
+
+    socket.on("join_result", (joinResultData) => {
+      if (joinResultData === "invalid input") {
+        console.log("INVALID joinResultData");
+      } else {
+        setUsers(joinResultData.user_name);
+      }
+    });
+
+    socket.on("remove_user", (removeUserData) => {
+      if (typeof(removeUserData) == "object") {
+        setUsers(removeUserData);
+      } else {
+        console.log("INVALID removeUserData");
+      }
+    });
+
+    socket.emit("get_info", {
+      "room_id": roomID
+    });
+
+    socket.on("room_info", (roomInfoData) => {
+      setUsers(roomInfoData.user_name);
+    });
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -212,7 +239,7 @@ export default function CreateRoom(props) {
         <Divider />
         <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
         <Divider />
-        <AttendeeList attendees={props.location.state.data.user_name} />
+        <AttendeeList attendees={users} />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
