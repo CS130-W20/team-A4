@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 import Modal from 'react-awesome-modal';
 import CustomizedAvatars from './CustomizedAvatars';
 
@@ -45,11 +45,12 @@ export default function AttendeeList(props) {
         </Modal>
       }
       <List>
-        {props.attendees.map((name, index) => (
+        {props.attendees != undefined && props.attendees.map((name, index) => (
           <ListItem key={index} button>
             <ListItemAvatar>
               <Avatar onClick={openModel} alt={name} src={props.currentAvatar}/>
             </ListItemAvatar>
+            <ListItemText primary={name} />
           </ListItem>
         ))}
       </List>

@@ -112,7 +112,6 @@ export default function CreateRoom(props) {
   const avatars = [
     "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
     "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
-    "https://lh3.googleusercontent.com/proxy/Zvz7clvSFkNGkW7STBzWq2xgMAdGNnPe4wiqOzIUnxAGLiYCEggx8pGk8tqfP72WN6ahwPWx7RpomQS-6AlbElUvpeCRxJLZp4PjDtljDvV8ttP0RX8SA1_rFQe6xVdwsG1s4ZOdCg7AUfTMXCLXFWj7",
     "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
     "https://listrick.com/wp-content/uploads/2019/11/Famous-Cartoon-Characters-with-Big-Noses-2.jpg",
     "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
@@ -196,7 +195,7 @@ export default function CreateRoom(props) {
     setCurrentAvatar(e);
     console.log("user avatar: ", currentAvatar);
   }
-  
+
   // Update components
   useEffect(() => {
     socket.on("create_component", (data) => {
