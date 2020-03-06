@@ -1,11 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Link } from "react-router-dom";
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
-// @material-ui/icons
 import People from "@material-ui/icons/People";
-// core components
 import Header from "./Header/Header.js";
 import GridContainer from "./Grid/GridContainer.js";
 import GridItem from "./Grid/GridItem.js";
@@ -17,24 +13,29 @@ import CardFooter from "./Card/CardFooter.js";
 import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
-import io from "socket.io-client";
+import socket from "./SocketContext";
 
 const useStyles = makeStyles(styles);
 
 export default function LoginPage(props) {
   function handleClick(e, field) {
+    //const socket = require('./SocketContext.js');
     if (name === "") {
       setBlank(true);
     } else {
       setBlank(false);
       switch(field) {
         case 'create':
+          setButtonStatus(4);
+          break;
+        case 'createNamedRoom':
           socket.emit("create", {
-            "user_name": name
+            "user_name": name,
+            "room_name": roomName
           });
           socket.on("create_result", (data) => {
             console.log("data:", data);
-            props.history.push(`/createRoom/name=${name}&room=${data.room_id}`, { data: data });
+            props.history.push(`/room/name=${name}&roomID=${data.room_id}&roomName=${roomName}`, { data: data });
           });
           break;
         case 'join':
@@ -43,15 +44,14 @@ export default function LoginPage(props) {
         case 'start':
           // pass room number into socket.emit
           socket.emit("join", {
-              "user_name": name,
-              "room_id": room
+            "user_name": name,
+            "room_id": roomID
           });
           socket.on("join_result", (data) => {
-            console.log("data is:", data, typeof(data));
             if (data === "invalid input") {
               props.history.push('/');
             } else {
-              props.history.push(`/createRoom/name=${name}&room=${room}`, { data: data });
+              props.history.push(`/room/name=${name}&roomID=${roomID}&roomName=${data.room_name}`, { data: data });
             }
           });
           break;
@@ -67,8 +67,14 @@ export default function LoginPage(props) {
         setBlank(e.target.value === "");
         setName(e.target.value);
         break;
-      case 'room':
-        setRoom(e.target.value);
+      case 'roomID':
+        setRoomID(e.target.value);
+        break;
+      case 'roomName':
+        setRoomName(e.target.value);
+        break;
+      case 'roomName':
+        setRoomName(e.target.value);
         break;
       default:
         break;
@@ -77,7 +83,7 @@ export default function LoginPage(props) {
 
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
   //const endpoint = React.useState("ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080");
-  const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
+  //const socket = io( "ec2-54-184-200-244.us-west-2.compute.amazonaws.com:8080", {"transports": ["polling","websocket"]});
   const path = React.useState("");
 
   setTimeout(function() {
@@ -85,11 +91,12 @@ export default function LoginPage(props) {
   }, 700);
   const classes = useStyles();
   const [name, setName] = React.useState("");
-  const [room, setRoom] = React.useState("");
+  const [roomID, setRoomID] = React.useState("");
+  const [roomName, setRoomName] = React.useState("");
   const [blank, setBlank] = React.useState(false);
-  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start
+  const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
   const { ...rest } = props;
-
+  console.log("button status ", buttonStatus);
   return (
     <div>
       <Header
@@ -134,6 +141,19 @@ export default function LoginPage(props) {
                           error: blank,
                         }}
                       />
+                    : buttonStatus === 4 ?
+                    <CustomInput
+                      labelText="Enter room name..."
+                      id="room_name"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        value: roomName,
+                        onChange: (e) => handleChange(e, "roomName")
+                      }}
+                    />
                     :
                       <CustomInput
                         labelText="Room ID"
@@ -143,8 +163,8 @@ export default function LoginPage(props) {
                         }}
                         inputProps={{
                           type: "text",
-                          value: room,
-                          onChange: (e) => handleChange(e, "room"),
+                          value: roomID,
+                          onChange: (e) => handleChange(e, "roomID"),
                         }}
                       />
                     }
@@ -169,6 +189,15 @@ export default function LoginPage(props) {
                         Join Room
                       </Button>]
                       :
+                      buttonStatus === 4 ? 
+                      <Button
+                      onClick={e => handleClick(e, "createNamedRoom")}
+                      simple
+                      color="primary"
+                      size="lg">
+                      Start
+                    </Button>
+                    :
                       <Button
                         onClick={e => handleClick(e, "start")}
                         simple

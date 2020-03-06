@@ -2,23 +2,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import PeopleIcon from '@material-ui/icons/People';
-import ImageIcon from '@material-ui/icons/Image';
-import AddIcon from '@material-ui/icons/Add';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import MovieIcon from '@material-ui/icons/Movie';
-import TextFieldsIcon from '@material-ui/icons/TextFields';
-import BrushIcon from '@material-ui/icons/Brush';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Collapse from '@material-ui/core/Collapse';
-import StarBorder from '@material-ui/icons/StarBorder';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import Modal from 'react-awesome-modal';
+import CustomizedAvatars from './CustomizedAvatars';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,6 +24,8 @@ const useStyles = makeStyles(theme => ({
 export default function AttendeeList(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [popupVisible, setPopupVisible] = React.useState(false);
+
   const avatars = [
     "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
     "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
@@ -44,21 +36,41 @@ export default function AttendeeList(props) {
     "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
     "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
   ]
+  const [currentIndex, setCurrentIndex] = React.useState(0);
 
-  const handleClick = () => {
-    setOpen(!open);
-  };
+  const openModel = () => {
+    setPopupVisible(true);
+  }
 
+  const closeModel = () => {
+    setPopupVisible(false);
+  }
+
+  const setAvatarIndex = (e) => {
+    setCurrentIndex(e);
+    console.log(e);
+  }
+  console.log("current index is: ", currentIndex);
   return (
+    <div>
+    <Modal visible={popupVisible} width="400" height="220" effect="fadeInUp" onClickAway={() => closeModel()}>
+      <div>
+          <CustomizedAvatars setAvatarIndex={setAvatarIndex}/>
+          <Button color="primary" onClick={() => closeModel()}>Choose</Button>
+      </div>
+    </Modal>
     <List>
       {props.attendees.map((name, index) => (
         <ListItem button>
           <ListItemAvatar>
-            <Avatar alt={name} src={avatars[index]} />
+          <IconButton onClick={openModel}>
+              <Avatar alt={name} src={avatars[currentIndex]}/>
+          </IconButton>
           </ListItemAvatar>
           <ListItemText primary={name} />
         </ListItem>
       ))}
     </List>
+    </div>
   );
 }
