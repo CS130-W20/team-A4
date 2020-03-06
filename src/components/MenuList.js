@@ -17,14 +17,11 @@ import Collapse from '@material-ui/core/Collapse';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import Modal from 'react-awesome-modal';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-<<<<<<< HEAD
-=======
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
->>>>>>> dave-branch
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,33 +64,13 @@ export default function MenuList(props) {
 
   const closeModel = () => {
     setPopupVisible(false);
-<<<<<<< HEAD
     setCopied(false);
-=======
-    setCopied(false)
->>>>>>> dave-branch
   }
 
   const handleCopyClick = (e) => {
     setCopied(e);
   }
 
-<<<<<<< HEAD
-  return (
-    <div>
-      <Modal visible={popupVisible} width="400" height="300" effect="fadeInUp" onClickAway={() => closeModel()}>
-          <div>
-              <h1>Room ID</h1>
-              <p>{props.roomID}</p>
-              <CopyToClipboard text={props.roomID}
-                onCopy={() => handleCopyClick(true)}>
-                <button>Copy to clipboard</button>
-              </CopyToClipboard>
-              {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
-              <button onClick={() => closeModel()}>Close</button>
-          </div>
-      </Modal>
-=======
   const bull = <span className={classes.bullet}>•</span>;
 
 
@@ -125,7 +102,6 @@ export default function MenuList(props) {
           </Card>
       </Modal>
       }
->>>>>>> dave-branch
       <List>
       <ListItem button component={Link} to={'/'}>
         <ListItemIcon>
