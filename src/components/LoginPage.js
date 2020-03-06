@@ -1,10 +1,7 @@
 import React from 'react';
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
-// @material-ui/icons
 import People from "@material-ui/icons/People";
-// core components
 import Header from "./Header/Header.js";
 import GridContainer from "./Grid/GridContainer.js";
 import GridItem from "./Grid/GridItem.js";
@@ -16,7 +13,6 @@ import CardFooter from "./Card/CardFooter.js";
 import CustomInput from "./CustomInput/CustomInput.js";
 import styles from "../assets/jss/material-kit-react/views/loginPage.js";
 import image from "./pictures/bg7.jpg";
-import io from "socket.io-client";
 import socket from "./SocketContext";
 
 const useStyles = makeStyles(styles);
@@ -52,7 +48,6 @@ export default function LoginPage(props) {
             "room_id": roomID
           });
           socket.on("join_result", (data) => {
-            console.log("data is:", data, typeof(data));
             if (data === "invalid input") {
               props.history.push('/');
             } else {

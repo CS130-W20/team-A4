@@ -76,17 +76,8 @@ export default function MenuList(props) {
 
   return (
     <div>
-      <Modal visible={popupVisible} width="300" height="150" effect="fadeInUp" onClickAway={() => closeModel()}>
-          {/* <div>
-              <h1>Room ID</h1>
-              <p>{props.roomID}</p>
-              <CopyToClipboard text={props.roomID}
-                onCopy={() => handleCopyClick(true)}>
-                <button>Copy to clipboard</button>
-              </CopyToClipboard>
-              {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
-              <button onClick={() => closeModel()}>Close</button>
-          </div> */}
+      {popupVisible &&
+        <Modal visible={popupVisible} width="300" height="150" effect="fadeInUp" onClickAway={() => closeModel()}>
           <Card className={classes.root}>
             <CardContent>
               <Typography variant="h5" component="h2">
@@ -110,6 +101,7 @@ export default function MenuList(props) {
             </CardActions>
           </Card>
       </Modal>
+      }
       <List>
       <ListItem button component={Link} to={'/'}>
         <ListItemIcon>

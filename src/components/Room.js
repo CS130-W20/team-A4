@@ -1,7 +1,6 @@
 import React from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -21,7 +20,6 @@ import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
 import DraggableImage from './DraggableImage';
-import io from "socket.io-client";
 import socket from "./SocketContext";
 
 const drawerWidth = 240;
@@ -130,7 +128,15 @@ export default function CreateRoom(props) {
         console.log("INVALID removeUserData");
       }
     });
-  });
+
+    socket.emit("get_info", {
+      "room_id": roomID
+    });
+
+    socket.on("room_info", (roomInfoData) => {
+      setUsers(roomInfoData.user_name);
+    });
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
