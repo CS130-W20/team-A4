@@ -107,7 +107,6 @@ export default function LoginPage(props) {
       <Header
         absolute
         color="transparent"
-        brand="CS130"
         {...rest}
       />
       <div
