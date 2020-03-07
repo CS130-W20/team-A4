@@ -24,11 +24,12 @@ export default function DraggableText(props) {
         props.handleLocationChange(props.componentId, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
       }}
       onResize={(e, direction, ref, delta, position) => {
-        props.handleLocationChange(props.componentId,
-                                   props.location.split(',')[0],
-                                   props.location.split(',')[1],
-                                   ref.offsetWidth,
-                                   ref.offsetHeight);
+        props.handleLocationChange(
+          props.componentId,
+          props.location.split(',')[0],
+          props.location.split(',')[1],
+          ref.offsetWidth,
+          ref.offsetHeight);
       }}
       default={{
         x: 0,

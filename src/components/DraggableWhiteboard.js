@@ -26,10 +26,13 @@ export default class DraggableWhiteboard extends Component {
   }
 
   handleSliderChange = (_, value) => {
-    console.log("change:", value);
     this.setState({
       brushRadius: value
     });
+  }
+
+  componentWillUpdate = (props) => {
+    this.saveableCanvas.loadSaveData(props.value)
   }
 
   render() {
@@ -51,7 +54,10 @@ export default class DraggableWhiteboard extends Component {
       >
         <Card style={{ width: '100%', height: '100%' }}>
           <CardActions>
-            <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
+            <IconButton
+              aria-label="delete"
+              onClick={() => this.props.handleDeleteComponent(this.props.k)}
+            >
               <DeleteIcon />
             </IconButton>
             <IconButton
@@ -62,15 +68,17 @@ export default class DraggableWhiteboard extends Component {
               <OpenWithIcon />
             </IconButton>
           </CardActions>
-          <CardContent style={{ height: '65%' }}>
+          <CardContent style={{ height: '65%' }} onMouseUp={() => this.props.handleValueChange(this.props.k, this.saveableCanvas.getSaveData())}>
             <CanvasDraw
+              ref={canvasDraw => (this.saveableCanvas = canvasDraw)}
               style={{ width: '100%', height: '100%' }}
               brushColor={this.state.brushColor}
               lazyRadius={10}
               brushRadius={this.state.brushRadius}
+              loadTimeOffset={1}
             />
           </CardContent>
-          <CardActions> {/* TODO: align the color picker to center */} 
+          <CardActions style={{ marginBottom: 5 }}> {/* TODO: align the color picker to center */} 
             <TwitterPicker
               style={{ float: 'left' }}
               colors={colors}

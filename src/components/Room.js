@@ -189,23 +189,25 @@ export default function CreateRoom(props) {
     );
   }
 
-  const handleValueChange = (component_id, value) => {
-    let type = "text"; // TODO
+  const handleValueChange = (key, value) => {
+    console.log("In handleValueChange");
+    console.log("key:", key);
+    console.log("value:", value);
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
     let newContentTable = {...contentTable};
     newContentTable[component_id] = value;
     setContentTable(newContentTable);
-    socket.emit("update_component",
-       {
-          "room_id": roomID,
-          "component_id": component_id,
-          "component_type": type,
-          "update_type": "update_finished",
-          "update_info": {
-             "location": locationTable[component_id],
-             "data": value
-          }
-       }
-    );
+    socket.emit("update_component", {
+      "room_id": roomID,
+      "component_id": component_id,
+      "component_type": component_type,
+      "update_type": "update_finished",
+      "update_info": {
+        "location": locationTable[component_id],
+        "data": value
+      }
+    });
   }
 
   const handleLocationChange = (component_id, x, y, width, height) => {
@@ -272,7 +274,8 @@ export default function CreateRoom(props) {
     });
 
     socket.on("update_component", (data) => {
-      let component_type = data.component_type;
+      console.log("update_component:", data);
+
       let component_id = data.component_id;
       let update_info = data.update_info;
 
@@ -338,45 +341,50 @@ export default function CreateRoom(props) {
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
             {components.map((key) => {
+              let componentType = key.split(',')[0];
               let componentId = key.split(',')[1];
-              console.log("in rendering, location table is: ", locationTable, ", key is: ", key);
-              switch (key.split(',')[0]) {
+              switch (componentType) {
                 case 'video':
-                  return (<DraggableVideo
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                            handleLocationChange={handleLocationChange}
-                          />);
+                  return (
+                    <DraggableVideo
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />);
                 case 'text':
-                  return (<DraggableText
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                            handleLocationChange={handleLocationChange}
-                          />);
+                  return (
+                    <DraggableText
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
                 case 'whiteboard':
-                  return (<DraggableWhiteboard
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                            handleLocationChange={handleLocationChange}
-                          />);
+                  return (
+                    <DraggableWhiteboard
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
                 case 'image':
                   return (
                     <DraggableImage
