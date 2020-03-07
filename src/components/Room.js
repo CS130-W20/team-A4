@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -23,6 +23,16 @@ import DraggableImage from './DraggableImage';
 import socket from "./SocketContext";
 
 const drawerWidth = 240;
+const DEFAULT_LOCATION = "0,0,600,500";
+const avatars = [
+  "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
+  "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
+  "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
+  "https://listrick.com/wp-content/uploads/2019/11/Famous-Cartoon-Characters-with-Big-Noses-2.jpg",
+  "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
+  "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
+  "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
+]
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -108,20 +118,10 @@ export default function CreateRoom(props) {
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
   const [users, setUsers] = React.useState(props.location.state.data.user_name);
-  // const [users, setUsers] = React.useState([]);
   const { name, roomID, roomName } = props.match.params;
-  // let contentTable = {}; // <id, content>
   const [contentTable, setContentTable] = React.useState({});
   const [locationTable, setLocationTable] = React.useState({});
-  const avatars = [
-    "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
-    "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
-    "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
-    "https://listrick.com/wp-content/uploads/2019/11/Famous-Cartoon-Characters-with-Big-Noses-2.jpg",
-    "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
-    "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
-    "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
-  ]
+  const [imgSrcTable, setImgSrcTable] = React.useState({});
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
@@ -188,22 +188,36 @@ export default function CreateRoom(props) {
     });
   }
 
-  const handleValueChange = (key, value) => {
+  const handleValueChange = (key, value, imgSrc) => { // TODO: the imgSrc might cause issue
     let component_id = key.split(',')[1];
     let component_type = key.split(',')[0];
     let newContentTable = {...contentTable};
     newContentTable[component_id] = value;
     setContentTable(newContentTable);
-    socket.emit("update_component", {
-      "room_id": roomID,
-      "component_id": component_id,
-      "component_type": component_type,
-      "update_type": "update_finished",
-      "update_info": {
-        "location": locationTable[component_id],
-        "data": value
-      }
-    });
+    if (component_type === "whiteboard") {
+      socket.emit("update_component", {
+        "room_id": roomID,
+        "component_id": component_id,
+        "component_type": component_type,
+        "update_type": "update_finished",
+        "update_info": {
+          "location": locationTable[component_id],
+          "data": value,
+          "image_source": imgSrc
+        }
+      });
+    } else {
+      socket.emit("update_component", {
+        "room_id": roomID,
+        "component_id": component_id,
+        "component_type": component_type,
+        "update_type": "update_finished",
+        "update_info": {
+          "location": locationTable[component_id],
+          "data": value,
+        }
+      });
+    } 
   }
 
   const handleLocationChange = (component_id, x, y, width, height) => {
@@ -246,10 +260,11 @@ export default function CreateRoom(props) {
       let component_data = data.component_data;
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
+      // TODO: why can't I put setComponents(newComponents); here?
 
       // Set default value
       let newLocationTable = {...locationTable};
-      newLocationTable[component_id] = "0,0,500,500";
+      newLocationTable[component_id] = DEFAULT_LOCATION;
       setLocationTable(newLocationTable);
 
       let newContentTable = {...contentTable};
@@ -271,20 +286,24 @@ export default function CreateRoom(props) {
 
     socket.on("update_component", (data) => {
       console.log("update_component:", data);
-
       let component_id = data.component_id;
       let update_info = data.update_info;
 
       let newContentTable = {...contentTable};
       newContentTable[component_id] = update_info.data;
+      setContentTable(newContentTable);
 
       let newLocationTable = {...locationTable};
       newLocationTable[component_id] = update_info.location;
-
-      setContentTable(newContentTable);
       setLocationTable(newLocationTable);
+
+      if (data.component_type === "whiteboard") {
+        let newImgSrcTable = {...imgSrcTable};
+        newImgSrcTable[component_id] = data.update_info.image_source
+        setImgSrcTable(newImgSrcTable);
+      }
     });
-  }, []);
+  }, [components]);
 
   return (
     <div className={classes.root}>
@@ -375,20 +394,7 @@ export default function CreateRoom(props) {
                       roomID={roomID}
                       componentId={componentId}
                       value={contentTable[componentId]}
-                      location={locationTable[componentId]}
-                      handleDeleteComponent={handleDeleteComponent}
-                      handleValueChange={handleValueChange}
-                      handleLocationChange={handleLocationChange}
-                    />
-                  );
-                case 'image':
-                  return (
-                    <DraggableImage
-                      key={key}
-                      k={key}
-                      roomID={roomID}
-                      componentId={componentId}
-                      value={contentTable[componentId]}
+                      imgSrc={imgSrcTable[componentId]}
                       location={locationTable[componentId]}
                       handleDeleteComponent={handleDeleteComponent}
                       handleValueChange={handleValueChange}

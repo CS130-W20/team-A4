@@ -16,7 +16,6 @@ export default function DraggableText(props) {
   return (
     <Rnd
       style={style}
-      enableUserSelectHack={false}
       size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
       position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
       onDragStop={(e, d) => {
