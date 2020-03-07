@@ -1,5 +1,8 @@
 test_case=all
 
+server:
+	/home/ubuntu/.nvm/versions/node/v13.10.1/bin/node ./backend/app.js 0
+
 server1:
 	/home/ubuntu/.nvm/versions/node/v13.10.1/bin/node ./backend/app.js 1
 

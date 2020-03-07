@@ -1,4 +1,5 @@
-var app = require("express")()
+var express = require("express")
+var app = express()
 var fs = require("fs")
 var server = require("http").Server(app)
 var io = require("socket.io")(server)
@@ -7,6 +8,9 @@ var validator = require('validator');
 var { Client } = require("pg")
 
 dev_environment = process.argv[2]
+
+IMAGE_URL = "http://ec2-50-112-33-65.us-west-2.compute.amazonaws.com:808"+ dev_environment + "/"
+USER_CACHE_SIZE = 50
 
 db_config = {
 	user: "dbuser" + dev_environment,
@@ -42,9 +46,9 @@ var create_room_table = "CREATE TABLE IF NOT EXISTS room_table (\
 
 default_data = {
 	"text" : "Enter text here",
-	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com",
-	"image": "/home/ubuntu/team-A4/backend/images/default_image.jpg",
+	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com:808"+ dev_environment ,
 	"video": "https://youtu.be/zF9PdMVteOQ",
+	"whiteboard": "default whiteboard",
 	"location": "300,400,100,100"
 }
 
@@ -59,8 +63,18 @@ client.query(create_content_table)
 client.query(create_user_table)
 client.query(create_room_table)
 
+app.use(express.static(__dirname + "/images"))
+
 var index_path = "/home/ubuntu/team-A4/public/index.html"
 server.listen(8080 + parseInt(dev_environment))
+
+var user_cache = new Map()
+user_cache.push = function(){
+	if(this.size >= USER_CACHE_SIZE){
+		this.delete(this.keys().next().value)
+	}
+	Map.prototype.set.apply(this, arguments)
+}
 
 app.get("/", function (req, res) {
     res.sendFile(index_path)
@@ -115,6 +129,9 @@ function join_room(socket, room_id, user_name, current_user_avatar){
 			user_name: [],
 			user_avatar: []
 		}
+		if(user_cache.has(user_name + room_id)){
+			current_user_avatar = user_cache.get(user_name + room_id)
+		}
 
 		client.query("SELECT * FROM app_content WHERE room_id=$1;", [room_id])
 		.then((data) => {res.component = data.rows})
@@ -126,26 +143,31 @@ function join_room(socket, room_id, user_name, current_user_avatar){
 			})
 			.then(() => {
 				client.query("SELECT room_name FROM room_table WHERE room_id=$1;", [room_id])
-				.then((data) => {res.room_name = data.rows[0].room_name})
-				.then(()=>{
-					client.query("INSERT INTO user_table VALUES($1, $2, $3, $4);", [socket.id, user_name, current_user_avatar, room_id])
-					.then(()=>{
-						res.user_name.push(user_name)
-						res.user_avatar.push(current_user_avatar)
-						socket.join(room_id)
-						socket.emit("join_result", res)
-						socket.broadcast.to(room_id).emit("join_result", res)
-						log_data("Join room result", socket.id, res)
-					})
-					.catch((error)=>{
-						socket.join(room_id)
-						socket.emit("join_result", res)
-						socket.broadcast.to(room_id).emit("join_result", res)
-						log_data("Join room result", socket.id, res)
-					})					
+				.then((data) => {
+					if (typeof data.rows[0] === "undefined"){
+						socket.emit("join_result", "Room doesn't exist")
+						log_data("Join room result", socket.id, "Room doesn't exist")
+					}else{
+						res.room_name = data.rows[0].room_name
+						client.query("INSERT INTO user_table VALUES($1, $2, $3, $4);", [socket.id, user_name, current_user_avatar, room_id])
+						.then(()=>{
+							res.user_name.push(user_name)
+							res.user_avatar.push(current_user_avatar)
+							socket.join(room_id)
+							socket.emit("join_result", res)
+							socket.broadcast.to(room_id).emit("join_result", res)
+							log_data("Join room result", socket.id, res)
+						})
+						.catch((error)=>{
+							socket.join(room_id)
+							socket.emit("join_result", res)
+							socket.broadcast.to(room_id).emit("join_result", res)
+							log_data("Join room result", socket.id, res)
+						})
+					}
+					
 				})
-			})
-			
+			})	
 		})
 	}else{
 		socket.emit("join_result", "invalid input")
@@ -153,65 +175,60 @@ function join_room(socket, room_id, user_name, current_user_avatar){
 	}
 }
 
-function create_component(socket, my_component_type, room_id){
-	if (my_component_type in default_data){
+function create_component(socket, current_component_type, room_id){
+	if (current_component_type in default_data){
 		
 		current_component_id = uuidv4()
 		client.query("INSERT INTO app_content VALUES($1, $2, $3, $4, $5);", 
-					[current_component_id, room_id, default_data["location"], default_data[my_component_type], my_component_type])
+					[current_component_id, room_id, default_data["location"], default_data[current_component_type], current_component_type])
 		
-		if (my_component_type == "image"){
-			var read_stream = fs.createReadStream(default_data["image"], {encoding: "binary"})
-			read_stream.on("data", function(image_data){
-				res = {
-					component_id: current_component_id,
-					component_type: my_component_type,
-					component_data: image_data
-				}
-				socket.broadcast.to(room_id).emit("create_component", res)
-				socket.emit("create_component", res)
-				log_data("Create component result", socket.id, res)
-			})
-		}else{
-			res = {
-				component_id: current_component_id,
-				component_type: my_component_type,
-				component_data: default_data[my_component_type]
-			}
-			socket.broadcast.to(room_id).emit("create_component", res)
-			socket.emit("create_component", res)
-			log_data("Create component result", socket.id, res)
+		res = {
+			component_id: current_component_id,
+			component_type: current_component_type,
+			component_data: default_data[current_component_type]
 		}
+		socket.broadcast.to(room_id).emit("create_component", res)
+		socket.emit("create_component", res)
+		log_data("Create component result", socket.id, res)
 	}
 }	
 
 function update_component(socket, room_id, current_component_id, current_component_type, update_type, current_update_info){
-		// Handle update image
+	res = {
+		component_id: current_component_id,
+		component_type: current_component_type,
+		update_info: current_update_info
+	}
+	
+	if(typeof current_update_info.image_source !== "undefined"){
+		image_data = current_update_info.image_source.replace(/^data:image\/png;base64,/, "")
+		fs.unlink(__dirname + "/images/" + current_component_id + ".png", (err) => {})
+		fs.writeFile(__dirname + "/images/" + current_component_id + ".png", image_data, 'base64', (err) => {
+			log_data("Store image error", socket.id, image_data)
+		})
+		res.update_info.image_source = IMAGE_URL + current_component_id + ".png"
+		socket.emit("update_component", res)
+	}
 
-		res = {
-			component_id: current_component_id,
-			component_type: current_component_type,
-			update_info: current_update_info
-		}
-		socket.broadcast.to(room_id).emit("update_component", res)
+	socket.broadcast.to(room_id).emit("update_component", res)
 
-		if(update_type == "update_finished"){
-			client.query("UPDATE app_content SET location=$1, data=$2 WHERE component_id=$3;", 
-						[current_update_info.location, current_update_info.data, current_component_id])
-		}
-		log_data("Update component result", socket.id, res)
+	if(update_type == "update_finished"){
+		client.query("UPDATE app_content SET location=$1, data=$2 WHERE component_id=$3;", 
+					[current_update_info.location, current_update_info.data, current_component_id])
+	}
+	log_data("Update component result", socket.id, res)
 }
 
-function delete_component(socket, my_component_id, room_id, my_component_type){
+function delete_component(socket, current_component_id, room_id, current_component_type){
+
+	client.query("DELETE FROM app_content WHERE component_id=$1;", [current_component_id])
 	
-	client.query("DELETE FROM app_content WHERE component_id=$1;", [my_component_id])
-	
-	if (my_component_type == "image"){
-		// TODO: How to delete image
+	if (current_component_type == "whiteboard"){
+		fs.unlink(__dirname + "/images/" + current_component_id + ".png", (err) => {})
 	}
 	res = {
-		component_id: my_component_id,
-		component_type: my_component_type
+		component_id: current_component_id,
+		component_type: current_component_type
 	}
 	socket.broadcast.to(room_id).emit("delete_component", res)
 	log_data("Delete component result", socket.id, res)
@@ -223,10 +240,11 @@ function remove_user(socket){
 		user_name: [],
 		user_avatar: []
 	}
-	client.query("SELECT room_id FROM user_table WHERE user_id=$1;", [socket.id])
+	client.query("SELECT * FROM user_table WHERE user_id=$1;", [socket.id])
 	.then((data)=>{
 		if(typeof data.rows[0] !== "undefined"){
 			current_room_id = data.rows[0].room_id
+			user_cache.push(data.rows[0].user_name + data.rows[0].room_id, data.rows[0].user_avatar)
 			client.query("DELETE FROM user_table WHERE user_id=$1;", [socket.id])
 			.then(()=>{
 				client.query("SELECT user_name, user_avatar FROM user_table WHERE room_id=$1;", [current_room_id])
