@@ -10,9 +10,26 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 
 export default function DraggableText(props) {
+
+  console.log("in draggabletext, location is: ", props.location);
+
   return (
     <Rnd
       style={style}
+      enableUserSelectHack={false}
+      size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
+      position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
+      onDragStop={(e, d) => {
+        console.log("In draggable, location is: ", d.x, ", ", d.y);
+        props.handleLocationChange(props.componentId, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
+      }}
+      onResize={(e, direction, ref, delta, position) => {
+        props.handleLocationChange(props.componentId,
+                                   props.location.split(',')[0],
+                                   props.location.split(',')[1],
+                                   ref.offsetWidth,
+                                   ref.offsetHeight);
+      }}
       default={{
         x: 0,
         y: 0,
