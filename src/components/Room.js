@@ -114,7 +114,7 @@ export default function CreateRoom(props) {
   const { name, roomID, roomName } = props.match.params;
   // let contentTable = {}; // <id, content>
   const [contentTable, setContentTable] = React.useState({});
-  let locationTable = {}; // <id, location>
+  const [locationTable, setLocationTable] = React.useState({});
   const avatars = [
     "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
     "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
@@ -226,6 +226,25 @@ export default function CreateRoom(props) {
     );
   }
 
+  const handleLocationChange = (component_id, x, y, width, height) => {
+    let type = "text"; // TODO
+    //locationTable[component_id] = location;
+    console.log("location: ", x, ", ", y);
+    // socket.emit("update_component",
+    //    {
+    //       "room_id": roomID,
+    //       "component_id": component_id,
+    //       "component_type": type,
+    //       "update_type": "update_finished",
+    //       "update_info": {
+    //          "location": "(-1,-1),(-1,-1)", //-1 means no change in location
+    //          "data": value
+    //       }
+    //    }
+    // );
+  }
+
+
   // Listen to any updates on create components
   const userSetAvatar = (e) => {
     setCurrentAvatar(e);
@@ -248,6 +267,7 @@ export default function CreateRoom(props) {
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
       setComponents(newComponents);
+      // TODO: 设置value和location的default value
     });
 
     socket.on("delete_component", (data) => {
@@ -264,12 +284,15 @@ export default function CreateRoom(props) {
       let component_type = data.component_type;
       let component_id = data.component_id;
       let update_info = data.update_info;
-      let newComponents = [...components];
-      let key = [component_type, component_id].join(',');
-      locationTable[component_id] = update_info.location;
+
       let newContentTable = {...contentTable};
       newContentTable[component_id] = update_info.data;
+
+      let newLocationTable = {...locationTable};
+      newLocationTable[component_id] = update_info.location;
+      
       setContentTable(newContentTable);
+      setLocationTable(newLocationTable);
     });
   }, []);
 
@@ -327,7 +350,16 @@ export default function CreateRoom(props) {
               let componentId = key.split(',')[1];
               switch (key.split(',')[0]) {
                 case 'video':
-                  return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (<DraggableVideo
+                            key={key}
+                            k={key}
+                            roomID={roomID}
+                            componentId={componentId}
+                            value={contentTable[componentId]}
+                            location={locationTable[componentId]}
+                            handleDeleteComponent={handleDeleteComponent}
+                            handleValueChange={handleValueChange}
+                          />);
                 case 'text':
                   return (<DraggableText
                             key={key}
@@ -340,9 +372,30 @@ export default function CreateRoom(props) {
                             handleValueChange={handleValueChange}
                           />);
                 case 'whiteboard':
-                  return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (<DraggableWhiteboard 
+                            key={key}
+                            k={key}
+                            roomID={roomID}
+                            componentId={componentId}
+                            value={contentTable[componentId]}
+                            location={locationTable[componentId]}
+                            handleDeleteComponent={handleDeleteComponent}
+                            handleValueChange={handleValueChange}
+                            handleLocationChange={handleLocationChange}
+                          />);
                 case 'image':
-                  return (<DraggableImage key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (
+                    <DraggableImage 
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                    />      
+                  );
               }
             })}
           </Grid>
