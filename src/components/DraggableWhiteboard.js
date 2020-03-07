@@ -40,6 +40,7 @@ export default class DraggableWhiteboard extends Component {
       '#000000', '#FF6900', '#FCB900', '#7BDCB5', '#00D084', 
       '#8ED1FC', '#0693E3', '#ABB8C3', '#EB144C', '#F78DA7'
     ];
+    
     return (
       <Rnd
         style={style}
@@ -48,6 +49,19 @@ export default class DraggableWhiteboard extends Component {
           y: 0,
           width: 500,
           height: 500,
+        }}
+        size={{ width: this.props.location.split(',')[2], height: this.props.location.split(',')[3] }}
+        position={{ x: this.props.location.split(',')[0], y: this.props.location.split(',')[1] }}
+        onDragStop={(e, d) => {
+          this.props.handleLocationChange(this.props.componentId, d.x, d.y, this.props.location.split(',')[2], this.props.location.split(',')[3]);
+        }}
+        onResize={(e, direction, ref, delta, position) => {
+          this.props.handleLocationChange(
+            this.props.componentId,
+            this.props.location.split(',')[0],
+            this.props.location.split(',')[1],
+            ref.offsetWidth,
+            ref.offsetHeight);
         }}
         enableUserSelectHack={false}
         dragHandleClassName="moveable"
@@ -68,7 +82,10 @@ export default class DraggableWhiteboard extends Component {
               <OpenWithIcon />
             </IconButton>
           </CardActions>
-          <CardContent style={{ height: '65%' }} onMouseUp={() => this.props.handleValueChange(this.props.k, this.saveableCanvas.getSaveData())}>
+          <CardContent
+            style={{ height: '65%' }}
+            onMouseUp={() => this.props.handleValueChange(this.props.k, this.saveableCanvas.getSaveData())}
+          >
             <CanvasDraw
               ref={canvasDraw => (this.saveableCanvas = canvasDraw)}
               style={{ width: '100%', height: '100%' }}

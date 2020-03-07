@@ -18,6 +18,7 @@ if(test_environment === 'local'){
 	}
 }
 
+
 var room_uuid_obj = {room_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 var component_obj = {
 	component_id : "aa7b9618-e140-4262-ae39-86323153b7e8",
