@@ -21,15 +21,14 @@ export default function DraggableText(props) {
       position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
       onDragStop={(e, d) => {
         console.log("In draggable, location is: ", d.x, ", ", d.y);
-        props.handleLocationChange(props.componentId, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
+        props.handleLocationChange(props.k, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
       }}
       onResize={(e, direction, ref, delta, position) => {
-        props.handleLocationChange(
-          props.componentId,
-          props.location.split(',')[0],
-          props.location.split(',')[1],
-          ref.offsetWidth,
-          ref.offsetHeight);
+        props.handleLocationChange(props.k,
+                                   props.location.split(',')[0],
+                                   props.location.split(',')[1],
+                                   ref.offsetWidth,
+                                   ref.offsetHeight);
       }}
       default={{
         x: 0,
@@ -56,7 +55,7 @@ export default function DraggableText(props) {
             rows="4"
             rowsMax="10"
             variant="outlined"
-            onChange={(e) => props.handleValueChange(props.componentId, e.target.value)}
+            onChange={(e) => props.handleValueChange(props.k, e.target.value)}
             style={{ width: '100%', height: '100%' }}
           />
         </CardContent>

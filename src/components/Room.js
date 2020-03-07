@@ -194,20 +194,24 @@ export default function CreateRoom(props) {
     let newContentTable = {...contentTable};
     newContentTable[component_id] = value;
     setContentTable(newContentTable);
-    socket.emit("update_component", {
-      "room_id": roomID,
-      "component_id": component_id,
-      "component_type": component_type,
-      "update_type": "update_finished",
-      "update_info": {
-        "location": locationTable[component_id],
-        "data": value
-      }
-    });
+    socket.emit("update_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": component_type,
+          "update_type": "update_finished",
+          "update_info": {
+             "location": locationTable[component_id],
+             "data": value
+          }
+       }
+    );
   }
 
-  const handleLocationChange = (component_id, x, y, width, height) => {
-    let type = "text"; // TODO: change this
+  const handleLocationChange = (key, x, y, width, height) => {
+    console.log("receive handle location change")
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
     let location = [x, y, width, height].join(',');
     let newLocationTable = {...locationTable};
     newLocationTable[component_id] = location;
@@ -216,7 +220,7 @@ export default function CreateRoom(props) {
        {
           "room_id": roomID,
           "component_id": component_id,
-          "component_type": type,
+          "component_type": component_type,
           "update_type": "update_finished",
           "update_info": {
              "location": location,
@@ -224,7 +228,6 @@ export default function CreateRoom(props) {
           }
        }
     );
-    locationTable[component_id] = location;
   }
 
 
@@ -270,8 +273,9 @@ export default function CreateRoom(props) {
     });
 
     socket.on("update_component", (data) => {
-      console.log("update_component:", data);
+      console.log("update_component: ", data);
 
+      let component_type = data.component_type;
       let component_id = data.component_id;
       let update_info = data.update_info;
 
@@ -283,8 +287,10 @@ export default function CreateRoom(props) {
 
       setContentTable(newContentTable);
       setLocationTable(newLocationTable);
+
+      console.log("print locationtable: ", newLocationTable);
     });
-  }, []);
+  }, [components, contentTable, locationTable]);
 
   return (
     <div className={classes.root}>
