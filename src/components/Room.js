@@ -19,7 +19,7 @@ import AttendeeList from './AttendeeList';
 import DraggableWhiteboard from './DraggableWhiteboard';
 import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
-import DraggableImage from './DraggableImage';
+import DraggableWeb from './DraggableWeb';
 import socket from "./SocketContext";
 
 const drawerWidth = 240;
@@ -402,6 +402,20 @@ export default function CreateRoom(props) {
                       handleLocationChange={handleLocationChange}
                     />
                   );
+                case 'web':
+                return (
+                  <DraggableWeb
+                    key={key}
+                    k={key}
+                    roomID={roomID}
+                    componentId={componentId}
+                    value={contentTable[componentId]}
+                    location={locationTable[componentId]}
+                    handleDeleteComponent={handleDeleteComponent}
+                    handleValueChange={handleValueChange}
+                    handleLocationChange={handleLocationChange}
+                  />
+                );
               }
             })}
           </Grid>
