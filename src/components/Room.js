@@ -225,7 +225,9 @@ export default function CreateRoom(props) {
 
   const handleValueChange = (component_id, value) => {
     let type = "text"; // TODO
-    contentTable[component_id] = value;
+    let newContentTable = {...contentTable};
+    newContentTable[component_id] = value;
+    setContentTable(newContentTable);
     socket.emit("update_component",
        {
           "room_id": roomID,
