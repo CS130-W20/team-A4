@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useRef } from 'react'
 import { Rnd } from "react-rnd";
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,7 +13,8 @@ export default class DraggableImage extends Component {
   state = {
       selectedImage : null,
       show : false,
-      imageFile : null
+      imageFile : null,
+      z : 0
   }
 
   imageSelectedHandler = e => {
@@ -27,16 +28,21 @@ export default class DraggableImage extends Component {
 
   render() {
     const show = this.state.show;
-    console.log("image selected:", this.state.selectedImage);
-    console.log("image file: ", this.state.imageFile);
     return (
       <Rnd
+        style={{...style, zIndex:this.state.z}}
         style={style}
         default={{
           x: 0,
           y: 0,
           width: 500,
           height: 400,
+        }}
+        onDragStart={(e, d) => { 
+          if (this.props.maxZIndex >= this.state.z) {
+            this.setState({ z:this.props.maxZIndex+1})
+            this.props.updateMaxZIndex(this.state.z);
+          }
         }}
         enableUserSelectHack={false}
         dragHandleClassName="moveable"

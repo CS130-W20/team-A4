@@ -113,6 +113,7 @@ export default function CreateRoom(props) {
   // let contentTable = {}; // <id, content>
   const [contentTable, setContentTable] = React.useState({});
   const [locationTable, setLocationTable] = React.useState({});
+  const [maxZIndex, setMaxZIndex] = React.useState(0);
   const avatars = [
     "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
     "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
@@ -124,11 +125,12 @@ export default function CreateRoom(props) {
   ]
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
-
+  console.log(currentAvatar, userAvatars, users)
   React.useEffect(() => {
     socket.emit("join", { // TODO: avatar传过去
       "user_name": name,
-      "room_id": roomID
+      "room_id": roomID,
+      "user_avatar": currentAvatar // should not resend avatar, should keep the original avatar
     });
 
     socket.on("join_result", (joinResultData) => {
@@ -236,6 +238,10 @@ export default function CreateRoom(props) {
       "user_name": name,
       "user_avatar": e
     })
+  }
+
+  const updateMaxZIndex = (e) => {
+    setMaxZIndex(e);
   }
 
   useEffect(() => {
@@ -365,6 +371,8 @@ export default function CreateRoom(props) {
                       handleDeleteComponent={handleDeleteComponent}
                       handleValueChange={handleValueChange}
                       handleLocationChange={handleLocationChange}
+                      updateMaxZIndex={updateMaxZIndex} 
+                      maxZIndex={maxZIndex}
                     />
                   );
                 case 'whiteboard':
@@ -393,6 +401,8 @@ export default function CreateRoom(props) {
                       handleDeleteComponent={handleDeleteComponent}
                       handleValueChange={handleValueChange}
                       handleLocationChange={handleLocationChange}
+                      updateMaxZIndex={updateMaxZIndex} 
+                      maxZIndex={maxZIndex}
                     />
                   );
               }

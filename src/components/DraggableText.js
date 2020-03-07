@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component, useState} from 'react'
 import { Rnd } from "react-rnd";
 import style from "../assets/jss/draggableStyle";
 import Card from '@material-ui/core/Card';
@@ -10,12 +10,11 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 
 export default function DraggableText(props) {
-
+  const [z, setZ] = useState(0);
   console.log("in draggabletext, location is: ", props.location);
-
   return (
     <Rnd
-      style={style}
+      style={{...style, zIndex: z}}
       enableUserSelectHack={false}
       size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
       position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
@@ -36,6 +35,12 @@ export default function DraggableText(props) {
         y: 0,
         width: 320,
         height: 250,
+      }}
+      onDragStart={(e, d) => { 
+        if (props.maxZIndex >= z) {
+          setZ(props.maxZIndex+1)
+          props.updateMaxZIndex(z);
+        }
       }}
       enableUserSelectHack={false}
       dragHandleClassName="moveable"
