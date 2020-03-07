@@ -31,21 +31,38 @@ export default class DraggableVideo extends Component {
     return "https://www.youtube.com/embed/" + videoId;
   }
 
-  onChange = (e) => this.setState({ videoUrl: e.target.value });
+  onChange = (e) => {
+    // TODO: s
+    this.setState({ videoUrl: e.target.value });
+    this.props.handleValueChange(this.props.k, e.target.value);
+  }
 
   render() {
     const show = this.state.show;
     return (
       <Rnd
         style={style}
-        default={{
-          x: 0,
-          y: 0,
-          width: 400,
-          height: 300,
-        }}
+        // default={{
+        //   x: 0,
+        //   y: 0,
+        //   width: 400,
+        //   height: 300,
+        // }}
         enableUserSelectHack={false}
         dragHandleClassName="moveable"
+        size={{ width: this.props.location.split(',')[2],  height: this.props.location.split(',')[3] }}
+        position={{ x: this.props.location.split(',')[0], y: this.props.location.split(',')[1] }}
+        onDragStop={(e, d) => {
+          console.log("In draggable, location is: ", d.x, ", ", d.y, ",", this.props.location.split(',')[2], ",", this.props.location.split(',')[3]);
+          this.props.handleLocationChange(this.props.k, d.x, d.y, this.props.location.split(',')[2], this.props.location.split(',')[3]);
+        }}
+        onResize={(e, direction, ref, delta, position) => {
+          this.props.handleLocationChange(this.props.k,
+                                     this.props.location.split(',')[0],
+                                     this.props.location.split(',')[1],
+                                     ref.offsetWidth,
+                                     ref.offsetHeight);
+        }}
       >
         <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
@@ -59,12 +76,12 @@ export default class DraggableVideo extends Component {
         <CardContent style={{ height: '100%' }}>
         {show ?
           <Iframe
-            url={this.convertToEmbedUrl(this.state.videoUrl)}
+            url={this.convertToEmbedUrl(this.props.value)}
             width="100%"
             height="70%"
           />
         :
-          (<FormControl style={{ marginLeft: 10, display: 'flex' }}>  
+          (<FormControl style={{ marginLeft: 10, display: 'flex' }}>
             <TextField style={{ width: "85%", float: "left" }} id="standard-videoUrl" label="Add Video URL link..." onChange={this.onChange} />
             <Button variant="contained" onClick={() => this.onSubmit()} style={{ width: "10%", float: "left" }} value="Submit">Submit</Button>
           </FormControl>

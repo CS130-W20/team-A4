@@ -189,8 +189,9 @@ export default function CreateRoom(props) {
     );
   }
 
-  const handleValueChange = (component_id, value) => {
-    let type = "text"; // TODO
+  const handleValueChange = (key, value) => {
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
     let newContentTable = {...contentTable};
     newContentTable[component_id] = value;
     setContentTable(newContentTable);
@@ -198,7 +199,7 @@ export default function CreateRoom(props) {
        {
           "room_id": roomID,
           "component_id": component_id,
-          "component_type": type,
+          "component_type": component_type,
           "update_type": "update_finished",
           "update_info": {
              "location": locationTable[component_id],
@@ -208,8 +209,10 @@ export default function CreateRoom(props) {
     );
   }
 
-  const handleLocationChange = (component_id, x, y, width, height) => {
-    let type = "text"; // TODO
+  const handleLocationChange = (key, x, y, width, height) => {
+    console.log("receive handle location change")
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
     let location = [x, y, width, height].join(',');
     let newLocationTable = {...locationTable};
     newLocationTable[component_id] = location;
@@ -218,7 +221,7 @@ export default function CreateRoom(props) {
        {
           "room_id": roomID,
           "component_id": component_id,
-          "component_type": type,
+          "component_type": component_type,
           "update_type": "update_finished",
           "update_info": {
              "location": location,
@@ -226,7 +229,6 @@ export default function CreateRoom(props) {
           }
        }
     );
-    locationTable[component_id] = location;
   }
 
 
@@ -251,6 +253,7 @@ export default function CreateRoom(props) {
 
       // Set default value
       let newLocationTable = {...locationTable};
+      // TODO: if video, default value ...
       newLocationTable[component_id] = "0,0,320,250";
       setLocationTable(newLocationTable);
 
@@ -272,6 +275,8 @@ export default function CreateRoom(props) {
     });
 
     socket.on("update_component", (data) => {
+      console.log("print data: ", data);
+
       let component_type = data.component_type;
       let component_id = data.component_id;
       let update_info = data.update_info;
@@ -284,6 +289,8 @@ export default function CreateRoom(props) {
 
       setContentTable(newContentTable);
       setLocationTable(newLocationTable);
+
+      console.log("print locationtable: ", newLocationTable);
     });
   }, []);
 
@@ -339,7 +346,7 @@ export default function CreateRoom(props) {
           <Grid>
             {components.map((key) => {
               let componentId = key.split(',')[1];
-              console.log("in rendering, location table is: ", locationTable, ", key is: ", key);
+              console.log("location table: ", locationTable, "content table: ", contentTable, "components: ", components);
               switch (key.split(',')[0]) {
                 case 'video':
                   return (<DraggableVideo
