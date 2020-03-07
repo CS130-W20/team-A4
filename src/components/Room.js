@@ -104,7 +104,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function CreateRoom(props) {
+export default function Room(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
@@ -197,20 +197,24 @@ export default function CreateRoom(props) {
     let newContentTable = {...contentTable};
     newContentTable[component_id] = value;
     setContentTable(newContentTable);
-    socket.emit("update_component", {
-      "room_id": roomID,
-      "component_id": component_id,
-      "component_type": component_type,
-      "update_type": "update_finished",
-      "update_info": {
-        "location": locationTable[component_id],
-        "data": value
-      }
-    });
+    socket.emit("update_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": component_type,
+          "update_type": "update_finished",
+          "update_info": {
+             "location": locationTable[component_id],
+             "data": value
+          }
+       }
+    );
   }
 
-  const handleLocationChange = (component_id, x, y, width, height) => {
-    let type = "text"; // TODO: change this
+  const handleLocationChange = (key, x, y, width, height) => {
+    console.log("receive handle location change")
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
     let location = [x, y, width, height].join(',');
     let newLocationTable = {...locationTable};
     newLocationTable[component_id] = location;
@@ -219,7 +223,7 @@ export default function CreateRoom(props) {
        {
           "room_id": roomID,
           "component_id": component_id,
-          "component_type": type,
+          "component_type": component_type,
           "update_type": "update_finished",
           "update_info": {
              "location": location,
@@ -227,7 +231,6 @@ export default function CreateRoom(props) {
           }
        }
     );
-    locationTable[component_id] = location;
   }
 
 
@@ -247,22 +250,27 @@ export default function CreateRoom(props) {
 
   useEffect(() => {
     socket.on("create_component", (data) => {
+      console.log("[start create_component] coponents: ", components, "contentTable: ", contentTable, "locationtable: ", locationTable);
       let newComponents = [...components];
       let component_id = data.component_id;
       let component_type = data.component_type;
       let component_data = data.component_data;
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
-      setComponents(newComponents);
+      
 
       // Set default value
       let newLocationTable = {...locationTable};
       newLocationTable[component_id] = "0,0,500,500";
       setLocationTable(newLocationTable);
+      // setLocationTable({{...locationTable, [component_id, "0,0,500,500"].join(',')}});
 
-      let newContentTable = {...contentTable};
+      let newContentTable = {...contentTable, component_id};
       newContentTable[component_id] = component_data;
       setContentTable(newContentTable);
+      console.log("[end create_component] newcoponents: ", newComponents, "newcontentTable: ", newContentTable, "newlocationtable: ", newLocationTable);
+      console.log("[end create_component] coponents: ", components, "contentTable: ", contentTable, "locationtable: ", locationTable);
+      setComponents(newComponents);
     });
 
     socket.on("delete_component", (data) => {
@@ -273,12 +281,13 @@ export default function CreateRoom(props) {
       let key = [component_type, component_id].join(',');
       let index = newComponents.indexOf(key);
       newComponents.splice(index, 1);
-      // setComponents(newComponents);
+      setComponents(newComponents);
     });
 
     socket.on("update_component", (data) => {
-      console.log("update_component:", data);
+      console.log("update_component: ", data);
 
+      let component_type = data.component_type;
       let component_id = data.component_id;
       let update_info = data.update_info;
 
@@ -290,8 +299,10 @@ export default function CreateRoom(props) {
 
       setContentTable(newContentTable);
       setLocationTable(newLocationTable);
+
+      console.log("print locationtable: ", newLocationTable);
     });
-  }, [components]); // TODO: too many channels to listen, can further reduce overhead
+  }, [components, contentTable, locationTable]); // TODO: too many channels to listen, can further reduce overhead
 
   return (
     <div className={classes.root}>
@@ -344,26 +355,11 @@ export default function CreateRoom(props) {
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
             {components.map((key) => {
-              console.log("length of components:", components.length);
+              console.log("[end create_component] coponents: ", components, "contentTable: ", contentTable, "locationtable: ", locationTable);
+              console.log("length of components:", components);
               let componentType = key.split(',')[0];
               let componentId = key.split(',')[1];
               switch (componentType) {
-                case 'text':
-                  return (
-                    <DraggableText
-                      key={key}
-                      k={key}
-                      roomID={roomID}
-                      componentId={componentId}
-                      value={contentTable[componentId]}
-                      location={locationTable[componentId]}
-                      handleDeleteComponent={handleDeleteComponent}
-                      handleValueChange={handleValueChange}
-                      handleLocationChange={handleLocationChange}
-                      updateMaxZIndex={updateMaxZIndex} 
-                      maxZIndex={maxZIndex}
-                    />
-                  );
                 case 'whiteboard':
                   return (
                     <DraggableWhiteboard
@@ -380,6 +376,7 @@ export default function CreateRoom(props) {
                   );
                 case 'image':
                 case 'video':
+                case 'text':
                   return (
                     <DraggableComponent
                       key={key}

@@ -31,7 +31,11 @@ export default class DraggableVideo extends Component {
     return "https://www.youtube.com/embed/" + videoId;
   }
 
-  onChange = (e) => this.setState({ videoUrl: e.target.value });
+  onChange = (e) => {
+    // TODO: s
+    this.setState({ videoUrl: e.target.value });
+    this.props.handleValueChange(this.props.k, e.target.value);
+  }
 
   render() {
     const show = this.state.show;
@@ -48,12 +52,12 @@ export default class DraggableVideo extends Component {
         <CardContent style={{ height: '100%' }}>
         {show ?
           <Iframe
-            url={this.convertToEmbedUrl(this.state.videoUrl)}
+            url={this.convertToEmbedUrl(this.props.value)}
             width="100%"
             height="70%"
           />
         :
-          (<FormControl style={{ marginLeft: 10, display: 'flex' }}>  
+          (<FormControl style={{ marginLeft: 10, display: 'flex' }}>
             <TextField style={{ width: "85%", float: "left" }} id="standard-videoUrl" label="Add Video URL link..." onChange={this.onChange} />
             <Button variant="contained" onClick={() => this.onSubmit()} style={{ width: "10%", float: "left" }} value="Submit">Submit</Button>
           </FormControl>
