@@ -21,6 +21,7 @@ import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
 import DraggableImage from './DraggableImage';
 import socket from "./SocketContext";
+import DraggableComponent from './DraggableComponent';
 
 const drawerWidth = 240;
 
@@ -125,7 +126,7 @@ export default function CreateRoom(props) {
   ]
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
-  console.log(currentAvatar, userAvatars, users)
+
   React.useEffect(() => {
     socket.emit("join", { // TODO: avatar传过去
       "user_name": name,
@@ -252,6 +253,7 @@ export default function CreateRoom(props) {
       let component_data = data.component_data;
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
+      setComponents(newComponents);
 
       // Set default value
       let newLocationTable = {...locationTable};
@@ -261,18 +263,17 @@ export default function CreateRoom(props) {
       let newContentTable = {...contentTable};
       newContentTable[component_id] = component_data;
       setContentTable(newContentTable);
-
-      setComponents(newComponents);
     });
 
     socket.on("delete_component", (data) => {
+      console.log("delete_component!");
       let newComponents = [...components];
       let component_type = data.component_type;
       let component_id = data.component_id;
       let key = [component_type, component_id].join(',');
       let index = newComponents.indexOf(key);
       newComponents.splice(index, 1);
-      setComponents(newComponents);
+      // setComponents(newComponents);
     });
 
     socket.on("update_component", (data) => {
@@ -290,7 +291,7 @@ export default function CreateRoom(props) {
       setContentTable(newContentTable);
       setLocationTable(newLocationTable);
     });
-  }, []);
+  }, [components]); // TODO: too many channels to listen, can further reduce overhead
 
   return (
     <div className={classes.root}>
@@ -343,22 +344,10 @@ export default function CreateRoom(props) {
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
             {components.map((key) => {
+              console.log("length of components:", components.length);
               let componentType = key.split(',')[0];
               let componentId = key.split(',')[1];
               switch (componentType) {
-                case 'video':
-                  return (
-                    <DraggableVideo
-                      key={key}
-                      k={key}
-                      roomID={roomID}
-                      componentId={componentId}
-                      value={contentTable[componentId]}
-                      location={locationTable[componentId]}
-                      handleDeleteComponent={handleDeleteComponent}
-                      handleValueChange={handleValueChange}
-                      handleLocationChange={handleLocationChange}
-                    />);
                 case 'text':
                   return (
                     <DraggableText
@@ -390,8 +379,9 @@ export default function CreateRoom(props) {
                     />
                   );
                 case 'image':
+                case 'video':
                   return (
-                    <DraggableImage
+                    <DraggableComponent
                       key={key}
                       k={key}
                       roomID={roomID}
@@ -403,6 +393,7 @@ export default function CreateRoom(props) {
                       handleLocationChange={handleLocationChange}
                       updateMaxZIndex={updateMaxZIndex} 
                       maxZIndex={maxZIndex}
+                      componentType={componentType}
                     />
                   );
               }

@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CustomizedAvatars(props) {
   const classes = useStyles();
-  console.log("props.currentUser", props.currentUser);
+  // console.log("props.currentUser", props.currentUser);
 
   return (
     <Card variant="outlined" className={classes.root}>

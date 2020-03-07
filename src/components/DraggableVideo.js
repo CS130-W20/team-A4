@@ -36,17 +36,6 @@ export default class DraggableVideo extends Component {
   render() {
     const show = this.state.show;
     return (
-      <Rnd
-        style={style}
-        default={{
-          x: 0,
-          y: 0,
-          width: 400,
-          height: 300,
-        }}
-        enableUserSelectHack={false}
-        dragHandleClassName="moveable"
-      >
         <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
           <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
@@ -71,7 +60,6 @@ export default class DraggableVideo extends Component {
         )}
         </CardContent>
         </Card>
-      </Rnd>
     )
   }
 }

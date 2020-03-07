@@ -13,8 +13,7 @@ export default class DraggableImage extends Component {
   state = {
       selectedImage : null,
       show : false,
-      imageFile : null,
-      z : 0
+      imageFile : null
   }
 
   imageSelectedHandler = e => {
@@ -29,24 +28,6 @@ export default class DraggableImage extends Component {
   render() {
     const show = this.state.show;
     return (
-      <Rnd
-        style={{...style, zIndex:this.state.z}}
-        style={style}
-        default={{
-          x: 0,
-          y: 0,
-          width: 500,
-          height: 400,
-        }}
-        onDragStart={(e, d) => { 
-          if (this.props.maxZIndex >= this.state.z) {
-            this.setState({ z:this.props.maxZIndex+1})
-            this.props.updateMaxZIndex(this.state.z);
-          }
-        }}
-        enableUserSelectHack={false}
-        dragHandleClassName="moveable"
-      >
         <Card style={{ width: '100%', height: '100%' }} >
           <CardActions>
             <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
@@ -69,7 +50,6 @@ export default class DraggableImage extends Component {
             }
             </CardContent>
         </Card>
-      </Rnd>
     )
   }
 }
