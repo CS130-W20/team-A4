@@ -126,7 +126,7 @@ export default function CreateRoom(props) {
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
   React.useEffect(() => {
-    socket.emit("join", {
+    socket.emit("join", { // TODO: avatar传过去
       "user_name": name,
       "room_id": roomID
     });
@@ -137,6 +137,7 @@ export default function CreateRoom(props) {
       } else {
         setUsers(joinResultData.user_name);
         setUserAvatars(joinResultData.user_avatar);
+        // TODO: setComponents, location, content
       }
     });
 
@@ -180,19 +181,14 @@ export default function CreateRoom(props) {
 
     // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
 
-    socket.emit("delete_component",
-       {
-          "room_id": roomID,
-          "component_id": component_id,
-          "component_type": type
-       }
-    );
+    socket.emit("delete_component", {
+      "room_id": roomID,
+      "component_id": component_id,
+      "component_type": type
+    });
   }
 
   const handleValueChange = (key, value) => {
-    console.log("In handleValueChange");
-    console.log("key:", key);
-    console.log("value:", value);
     let component_id = key.split(',')[1];
     let component_type = key.split(',')[0];
     let newContentTable = {...contentTable};
@@ -211,7 +207,7 @@ export default function CreateRoom(props) {
   }
 
   const handleLocationChange = (component_id, x, y, width, height) => {
-    let type = "text"; // TODO
+    let type = "text"; // TODO: change this
     let location = [x, y, width, height].join(',');
     let newLocationTable = {...locationTable};
     newLocationTable[component_id] = location;
@@ -253,7 +249,7 @@ export default function CreateRoom(props) {
 
       // Set default value
       let newLocationTable = {...locationTable};
-      newLocationTable[component_id] = "0,0,320,250";
+      newLocationTable[component_id] = "0,0,500,500";
       setLocationTable(newLocationTable);
 
       let newContentTable = {...contentTable};
