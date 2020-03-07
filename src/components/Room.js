@@ -292,7 +292,7 @@ export default function CreateRoom(props) {
 
       console.log("print locationtable: ", newLocationTable);
     });
-  }, []);
+  }, [components, contentTable, locationTable]);
 
   return (
     <div className={classes.root}>
