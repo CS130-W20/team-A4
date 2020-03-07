@@ -14,33 +14,106 @@ import BrushIcon from '@material-ui/icons/Brush';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import Modal from 'react-awesome-modal';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    maxWidth: 360,
+    // maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
   nested: {
     paddingLeft: theme.spacing(4),
   },
+  // root: {
+  //   minWidth: 275,
+  // },
+  bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  title: {
+    fontSize: 14,
+  },
+  pos: {
+    marginBottom: 12,
+  }
 }));
 
-export default function MenuList() {
+export default function MenuList(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [popupVisible, setPopupVisible] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
   };
 
+  const openModel = () => {
+    setPopupVisible(true);
+  };
+
+  const closeModel = () => {
+    setPopupVisible(false);
+    setCopied(false);
+  }
+
+  const handleCopyClick = (e) => {
+    setCopied(e);
+  }
+
+  const bull = <span className={classes.bullet}>•</span>;
+
+
   return (
-    <List>
+    <div>
+      {popupVisible &&
+        <Modal visible={popupVisible} width="300" height="150" effect="fadeInUp" onClickAway={() => closeModel()}>
+          <Card className={classes.root}>
+            <CardContent>
+              <Typography variant="h5" component="h2">
+                Room ID
+              </Typography>
+              <br />
+              <Typography variant="body2" component="p">
+                {props.roomID}
+              </Typography>
+            </CardContent>
+            <CardActions style={{ float: 'right' }}>
+              <CopyToClipboard text={props.roomID}
+                onCopy={() => handleCopyClick(true)}>
+                  {copied ? 
+                    <Button size="medium">Copied</Button>
+                  :
+                    <Button color="primary" size="medium">Copy</Button>
+                  }
+              </CopyToClipboard>
+              <Button color="primary" size="medium" onClick={() => closeModel()}>Close</Button>
+            </CardActions>
+          </Card>
+      </Modal>
+      }
+      <List>
       <ListItem button component={Link} to={'/'}>
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
         <ListItemText primary="Home" />
+      </ListItem>
+      <ListItem button onClick={() => openModel()}>
+        <ListItemIcon>
+          <VpnKeyIcon />
+        </ListItemIcon>
+        <ListItemText primary="Room ID" />
       </ListItem>
       <ListItem button onClick={handleClick}>
         <ListItemIcon>
@@ -51,25 +124,25 @@ export default function MenuList() {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("video")}>
             <ListItemIcon>
               <MovieIcon />
             </ListItemIcon>
             <ListItemText primary="Video" />
           </ListItem>
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("text")}>
             <ListItemIcon>
               <TextFieldsIcon />
             </ListItemIcon>
             <ListItemText primary="Text" />
           </ListItem>
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("whiteboard")}>
             <ListItemIcon>
               <BrushIcon />
             </ListItemIcon>
             <ListItemText primary="Whiteboard" />
           </ListItem>
-          <ListItem button className={classes.nested}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("image")}>
             <ListItemIcon>
               <ImageIcon />
             </ListItemIcon>
@@ -78,5 +151,7 @@ export default function MenuList() {
         </List>
       </Collapse>
     </List>
+
+    </div>
   );
 }
