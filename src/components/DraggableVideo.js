@@ -8,8 +8,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import DeleteIcon from '@material-ui/icons/Delete';
-
+import OpenWithIcon from '@material-ui/icons/OpenWith';
 import style from "../assets/jss/draggableStyle";
+import { CardContent } from '@material-ui/core';
+
 export default class DraggableVideo extends Component {
   state = {
     videoUrl: "",
@@ -43,13 +45,18 @@ export default class DraggableVideo extends Component {
           height: 300,
         }}
         enableUserSelectHack={false}
+        dragHandleClassName="moveable"
       >
         <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
           <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
             <DeleteIcon fontSize="small" />
           </IconButton>
+          <IconButton style={{ marginLeft: 'auto', cursor: 'all-scroll' }} aria-label="move" className="moveable">
+            <OpenWithIcon />
+          </IconButton>
         </CardActions>
+        <CardContent style={{ height: '100%' }}>
         {show ?
           <Iframe
             url={this.convertToEmbedUrl(this.state.videoUrl)}
@@ -57,25 +64,12 @@ export default class DraggableVideo extends Component {
             height="70%"
           />
         :
-          (
-          // <form onSubmit={this.onSubmit} style={{ display: 'flex' }}>
-          <FormControl style={{ marginLeft: 10, display: 'flex' }}>  
+          (<FormControl style={{ marginLeft: 10, display: 'flex' }}>  
             <TextField style={{ width: "85%", float: "left" }} id="standard-videoUrl" label="Add Video URL link..." onChange={this.onChange} />
             <Button variant="contained" onClick={() => this.onSubmit()} style={{ width: "10%", float: "left" }} value="Submit">Submit</Button>
-            {/* <input 
-              type="text" 
-              name="videoUrl" 
-              placeholder="Add Video URL link..." 
-              value={this.state.videoUrl}
-            /> */}
-            {/* <input 
-              type="submit" 
-              value="Submit" 
-              className="btn"
-              style={{flex: '1', padding: '5px', width: '200px' }}
-            /> */}
           </FormControl>
         )}
+        </CardContent>
         </Card>
       </Rnd>
     )

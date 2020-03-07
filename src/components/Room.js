@@ -104,8 +104,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function CreateRoom(props) {
-  console.log("props.location.state:", props.location.state);
-
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
@@ -114,7 +112,7 @@ export default function CreateRoom(props) {
   const { name, roomID, roomName } = props.match.params;
   // let contentTable = {}; // <id, content>
   const [contentTable, setContentTable] = React.useState({});
-  let locationTable = {}; // <id, location>
+  const [locationTable, setLocationTable] = React.useState({});
   const avatars = [
     "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
     "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
@@ -127,13 +125,8 @@ export default function CreateRoom(props) {
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
-  // window.onbeforeunload = (e) => {
-  //   // I'm about to refresh! do something...
-  //   // return "HIII";
-  // };
-
   React.useEffect(() => {
-    socket.emit("join", {
+    socket.emit("join", { // TODO: avatar传过去
       "user_name": name,
       "room_id": roomID
     });
@@ -142,15 +135,14 @@ export default function CreateRoom(props) {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
-        console.log("joinResultData:", joinResultData);
         setUsers(joinResultData.user_name);
         setUserAvatars(joinResultData.user_avatar);
+        // TODO: setComponents, location, content
       }
     });
 
     socket.on("remove_user", (removeUserData) => {
       if (typeof(removeUserData) == "object") {
-        console.log("removeUserData:", removeUserData);
         setUsers(removeUserData.user_name);
       } else {
         console.log("INVALID removeUserData");
@@ -158,7 +150,6 @@ export default function CreateRoom(props) {
     });
 
     socket.on("room_info", (roomInfoData) => {
-      console.log("roomInfoData:", roomInfoData);
       setUsers(roomInfoData.user_name);
       setUserAvatars(roomInfoData.user_avatar);
     });
@@ -173,22 +164,9 @@ export default function CreateRoom(props) {
   };
 
   const handleAddComponent = (type) => {
-    // Inform server about adding component of type {type}
-    console.log("emit create_component of type: ", type, " and room id is: ", roomID);
-    socket.emit("create_component",
-       {
-          "room_id": roomID,
-          "component_type": type
-       }
-    );
-
-    // Retrive from server the component_id as {data}
-    socket.on("create_component", (data) => {
-      let newComponents = [...components];
-      let component_id = data.component_id;
-      let key = [type, component_id].join(',');
-      newComponents.push(key);
-      setComponents(newComponents);
+    socket.emit("create_component", {
+      "room_id": roomID,
+      "component_type": type
     });
   }
 
@@ -200,18 +178,40 @@ export default function CreateRoom(props) {
     let component_id = parseObjects[1];
     newComponents.splice(index, 1);
     setComponents(newComponents);
-    socket.emit("delete_component",
-       {
-          "room_id": roomID,
-          "component_id": component_id,
-          "component_type": type
-       }
-    );
+
+    // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
+
+    socket.emit("delete_component", {
+      "room_id": roomID,
+      "component_id": component_id,
+      "component_type": type
+    });
   }
 
-  const handleValueChange = (component_id, value) => {
-    let type = "text"; // TODO
-    contentTable[component_id] = value;
+  const handleValueChange = (key, value) => {
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
+    let newContentTable = {...contentTable};
+    newContentTable[component_id] = value;
+    setContentTable(newContentTable);
+    socket.emit("update_component", {
+      "room_id": roomID,
+      "component_id": component_id,
+      "component_type": component_type,
+      "update_type": "update_finished",
+      "update_info": {
+        "location": locationTable[component_id],
+        "data": value
+      }
+    });
+  }
+
+  const handleLocationChange = (component_id, x, y, width, height) => {
+    let type = "text"; // TODO: change this
+    let location = [x, y, width, height].join(',');
+    let newLocationTable = {...locationTable};
+    newLocationTable[component_id] = location;
+    setLocationTable(newLocationTable);
     socket.emit("update_component",
        {
           "room_id": roomID,
@@ -219,12 +219,14 @@ export default function CreateRoom(props) {
           "component_type": type,
           "update_type": "update_finished",
           "update_info": {
-             "location": "(-1,-1),(-1,-1)", //-1 means no change in location
-             "data": value
+             "location": location,
+             "data": contentTable[component_id]
           }
        }
     );
+    locationTable[component_id] = location;
   }
+
 
   // Listen to any updates on create components
   const userSetAvatar = (e) => {
@@ -236,9 +238,6 @@ export default function CreateRoom(props) {
     })
   }
 
-  // Update components
-  console.log("users:", users);
-
   useEffect(() => {
     socket.on("create_component", (data) => {
       let newComponents = [...components];
@@ -247,6 +246,16 @@ export default function CreateRoom(props) {
       let component_data = data.component_data;
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
+
+      // Set default value
+      let newLocationTable = {...locationTable};
+      newLocationTable[component_id] = "0,0,500,500";
+      setLocationTable(newLocationTable);
+
+      let newContentTable = {...contentTable};
+      newContentTable[component_id] = component_data;
+      setContentTable(newContentTable);
+
       setComponents(newComponents);
     });
 
@@ -261,15 +270,19 @@ export default function CreateRoom(props) {
     });
 
     socket.on("update_component", (data) => {
-      let component_type = data.component_type;
+      console.log("update_component:", data);
+
       let component_id = data.component_id;
       let update_info = data.update_info;
-      let newComponents = [...components];
-      let key = [component_type, component_id].join(',');
-      locationTable[component_id] = update_info.location;
+
       let newContentTable = {...contentTable};
       newContentTable[component_id] = update_info.data;
+
+      let newLocationTable = {...locationTable};
+      newLocationTable[component_id] = update_info.location;
+
       setContentTable(newContentTable);
+      setLocationTable(newLocationTable);
     });
   }, []);
 
@@ -324,25 +337,64 @@ export default function CreateRoom(props) {
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
             {components.map((key) => {
+              let componentType = key.split(',')[0];
               let componentId = key.split(',')[1];
-              switch (key.split(',')[0]) {
+              switch (componentType) {
                 case 'video':
-                  return (<DraggableVideo key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (
+                    <DraggableVideo
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />);
                 case 'text':
-                  return (<DraggableText
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                          />);
+                  return (
+                    <DraggableText
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
                 case 'whiteboard':
-                  return (<DraggableWhiteboard key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (
+                    <DraggableWhiteboard
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
                 case 'image':
-                  return (<DraggableImage key={key} k={key} handleDeleteComponent={handleDeleteComponent} />);
+                  return (
+                    <DraggableImage
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
               }
             })}
           </Grid>
