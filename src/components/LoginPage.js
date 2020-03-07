@@ -35,7 +35,6 @@ export default function LoginPage(props) {
             "user_avatar": "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg"
           });
           socket.on("create_result", (createResultData) => {
-            console.log("createResultData:", createResultData);
             props.history.push(`/room/name=${name}&roomID=${createResultData.room_id}`, { data: createResultData });
           });
           break;
@@ -49,11 +48,9 @@ export default function LoginPage(props) {
             "user_avatar": "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg"
           });
           socket.on("join_result", (joinResultData) => {
-            console.log("joinResultData:", joinResultData);
             if (joinResultData === "invalid input") {
               props.history.push('/');
             } else {
-              console.log("GET HERE!");
               props.history.push(`/room/name=${name}&roomID=${roomID}`, { data: joinResultData });
             }
           });
@@ -99,7 +96,7 @@ export default function LoginPage(props) {
   const [blank, setBlank] = React.useState(false);
   const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
   const { ...rest } = props;
-  console.log("button status ", buttonStatus);
+
   return (
     <div>
       <Header
