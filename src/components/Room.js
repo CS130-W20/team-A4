@@ -220,8 +220,10 @@ export default function CreateRoom(props) {
     } 
   }
 
-  const handleLocationChange = (component_id, x, y, width, height) => {
-    let type = "text"; // TODO: change this
+  const handleLocationChange = (key, x, y, width, height) => {
+    console.log("receive handle location change")
+    let component_id = key.split(',')[1];
+    let component_type = key.split(',')[0];
     let location = [x, y, width, height].join(',');
     let newLocationTable = {...locationTable};
     newLocationTable[component_id] = location;
@@ -230,7 +232,7 @@ export default function CreateRoom(props) {
        {
           "room_id": roomID,
           "component_id": component_id,
-          "component_type": type,
+          "component_type": component_type,
           "update_type": "update_finished",
           "update_info": {
              "location": location,
@@ -238,7 +240,6 @@ export default function CreateRoom(props) {
           }
        }
     );
-    locationTable[component_id] = location;
   }
 
 
@@ -303,7 +304,7 @@ export default function CreateRoom(props) {
         setImgSrcTable(newImgSrcTable);
       }
     });
-  }, [components]);
+  }, [components, contentTable, locationTable]);
 
   return (
     <div className={classes.root}>
