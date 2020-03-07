@@ -37,13 +37,6 @@ export default class DraggableWhiteboard extends Component {
           <CardContent style={{ height: '80%' }}>
             <CanvasDraw style={{ width: '100%', height: '100%' }} />
           </CardContent>
-          
-          {/* <Whiteboard
-            events={new EventStream()} eventStore={new EventStore()}
-            width={'100%'}
-            height={'100%'}
-            // style={{ backgroundColor: 'lightgray' }}
-          /> */}
         </Card>
       </Rnd>
     )

@@ -104,8 +104,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function CreateRoom(props) {
-  console.log("props.location.state:", props.location.state);
-
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [components, setComponents] = React.useState([]);
@@ -127,11 +125,6 @@ export default function CreateRoom(props) {
   const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
-  // window.onbeforeunload = (e) => {
-  //   // I'm about to refresh! do something...
-  //   // return "HIII";
-  // };
-
   React.useEffect(() => {
     socket.emit("join", {
       "user_name": name,
@@ -142,7 +135,6 @@ export default function CreateRoom(props) {
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
-        console.log("joinResultData:", joinResultData);
         setUsers(joinResultData.user_name);
         setUserAvatars(joinResultData.user_avatar);
       }
@@ -150,7 +142,6 @@ export default function CreateRoom(props) {
 
     socket.on("remove_user", (removeUserData) => {
       if (typeof(removeUserData) == "object") {
-        console.log("removeUserData:", removeUserData);
         setUsers(removeUserData.user_name);
       } else {
         console.log("INVALID removeUserData");
@@ -158,7 +149,6 @@ export default function CreateRoom(props) {
     });
 
     socket.on("room_info", (roomInfoData) => {
-      console.log("roomInfoData:", roomInfoData);
       setUsers(roomInfoData.user_name);
       setUserAvatars(roomInfoData.user_avatar);
     });
@@ -173,22 +163,9 @@ export default function CreateRoom(props) {
   };
 
   const handleAddComponent = (type) => {
-    // Inform server about adding component of type {type}
-    console.log("emit create_component of type: ", type, " and room id is: ", roomID);
-    socket.emit("create_component",
-       {
-          "room_id": roomID,
-          "component_type": type
-       }
-    );
-
-    // Retrive from server the component_id as {data}
-    socket.on("create_component", (data) => {
-      let newComponents = [...components];
-      let component_id = data.component_id;
-      let key = [type, component_id].join(',');
-      newComponents.push(key);
-      setComponents(newComponents);
+    socket.emit("create_component", {
+      "room_id": roomID,
+      "component_type": type
     });
   }
 
@@ -227,21 +204,6 @@ export default function CreateRoom(props) {
   }
 
   const handleLocationChange = (component_id, x, y, width, height) => {
-    let type = "text"; // TODO
-    //locationTable[component_id] = location;
-    console.log("location: ", x, ", ", y);
-    // socket.emit("update_component",
-    //    {
-    //       "room_id": roomID,
-    //       "component_id": component_id,
-    //       "component_type": type,
-    //       "update_type": "update_finished",
-    //       "update_info": {
-    //          "location": "(-1,-1),(-1,-1)", //-1 means no change in location
-    //          "data": value
-    //       }
-    //    }
-    // );
   }
 
 
@@ -254,9 +216,6 @@ export default function CreateRoom(props) {
       "user_avatar": e
     })
   }
-
-  // Update components
-  console.log("users:", users);
 
   useEffect(() => {
     socket.on("create_component", (data) => {
