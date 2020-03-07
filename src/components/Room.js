@@ -163,39 +163,9 @@ export default function CreateRoom(props) {
   };
 
   const handleAddComponent = (type) => {
-<<<<<<< HEAD
-    // Inform server about adding component of type {type}
-    console.log("emit create_component of type: ", type, " and room id is: ", roomID);
-    socket.emit("create_component",
-       {
-          "room_id": roomID,
-          "component_type": type
-       }
-    );
-
-    // Retrive from server the component_id as {data}
-    socket.on("create_component", (data) => {
-      let newComponents = [...components];
-      let component_id = data.component_id;
-      let component_data = data.component_data;
-      let key = [type, component_id].join(',');
-      newComponents.push(key);
-
-      // Set default value
-      let newLocationTable = {...locationTable};
-      newLocationTable[component_id] = "0,0,320,250";
-      setLocationTable(newLocationTable);
-
-      let newContentTable = {...contentTable};
-      newContentTable[component_id] = component_data;
-      setContentTable(newContentTable);
-
-      setComponents(newComponents);
-=======
     socket.emit("create_component", {
       "room_id": roomID,
       "component_type": type
->>>>>>> master
     });
   }
 
