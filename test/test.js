@@ -16,8 +16,11 @@ var client1, client2
 
 default_data = {
 	"text" : "Enter text here",
-	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com"
-	// "image": "images/default_image.jpg"
+	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com",
+	"image": "/home/ubuntu/team-A4/backend/images/default_image.jpg",
+	"video": "https://youtu.be/zF9PdMVteOQ",
+	"whiteboard": "default whiteboard",
+	"location": "300,400,100,100"
 }
 
 describe('Socket Connection', function(){
@@ -161,8 +164,9 @@ describe('Basci Compoent Operation', function(){
 			"room_id": room_uuid_obj.room_id
 		})
 		client1.on('create_component', (component_info) =>{
+			component_info.component_type.should.equal("text"),
 			component_info.component_id.should.not.be.empty(),
-			component_info.component_data.should.equal("Enter text here")
+			component_info.component_data.should.equal(default_data.text)
 			done()
 		})
 	})
@@ -173,8 +177,9 @@ describe('Basci Compoent Operation', function(){
 			"room_id": room_uuid_obj.room_id
 		})
 		client1.on('create_component', (component_info) =>{
+			component_info.component_type.should.equal("web"),
 			component_info.component_id.should.not.be.empty(),
-			component_info.component_data.should.equal("http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com")
+			component_info.component_data.should.equal(default_data.web)
 			done()
 		})
 	})
@@ -186,7 +191,21 @@ describe('Basci Compoent Operation', function(){
 		})
 		client1.on('create_component', (component_info) =>{
 			component_info.component_id.should.not.be.empty(),
-			component_info.component_data.should.not.be.empty()
+			component_info.component_data.should.not.be.empty(),
+			component_info.component_type.should.equal("image"),
+			done()
+		})
+	})
+
+	it('Create Video Component', function(done){
+		client2.emit('create_component', {
+			"component_type": "video",
+			"room_id": room_uuid_obj.room_id
+		})
+		client1.on('create_component', (component_info) =>{
+			component_info.component_type.should.equal("web"),
+			component_info.component_id.should.not.be.empty(),
+			component_info.component_data.should.equal(default_data.web)
 			done()
 		})
 	})
@@ -337,11 +356,34 @@ describe('Complex Room Operation', function(){
 			})
 
 		})
-		done()
 	})
 
 	it('Refresh Room with multiple users', function(done) {
-		done()
+		client1.emit("create", {
+			"user_name": "UnitTesterRefresh", 
+			"room_name": "UnitTestRoomRefreshRoom"
+		})
+
+		client1.on("create_result", (room_info) =>{
+			room_info.room_name.should.equal("UnitTestRoomRefreshRoom"),
+			room_info.room_id.should.not.be.empty(), 
+			room_uuid_obj.room_id = room_info.room_id,
+			client2.emit("join", {
+				"user_name": "UnitTesterRefresh2", 
+				"room_id": room_uuid_obj.room_id
+			}),
+			client2.on("join_result", (room_info) =>{
+				room_info.should.not.equal("invalid input"),
+				client1.emit("join", {
+					"user_name": "UnitTesterRefresh", 
+					"room_id": room_uuid_obj.room_id
+				}),
+				client1.on("join_result", (room_info) =>{
+					room_info.should.not.equal("invalid input"),
+					done()			
+				})	
+			})
+		})
 	})
 
 	it('Join Nonexist Room', function(done){
