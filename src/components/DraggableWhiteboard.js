@@ -4,10 +4,11 @@ import {Whiteboard, EventStream, EventStore} from '@ohtomi/react-whiteboard';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import OpenWithIcon from '@material-ui/icons/OpenWith';
 import Card from '@material-ui/core/Card';
 import CanvasDraw from "react-canvas-draw";
-
 import style from "../assets/jss/draggableStyle";
+import { CardContent } from '@material-ui/core';
 
 
 export default class DraggableWhiteboard extends Component {
@@ -22,20 +23,20 @@ export default class DraggableWhiteboard extends Component {
           height: 500,
         }}
         enableUserSelectHack={false}
+        dragHandleClassName="moveable"
       >
-        <Card style={{ width: '100%', height: '100%' }} >
+        <Card style={{ width: '100%', height: '100%' }}>
           <CardActions>
             <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
-              <DeleteIcon fontSize="small" />
+              <DeleteIcon />
+            </IconButton>
+            <IconButton style={{ marginLeft: 'auto', cursor: 'all-scroll' }} aria-label="move" className="moveable">
+              <OpenWithIcon />
             </IconButton>
           </CardActions>
-          <CanvasDraw />
-          {/* <Whiteboard
-            events={new EventStream()} eventStore={new EventStore()}
-            width={'100%'}
-            height={'100%'}
-            // style={{ backgroundColor: 'lightgray' }}
-          /> */}
+          <CardContent style={{ height: '80%' }}>
+            <CanvasDraw style={{ width: '100%', height: '100%' }} />
+          </CardContent>
         </Card>
       </Rnd>
     )
