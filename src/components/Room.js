@@ -126,7 +126,7 @@ export default function CreateRoom(props) {
   const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
 
   React.useEffect(() => {
-    socket.emit("join", {
+    socket.emit("join", { // TODO: avatar传过去
       "user_name": name,
       "room_id": roomID
     });
@@ -137,6 +137,7 @@ export default function CreateRoom(props) {
       } else {
         setUsers(joinResultData.user_name);
         setUserAvatars(joinResultData.user_avatar);
+        // TODO: setComponents, location, content
       }
     });
 
@@ -180,13 +181,11 @@ export default function CreateRoom(props) {
 
     // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
 
-    socket.emit("delete_component",
-       {
-          "room_id": roomID,
-          "component_id": component_id,
-          "component_type": type
-       }
-    );
+    socket.emit("delete_component", {
+      "room_id": roomID,
+      "component_id": component_id,
+      "component_type": type
+    });
   }
 
   const handleValueChange = (key, value) => {
@@ -253,8 +252,7 @@ export default function CreateRoom(props) {
 
       // Set default value
       let newLocationTable = {...locationTable};
-      // TODO: if video, default value ...
-      newLocationTable[component_id] = "0,0,320,250";
+      newLocationTable[component_id] = "0,0,500,500";
       setLocationTable(newLocationTable);
 
       let newContentTable = {...contentTable};
@@ -275,7 +273,7 @@ export default function CreateRoom(props) {
     });
 
     socket.on("update_component", (data) => {
-      console.log("print data: ", data);
+      console.log("update_component: ", data);
 
       let component_type = data.component_type;
       let component_id = data.component_id;
@@ -345,45 +343,50 @@ export default function CreateRoom(props) {
         <Container maxWidth="lg" className={classes.container}>
           <Grid>
             {components.map((key) => {
+              let componentType = key.split(',')[0];
               let componentId = key.split(',')[1];
-              console.log("location table: ", locationTable, "content table: ", contentTable, "components: ", components);
-              switch (key.split(',')[0]) {
+              switch (componentType) {
                 case 'video':
-                  return (<DraggableVideo
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                            handleLocationChange={handleLocationChange}
-                          />);
+                  return (
+                    <DraggableVideo
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />);
                 case 'text':
-                  return (<DraggableText
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                            handleLocationChange={handleLocationChange}
-                          />);
+                  return (
+                    <DraggableText
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
                 case 'whiteboard':
-                  return (<DraggableWhiteboard
-                            key={key}
-                            k={key}
-                            roomID={roomID}
-                            componentId={componentId}
-                            value={contentTable[componentId]}
-                            location={locationTable[componentId]}
-                            handleDeleteComponent={handleDeleteComponent}
-                            handleValueChange={handleValueChange}
-                            handleLocationChange={handleLocationChange}
-                          />);
+                  return (
+                    <DraggableWhiteboard
+                      key={key}
+                      k={key}
+                      roomID={roomID}
+                      componentId={componentId}
+                      value={contentTable[componentId]}
+                      location={locationTable[componentId]}
+                      handleDeleteComponent={handleDeleteComponent}
+                      handleValueChange={handleValueChange}
+                      handleLocationChange={handleLocationChange}
+                    />
+                  );
                 case 'image':
                   return (
                     <DraggableImage
