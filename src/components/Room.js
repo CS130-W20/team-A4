@@ -186,8 +186,19 @@ export default function CreateRoom(props) {
     socket.on("create_component", (data) => {
       let newComponents = [...components];
       let component_id = data.component_id;
+      let component_data = data.component_data;
       let key = [type, component_id].join(',');
       newComponents.push(key);
+
+      // Set default value
+      let newLocationTable = {...locationTable};
+      newLocationTable[component_id] = "0,0,320,250";
+      setLocationTable(newLocationTable);
+
+      let newContentTable = {...contentTable};
+      newContentTable[component_id] = component_data;
+      setContentTable(newContentTable);
+
       setComponents(newComponents);
     });
   }
@@ -200,6 +211,9 @@ export default function CreateRoom(props) {
     let component_id = parseObjects[1];
     newComponents.splice(index, 1);
     setComponents(newComponents);
+
+    // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
+
     socket.emit("delete_component",
        {
           "room_id": roomID,
@@ -219,7 +233,7 @@ export default function CreateRoom(props) {
           "component_type": type,
           "update_type": "update_finished",
           "update_info": {
-             "location": "(-1,-1),(-1,-1)", //-1 means no change in location
+             "location": locationTable[component_id],
              "data": value
           }
        }
@@ -228,20 +242,23 @@ export default function CreateRoom(props) {
 
   const handleLocationChange = (component_id, x, y, width, height) => {
     let type = "text"; // TODO
-    //locationTable[component_id] = location;
-    console.log("location: ", x, ", ", y);
-    // socket.emit("update_component",
-    //    {
-    //       "room_id": roomID,
-    //       "component_id": component_id,
-    //       "component_type": type,
-    //       "update_type": "update_finished",
-    //       "update_info": {
-    //          "location": "(-1,-1),(-1,-1)", //-1 means no change in location
-    //          "data": value
-    //       }
-    //    }
-    // );
+    let location = [x, y, width, height].join(',');
+    let newLocationTable = {...locationTable};
+    newLocationTable[component_id] = location;
+    setLocationTable(newLocationTable);
+    socket.emit("update_component",
+       {
+          "room_id": roomID,
+          "component_id": component_id,
+          "component_type": type,
+          "update_type": "update_finished",
+          "update_info": {
+             "location": location,
+             "data": contentTable[component_id]
+          }
+       }
+    );
+    locationTable[component_id] = location;
   }
 
 
@@ -266,8 +283,17 @@ export default function CreateRoom(props) {
       let component_data = data.component_data;
       let key = [component_type, component_id].join(',');
       newComponents.push(key);
+
+      // Set default value
+      let newLocationTable = {...locationTable};
+      newLocationTable[component_id] = "0,0,320,250";
+      setLocationTable(newLocationTable);
+
+      let newContentTable = {...contentTable};
+      newContentTable[component_id] = component_data;
+      setContentTable(newContentTable);
+
       setComponents(newComponents);
-      // TODO: 设置value和location的default value
     });
 
     socket.on("delete_component", (data) => {
@@ -290,7 +316,7 @@ export default function CreateRoom(props) {
 
       let newLocationTable = {...locationTable};
       newLocationTable[component_id] = update_info.location;
-      
+
       setContentTable(newContentTable);
       setLocationTable(newLocationTable);
     });
@@ -348,6 +374,7 @@ export default function CreateRoom(props) {
           <Grid>
             {components.map((key) => {
               let componentId = key.split(',')[1];
+              console.log("in rendering, location table is: ", locationTable, ", key is: ", key);
               switch (key.split(',')[0]) {
                 case 'video':
                   return (<DraggableVideo
@@ -359,6 +386,7 @@ export default function CreateRoom(props) {
                             location={locationTable[componentId]}
                             handleDeleteComponent={handleDeleteComponent}
                             handleValueChange={handleValueChange}
+                            handleLocationChange={handleLocationChange}
                           />);
                 case 'text':
                   return (<DraggableText
@@ -370,9 +398,10 @@ export default function CreateRoom(props) {
                             location={locationTable[componentId]}
                             handleDeleteComponent={handleDeleteComponent}
                             handleValueChange={handleValueChange}
+                            handleLocationChange={handleLocationChange}
                           />);
                 case 'whiteboard':
-                  return (<DraggableWhiteboard 
+                  return (<DraggableWhiteboard
                             key={key}
                             k={key}
                             roomID={roomID}
@@ -385,7 +414,7 @@ export default function CreateRoom(props) {
                           />);
                 case 'image':
                   return (
-                    <DraggableImage 
+                    <DraggableImage
                       key={key}
                       k={key}
                       roomID={roomID}
@@ -394,7 +423,8 @@ export default function CreateRoom(props) {
                       location={locationTable[componentId]}
                       handleDeleteComponent={handleDeleteComponent}
                       handleValueChange={handleValueChange}
-                    />      
+                      handleLocationChange={handleLocationChange}
+                    />
                   );
               }
             })}

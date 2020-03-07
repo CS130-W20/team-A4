@@ -13,22 +13,32 @@ import { Icon } from '@material-ui/core';
 import socket from "./SocketContext";
 
 export default function DraggableText(props) {
+
+  console.log("in draggabletext, location is: ", props.location);
+
   return (
     <Rnd
       style={style}
-      default={{
-        x: 0,
-        y: 0,
-        width: 320,
-        height: 250,
-      }}
-      enableUserSelectHack={false}
-      
-      // onDragStop={(e, d) => { 
-      //   console.log("In draggable, location is: ", d.x, ", ", d.y);
-      //   props.handleLocationChange(props.componentId, d.x, d.y);
-      //   // TODO: handleLocationChange要有四个参数
+      // default={{
+      //   x: 0,
+      //   y: 0,
+      //   width: 320,
+      //   height: 250,
       // }}
+      enableUserSelectHack={false}
+      size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
+      position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
+      onDragStop={(e, d) => {
+        console.log("In draggable, location is: ", d.x, ", ", d.y);
+        props.handleLocationChange(props.componentId, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
+      }}
+      onResize={(e, direction, ref, delta, position) => {
+        props.handleLocationChange(props.componentId,
+                                   props.location.split(',')[0],
+                                   props.location.split(',')[1],
+                                   ref.offsetWidth,
+                                   ref.offsetHeight);
+      }}
     >
       <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
