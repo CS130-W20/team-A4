@@ -8,11 +8,35 @@ import OpenWithIcon from '@material-ui/icons/OpenWith';
 import Card from '@material-ui/core/Card';
 import CanvasDraw from "react-canvas-draw";
 import style from "../assets/jss/draggableStyle";
-import { CardContent } from '@material-ui/core';
+import { CardContent, Slider } from '@material-ui/core';
+import { TwitterPicker } from 'react-color'
 
+const DEFAULT_BRUSH_RADIUS = 4;
 
 export default class DraggableWhiteboard extends Component {
+  state = {
+    brushColor: "#000000",
+    brushRadius: DEFAULT_BRUSH_RADIUS
+  }
+
+  onChangeComplete = (color, _) => {
+    this.setState({
+      brushColor: color.hex
+    });
+  }
+
+  handleSliderChange = (_, value) => {
+    console.log("change:", value);
+    this.setState({
+      brushRadius: value
+    });
+  }
+
   render() {
+    const colors = [
+      '#000000', '#FF6900', '#FCB900', '#7BDCB5', '#00D084', 
+      '#8ED1FC', '#0693E3', '#ABB8C3', '#EB144C', '#F78DA7'
+    ];
     return (
       <Rnd
         style={style}
@@ -30,13 +54,39 @@ export default class DraggableWhiteboard extends Component {
             <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
               <DeleteIcon />
             </IconButton>
-            <IconButton style={{ marginLeft: 'auto', cursor: 'all-scroll' }} aria-label="move" className="moveable">
+            <IconButton
+              style={{ marginLeft: 'auto', cursor: 'all-scroll' }}
+              aria-label="move"
+              className="moveable"
+            >
               <OpenWithIcon />
             </IconButton>
           </CardActions>
-          <CardContent style={{ height: '80%' }}>
-            <CanvasDraw style={{ width: '100%', height: '100%' }} />
+          <CardContent style={{ height: '65%' }}>
+            <CanvasDraw
+              style={{ width: '100%', height: '100%' }}
+              brushColor={this.state.brushColor}
+              lazyRadius={10}
+              brushRadius={this.state.brushRadius}
+            />
           </CardContent>
+          <CardActions> {/* TODO: align the color picker to center */} 
+            <TwitterPicker
+              style={{ float: 'left' }}
+              colors={colors}
+              onChangeComplete={this.onChangeComplete}
+            />
+            <Slider
+              style={{ width: '180px', float: 'right' }}
+              defaultValue={DEFAULT_BRUSH_RADIUS}
+              getAriaValueText={() => this.state.brushRadius}
+              onChange={this.handleSliderChange}
+              aria-labelledby="brush-slider"
+              valueLabelDisplay="auto"
+              min={1}
+              max={10}
+            />
+          </CardActions>
         </Card>
       </Rnd>
     )
