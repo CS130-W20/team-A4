@@ -15,6 +15,7 @@ var uuidv4 = require("uuid/v4");
 var room_uuid_obj = {room_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 var componet_obj = {component_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 
+
 var socketURL = 'http://ec2-50-112-33-65.us-west-2.compute.amazonaws.com:8082'
 var options ={
 	transports: ['polling','websocket'],
@@ -174,6 +175,7 @@ describe('Basci Compoent Operation', function(){
 			"room_id": room_uuid_obj.room_id
 		})
 		client1.on('create_component', (component_info) =>{
+
 			component_info.component_type.should.equal("text"),
 			component_info.component_id.should.not.be.empty(),
 			component_info.component_data.should.equal(default_data["text"])
@@ -199,6 +201,7 @@ describe('Basci Compoent Operation', function(){
 			"component_type": "image",
 			"room_id": room_uuid_obj.room_id
 		})
+
 		var read_stream = fs.createReadStream(default_data["image"], {encoding: "binary"})
 		
 		client1.on('create_component', (component_info) =>{
@@ -224,6 +227,7 @@ describe('Basci Compoent Operation', function(){
 			done()
 		})
 	})
+
 
 	it('Create Whiteboard Component', function(done){
 		client2.emit('create_component', {
