@@ -122,7 +122,7 @@ class Room extends Component {
     
     this.state = {
       open: false,
-      components: [],
+      components: [], // holds an array of keys, each key is "type, componentID"
       users: props.location.state.data.user_name,
       contentTable: {},
       locationTable: {},
@@ -145,15 +145,37 @@ class Room extends Component {
 
     // ! Should I put all these socket on in constructor ?
     socket.on("join_result", (joinResultData) => { // listen to any joining user
-      console.log("joinResultData:", joinResultData);
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
         this.roomName = joinResultData.room_name; // TODO: not a good style, might cause problem
         document.title = "Room " + this.roomName + " - xBoard";
+
+        // TODO: test this part
+        let newComponents = [];
+        let newLocationTable = {};
+        let newContentTable = {};
+        let newImgSrcTable = {};
+
+        joinResultData.component.forEach(element => {
+          let type = element.type;
+          let id = element.component_id;
+          let key = type + "," + id;
+          newComponents.push(key);
+          newContentTable[id] = element.data;
+          newLocationTable[id] = element.location;
+          if (element.image_source !== undefined) {
+            newImgSrcTable[id] = element.image_source;
+          }
+        });
+
         this.setState({
           users: joinResultData.user_name,
-          avatars: joinResultData.user_avatar
+          avatars: joinResultData.user_avatar,
+          components: newComponents,
+          contentTable: newContentTable,
+          locationTable: newLocationTable,
+          imgSrcTable: newImgSrcTable
         });
       }
     });
@@ -194,7 +216,7 @@ class Room extends Component {
 
     socket.on("update_component", (data) => {
       console.log("update_component:", data);
-      // TODO: the other person cannot get it
+      // TODO: the other person cannot get it: happens in dragging only
 
       let component_id = data.component_id;
       let update_info = data.update_info;
@@ -325,10 +347,8 @@ class Room extends Component {
     const { classes } = this.props;
 
     console.log("components:", this.state.components);
-    console.log("roomID:", this.roomID);
 
     return (
-    // <p>hello world</p>
       <div className={classes.root}>
         <CssBaseline />
         <AppBar position="absolute" className={clsx(classes.appBar, this.state.open && classes.appBarShift)}>
