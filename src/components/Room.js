@@ -145,14 +145,16 @@ class Room extends Component {
 
     // ! Should I put all these socket on in constructor ?
     socket.on("join_result", (joinResultData) => { // listen to any joining user
+      console.log("joinResultData:", joinResultData);
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
+        this.roomName = joinResultData.room_name; // TODO: not a good style, might cause problem
+        document.title = "Room " + this.roomName + " - xBoard";
         this.setState({
           users: joinResultData.user_name,
           avatars: joinResultData.user_avatar
         });
-        // TODO: setComponents, location, content
       }
     });
 
@@ -165,11 +167,6 @@ class Room extends Component {
         console.log("INVALID removeUserData");
       }
     });
-    
-    // socket.on("room_info", (roomInfoData) => { // TODO: Is this still useful?
-    //   setUsers(roomInfoData.user_name);
-    //   setUserAvatars(roomInfoData.user_avatar);
-    // });
 
     socket.on("create_component", (createComponentData) => {
       let component_id = createComponentData.component_id;
@@ -196,6 +193,9 @@ class Room extends Component {
     });
 
     socket.on("update_component", (data) => {
+      console.log("update_component:", data);
+      // TODO: the other person cannot get it
+
       let component_id = data.component_id;
       let update_info = data.update_info;
 
@@ -256,9 +256,6 @@ class Room extends Component {
   handleDrawerClose = () => this.setState({ open: false });
 
   handleAddComponent = (type) => {
-    // TODO: In handleDeleteComponent, we removed it from conponents list first.
-    // TODO: Should we do the same here?
-    // TODO: set up contentTable, locationTable, imgSrcTable ?? default value ??
     socket.emit("create_component", {
       "room_id": this.roomID,
       "component_type": type
@@ -266,7 +263,6 @@ class Room extends Component {
   }
 
   handleDeleteComponent = (key) => {
-    // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
     let parseObjects = key.split(",");
     let type = parseObjects[0];
     let component_id = parseObjects[1];
@@ -275,13 +271,6 @@ class Room extends Component {
       "component_id": component_id,
       "component_type": type
     });
-
-    // let newComponents = [...this.components];
-    // let index = newComponents.indexOf(key);
-    // newComponents.splice(index, 1);
-    // this.setState({
-    //   components: newComponents
-    // });
   }
 
   handleValueChange = (key, value, imgSrc) => { // TODO: the imgSrc might cause issue
@@ -299,13 +288,6 @@ class Room extends Component {
         "image_source": component_type === "whiteboard" ? imgSrc : "" // for whiteboard, include image source field
       }
     });
-
-    // let newContentTable = { ...this.contentTable };
-    // newContentTable[component_id] = value;
-
-    // this.setState({
-    //   contentTable: newContentTable
-    // });
   }
 
   handleLocationChange = (key, x, y, width, height) => {
@@ -323,13 +305,6 @@ class Room extends Component {
         "data": this.state.contentTable[component_id]
       }
     });
-
-    // let newLocationTable = { ...locationTable };
-    // newLocationTable[component_id] = location;
-
-    // this.setState({
-    //   locationTable: newLocationTable
-    // });
   }
 
   // Listen to any updates on create components
@@ -370,11 +345,6 @@ class Room extends Component {
             <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
               Room {this.roomName}
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
           </Toolbar>
         </AppBar>
         <Drawer
