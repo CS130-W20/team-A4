@@ -44,14 +44,15 @@ export default function AttendeeList(props) {
       {popupVisible &&
         <Modal visible={popupVisible} width="400" height="220" effect="fadeInUp" onClickAway={() => closeModel()}>
           {props.currentUser === userClickedPopup ? 
-          <CustomizedAvatars 
-            userSetAvatar={props.userSetAvatar} 
-            currentUser={props.currentUser}
-            avatars={props.avatars} 
-            closeModel={closeModel} 
-            attendees={props.attendees}
-            userAvatars={props.userAvatars}
-          />: 
+            <CustomizedAvatars 
+              userSetAvatar={props.userSetAvatar} 
+              currentUser={props.currentUser}
+              avatars={props.avatars} 
+              closeModel={closeModel} 
+              attendees={props.attendees}
+              userAvatars={props.userAvatars}
+            />
+          :
             <Card className={classes.root}>
               <CardContent>
                 <Typography variant="h5" component="h2">
@@ -66,7 +67,6 @@ export default function AttendeeList(props) {
                 <Button color="primary" size="medium" onClick={() => closeModel()}>Close</Button>
               </CardActions>
             </Card>
-
           }
         </Modal>
       }

@@ -27,15 +27,6 @@ import socket from "./SocketContext";
 
 const drawerWidth = 240;
 const DEFAULT_LOCATION = "0,0,600,500";
-const AVATARS = [
-  "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
-  "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
-  "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
-  "https://listrick.com/wp-content/uploads/2019/11/Famous-Cartoon-Characters-with-Big-Noses-2.jpg",
-  "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
-  "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
-  "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
-]
 
 const styles = theme => ({
   root: {
@@ -127,7 +118,6 @@ class Room extends Component {
       contentTable: {},
       locationTable: {},
       imgSrcTable: {},
-      currentAvatar: AVATARS[0],
       userAvatars: props.location.state.data.user_avatar
     }
 
@@ -150,7 +140,7 @@ class Room extends Component {
       } else {
         this.setState({
           users: joinResultData.user_name,
-          avatars: joinResultData.user_avatar
+          userAvatars: joinResultData.user_avatar
         });
         // TODO: setComponents, location, content
       }
@@ -275,13 +265,6 @@ class Room extends Component {
       "component_id": component_id,
       "component_type": type
     });
-
-    // let newComponents = [...this.components];
-    // let index = newComponents.indexOf(key);
-    // newComponents.splice(index, 1);
-    // this.setState({
-    //   components: newComponents
-    // });
   }
 
   handleValueChange = (key, value, imgSrc) => { // TODO: the imgSrc might cause issue
@@ -299,13 +282,6 @@ class Room extends Component {
         "image_source": component_type === "whiteboard" ? imgSrc : "" // for whiteboard, include image source field
       }
     });
-
-    // let newContentTable = { ...this.contentTable };
-    // newContentTable[component_id] = value;
-
-    // this.setState({
-    //   contentTable: newContentTable
-    // });
   }
 
   handleLocationChange = (key, x, y, width, height) => {
@@ -323,13 +299,6 @@ class Room extends Component {
         "data": this.state.contentTable[component_id]
       }
     });
-
-    // let newLocationTable = { ...locationTable };
-    // newLocationTable[component_id] = location;
-
-    // this.setState({
-    //   locationTable: newLocationTable
-    // });
   }
 
   // Listen to any updates on create components
@@ -340,20 +309,14 @@ class Room extends Component {
       "user_name": this.name,
       "user_avatar": e
     });
-
-    this.setState({
-      currentAvatar: e
-    });
   }
 
   render() {
+    console.log("this.props.location.state.data:", this.props.location.state.data);
+
     const { classes } = this.props;
 
-    console.log("components:", this.state.components);
-    console.log("roomID:", this.roomID);
-
     return (
-    // <p>hello world</p>
       <div className={classes.root}>
         <CssBaseline />
         <AppBar position="absolute" className={clsx(classes.appBar, this.state.open && classes.appBarShift)}>
@@ -396,8 +359,7 @@ class Room extends Component {
             attendees={this.state.users}
             userSetAvatar={this.userSetAvatar}
             userAvatars={this.state.userAvatars}
-            avatars={AVATARS}
-            currentUser={this.state.name}
+            currentUser={this.name}
           />
         </Drawer>
         <main className={classes.content}>
@@ -479,4 +441,3 @@ Room.propTypes = {
 };
 
 export default withStyles(styles)(Room); // TODO: unsure about this
-// withStyles(stylesObjectOrCreator, { withTheme: true })

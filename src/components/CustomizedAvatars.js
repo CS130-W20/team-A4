@@ -32,11 +32,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
+const AVATARS = [
+  "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
+  "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
+  "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
+  "https://listrick.com/wp-content/uploads/2019/11/Famous-Cartoon-Characters-with-Big-Noses-2.jpg",
+  "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
+  "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
+  "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
+];
 
 export default function CustomizedAvatars(props) {
   const classes = useStyles();
   console.log("props.currentUser", props.currentUser);
+  console.log("props.attendees", props.attendees);
+  console.log("props.userAvatars", props.userAvatars);
 
   return (
     <Card variant="outlined" className={classes.root}>
@@ -46,7 +56,7 @@ export default function CustomizedAvatars(props) {
         </Typography>
       </CardContent>
       <GridList className={classes.gridList} cols={2.5}>
-        {props.avatars.map((avatar, index) => (
+        {AVATARS.map((avatar, index) => (
           <GridListTile key={index}>
             <img src={avatar} alt={"image " + index} style={{ cursor: "pointer" }} />
             <GridListTileBar
@@ -56,8 +66,8 @@ export default function CustomizedAvatars(props) {
               }}
               actionIcon={
                 <Radio
-                  checked={props.userAvatars[props.attendees.indexOf(props.currentUser)] === props.avatars[index]}
-                  onChange={() => props.userSetAvatar(props.avatars[index])}
+                  checked={props.userAvatars[props.attendees.indexOf(props.currentUser)] === AVATARS[index]}
+                  onChange={() => props.userSetAvatar(AVATARS[index])}
                   name="radio-button-demo"
                   inputProps={{ 'aria-label': 'A' }}
                 />
