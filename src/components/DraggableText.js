@@ -19,15 +19,16 @@ export default function DraggableText(props) {
       size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
       position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
       onDragStop={(e, d) => {
-        console.log("In draggable, location is: ", d.x, ", ", d.y);
         props.handleLocationChange(props.k, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
       }}
       onResize={(e, direction, ref, delta, position) => {
-        props.handleLocationChange(props.k,
-                                   props.location.split(',')[0],
-                                   props.location.split(',')[1],
-                                   ref.offsetWidth,
-                                   ref.offsetHeight);
+        props.handleLocationChange(
+          props.k,
+          props.location.split(',')[0],
+          props.location.split(',')[1],
+          ref.offsetWidth,
+          ref.offsetHeight
+        );
       }}
       default={{
         x: 0,

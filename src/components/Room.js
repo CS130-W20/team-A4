@@ -313,12 +313,15 @@ class Room extends Component {
   }
 
   handleLocationChange = (key, x, y, width, height) => {
+    console.log("In handleLocationChange!");
+    // TODO: this reveives no data
+
     let location = [x, y, width, height].join(',');
     let component_type = key.split(',')[0];
     let component_id = key.split(',')[1];
 
     socket.emit("update_component", {
-      "room_id": this.state.roomID,
+      "room_id": this.roomID,
       "component_id": component_id,
       "component_type": component_type,
       "update_type": "update_finished",
