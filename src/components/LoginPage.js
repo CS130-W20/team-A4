@@ -17,6 +17,8 @@ import socket from "./SocketContext";
 
 const useStyles = makeStyles(styles);
 
+// TODO: when get to half screen, the input box is too small
+
 export default function LoginPage(props) {
   function handleClick(e, field) {
     //const socket = require('./SocketContext.js');

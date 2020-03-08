@@ -1,4 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+// import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -24,7 +27,7 @@ import socket from "./SocketContext";
 
 const drawerWidth = 240;
 const DEFAULT_LOCATION = "0,0,600,500";
-const avatars = [
+const AVATARS = [
   "https://secure.img1-ag.wfcdn.com/im/98270403/resize-h800-w800%5Ecompr-r85/8470/84707680/Pokemon+Pikachu+Wall+Decal.jpg",
   "https://pbs.twimg.com/profile_images/551035896602980352/sght8a8B.png",
   "https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/05/1486126267-mickey-mouse.jpg",
@@ -34,7 +37,7 @@ const avatars = [
   "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
 ]
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   root: {
     display: 'flex',
   },
@@ -46,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: '0 8px',
-    ...theme.mixins.toolbar,
+    ...theme.mixins.toolbar, // TODO: uncomment this
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -111,316 +114,369 @@ const useStyles = makeStyles(theme => ({
   fixedHeight: {
     height: 240,
   },
-}));
+});
 
-export default function CreateRoom(props) {
-  const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const [components, setComponents] = React.useState([]);
-  const [users, setUsers] = React.useState(props.location.state.data.user_name);
-  const { name, roomID, roomName } = props.match.params;
-  const [contentTable, setContentTable] = React.useState({});
-  const [locationTable, setLocationTable] = React.useState({});
-  const [imgSrcTable, setImgSrcTable] = React.useState({});
-  const [currentAvatar, setCurrentAvatar] = React.useState(avatars[0]);
-  const [userAvatars, setUserAvatars] = React.useState(props.location.state.data.user_avatar);
+class Room extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      open: false,
+      components: [],
+      users: props.location.state.data.user_name,
+      contentTable: {},
+      locationTable: {},
+      imgSrcTable: {},
+      currentAvatar: AVATARS[0],
+      userAvatars: props.location.state.data.user_avatar
+    }
 
-  React.useEffect(() => {
-    socket.emit("join", { // TODO: avatar传过去
-      "user_name": name,
-      "room_id": roomID
+    console.log("props:", props);
+
+    this.name = props.match.params.name;
+    this.roomID = props.match.params.roomID;
+    // TODO: room name
+    
+    socket.emit("join", { // join room when load this page
+      "user_name": this.name,
+      "room_id": this.roomID,
+      // TODO: avatar传过去
     });
 
-    socket.on("join_result", (joinResultData) => {
+    // ! Should I put all these socket on in constructor ?
+    socket.on("join_result", (joinResultData) => { // listen to any joining user
       if (joinResultData === "invalid input") {
         console.log("INVALID joinResultData");
       } else {
-        setUsers(joinResultData.user_name);
-        setUserAvatars(joinResultData.user_avatar);
+        this.setState({
+          users: joinResultData.user_name,
+          avatars: joinResultData.user_avatar
+        });
         // TODO: setComponents, location, content
       }
     });
 
-    socket.on("remove_user", (removeUserData) => {
-      if (typeof(removeUserData) == "object") {
-        setUsers(removeUserData.user_name);
+    socket.on("remove_user", (removeUserData) => { // listen to any leaving user
+      if (typeof (removeUserData) == "object") {
+        this.setState({
+          users: removeUserData.user_name
+        });
       } else {
         console.log("INVALID removeUserData");
       }
     });
+    
+    // socket.on("room_info", (roomInfoData) => { // TODO: Is this still useful?
+    //   setUsers(roomInfoData.user_name);
+    //   setUserAvatars(roomInfoData.user_avatar);
+    // });
 
-    socket.on("room_info", (roomInfoData) => {
-      setUsers(roomInfoData.user_name);
-      setUserAvatars(roomInfoData.user_avatar);
-    });
-  }, []);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const handleAddComponent = (type) => {
-    socket.emit("create_component", {
-      "room_id": roomID,
-      "component_type": type
-    });
-  }
-
-  const handleDeleteComponent = (key) => {
-    let newComponents = [...components];
-    let index = newComponents.indexOf(key);
-    let parseObjects = key.split(",");
-    let type = parseObjects[0];
-    let component_id = parseObjects[1];
-    newComponents.splice(index, 1);
-    setComponents(newComponents);
-
-    // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
-
-    socket.emit("delete_component", {
-      "room_id": roomID,
-      "component_id": component_id,
-      "component_type": type
-    });
-  }
-
-  const handleValueChange = (key, value, imgSrc) => { // TODO: the imgSrc might cause issue
-    let component_id = key.split(',')[1];
-    let component_type = key.split(',')[0];
-    let newContentTable = {...contentTable};
-    newContentTable[component_id] = value;
-    setContentTable(newContentTable);
-    if (component_type === "whiteboard") {
-      socket.emit("update_component", {
-        "room_id": roomID,
-        "component_id": component_id,
-        "component_type": component_type,
-        "update_type": "update_finished",
-        "update_info": {
-          "location": locationTable[component_id],
-          "data": value,
-          "image_source": imgSrc
-        }
-      });
-    } else {
-      socket.emit("update_component", {
-        "room_id": roomID,
-        "component_id": component_id,
-        "component_type": component_type,
-        "update_type": "update_finished",
-        "update_info": {
-          "location": locationTable[component_id],
-          "data": value,
-        }
-      });
-    } 
-  }
-
-  const handleLocationChange = (key, x, y, width, height) => {
-    console.log("receive handle location change")
-    let component_id = key.split(',')[1];
-    let component_type = key.split(',')[0];
-    let location = [x, y, width, height].join(',');
-    let newLocationTable = {...locationTable};
-    newLocationTable[component_id] = location;
-    setLocationTable(newLocationTable);
-    socket.emit("update_component",
-       {
-          "room_id": roomID,
-          "component_id": component_id,
-          "component_type": component_type,
-          "update_type": "update_finished",
-          "update_info": {
-             "location": location,
-             "data": contentTable[component_id]
-          }
-       }
-    );
-  }
-
-
-  // Listen to any updates on create components
-  const userSetAvatar = (e) => {
-    setCurrentAvatar(e);
-    socket.emit("change_avatar", {
-      "room_id": roomID,
-      "user_name": name,
-      "user_avatar": e
-    })
-  }
-
-  useEffect(() => {
-    socket.on("create_component", (data) => {
-      let newComponents = [...components];
-      let component_id = data.component_id;
-      let component_type = data.component_type;
-      let component_data = data.component_data;
+    socket.on("create_component", (createComponentData) => {
+      let component_id = createComponentData.component_id;
+      let component_type = createComponentData.component_type;
+      let component_data = createComponentData.component_data;
       let key = [component_type, component_id].join(',');
+
+      // TODO: these default value should investigated further. 
+      // TODO: Try to print createComponentData out and see what's in there.
+      let newComponents = [...this.state.components];
       newComponents.push(key);
-      // TODO: why can't I put setComponents(newComponents); here?
 
-      // Set default value
-      let newLocationTable = {...locationTable};
+      let newLocationTable = { ...this.state.locationTable };
       newLocationTable[component_id] = DEFAULT_LOCATION;
-      setLocationTable(newLocationTable);
-
-      let newContentTable = {...contentTable};
+      
+      let newContentTable = { ...this.state.contentTable };
       newContentTable[component_id] = component_data;
-      setContentTable(newContentTable);
-
-      setComponents(newComponents);
-    });
-
-    socket.on("delete_component", (data) => {
-      let newComponents = [...components];
-      let component_type = data.component_type;
-      let component_id = data.component_id;
-      let key = [component_type, component_id].join(',');
-      let index = newComponents.indexOf(key);
-      newComponents.splice(index, 1);
-      setComponents(newComponents);
+      
+      this.setState({
+        contentTable: newContentTable,
+        locationTable: newLocationTable,
+        components: newComponents
+      });
     });
 
     socket.on("update_component", (data) => {
-      console.log("update_component:", data);
       let component_id = data.component_id;
       let update_info = data.update_info;
 
-      let newContentTable = {...contentTable};
+      let newContentTable = { ...this.state.contentTable };
       newContentTable[component_id] = update_info.data;
-      setContentTable(newContentTable);
 
-      let newLocationTable = {...locationTable};
+      let newLocationTable = { ...this.state.locationTable };
       newLocationTable[component_id] = update_info.location;
-      setLocationTable(newLocationTable);
 
+      let newImgSrcTable = { ...this.state.imgSrcTable };
       if (data.component_type === "whiteboard") {
-        let newImgSrcTable = {...imgSrcTable};
         newImgSrcTable[component_id] = data.update_info.image_source
-        setImgSrcTable(newImgSrcTable);
+      }
+
+      this.setState({
+        locationTable: newLocationTable,
+        contentTable: newContentTable,
+        imgSrcTable: newImgSrcTable,
+      });
+    });
+
+    socket.on("delete_component", (data) => {
+      let component_type = data.component_type;
+      let component_id = data.component_id;
+      let key = [component_type, component_id].join(',');
+      
+      let newComponents = [...this.state.components];
+      let index = newComponents.indexOf(key);
+      newComponents.splice(index, 1);
+
+      // TODO: test these hashtable delete
+      let newLocationTable = {...this.state.locationTable};
+      if (newLocationTable.component_id !== undefined) {
+        delete newLocationTable.component_id;
+      }
+      
+      let newContentTable = {...this.state.contentTable};
+      if (newContentTable.component_id !== undefined) {
+        delete newContentTable.component_id;
+      }
+      
+      let newImgSrcTable = {...this.state.contentTable};
+      if (component_type === "whiteboard" && newImgSrcTable.component_id !== undefined) {
+        delete newImgSrcTable.component_id;
+      }
+
+      this.setState({
+        components: newComponents,
+        locationTable: newLocationTable,
+        contentTable: newContentTable,
+        imgSrcTable: newImgSrcTable,
+      });
+    });
+  }
+
+  handleDrawerOpen = () => this.setState({ open: true });
+
+  handleDrawerClose = () => this.setState({ open: false });
+
+  handleAddComponent = (type) => {
+    // TODO: In handleDeleteComponent, we removed it from conponents list first.
+    // TODO: Should we do the same here?
+    // TODO: set up contentTable, locationTable, imgSrcTable ?? default value ??
+    socket.emit("create_component", {
+      "room_id": this.roomID,
+      "component_type": type
+    });
+  }
+
+  handleDeleteComponent = (key) => {
+    // TODO: delete item from contentTable and locationTable (although it has no effect in demo)
+    let parseObjects = key.split(",");
+    let type = parseObjects[0];
+    let component_id = parseObjects[1];
+    socket.emit("delete_component", {
+      "room_id": this.roomID,
+      "component_id": component_id,
+      "component_type": type
+    });
+
+    // let newComponents = [...this.components];
+    // let index = newComponents.indexOf(key);
+    // newComponents.splice(index, 1);
+    // this.setState({
+    //   components: newComponents
+    // });
+  }
+
+  handleValueChange = (key, value, imgSrc) => { // TODO: the imgSrc might cause issue
+    let component_type = key.split(',')[0];
+    let component_id = key.split(',')[1];
+
+    socket.emit("update_component", {
+      "room_id": this.roomID,
+      "component_id": component_id,
+      "component_type": component_type,
+      "update_type": "update_finished",
+      "update_info": {
+        "location": this.state.locationTable[component_id],
+        "data": value,
+        "image_source": component_type === "whiteboard" ? imgSrc : "" // for whiteboard, include image source field
       }
     });
-  }, [components, contentTable, locationTable]);
 
-  return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Room {roomName}
-          </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <MenuList handleAddComponent={handleAddComponent} roomID={roomID}/>
-        <Divider />
-        <AttendeeList
-          attendees={users}
-          userSetAvatar={userSetAvatar}
-          userAvatars={userAvatars}
-          avatars={avatars}
-          currentUser={name}/>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Grid>
-            {components.map((key) => {
-              let componentType = key.split(',')[0];
-              let componentId = key.split(',')[1];
-              switch (componentType) {
-                case 'video':
-                  return (
-                    <DraggableVideo
-                      key={key}
-                      k={key}
-                      roomID={roomID}
-                      componentId={componentId}
-                      value={contentTable[componentId]}
-                      location={locationTable[componentId]}
-                      handleDeleteComponent={handleDeleteComponent}
-                      handleValueChange={handleValueChange}
-                      handleLocationChange={handleLocationChange}
-                    />);
-                case 'text':
-                  return (
-                    <DraggableText
-                      key={key}
-                      k={key}
-                      roomID={roomID}
-                      componentId={componentId}
-                      value={contentTable[componentId]}
-                      location={locationTable[componentId]}
-                      handleDeleteComponent={handleDeleteComponent}
-                      handleValueChange={handleValueChange}
-                      handleLocationChange={handleLocationChange}
-                    />
-                  );
-                case 'whiteboard':
-                  return (
-                    <DraggableWhiteboard
-                      key={key}
-                      k={key}
-                      roomID={roomID}
-                      componentId={componentId}
-                      value={contentTable[componentId]}
-                      imgSrc={imgSrcTable[componentId]}
-                      location={locationTable[componentId]}
-                      handleDeleteComponent={handleDeleteComponent}
-                      handleValueChange={handleValueChange}
-                      handleLocationChange={handleLocationChange}
-                    />
-                  );
-                case 'web':
-                return (
-                  <DraggableWeb
-                    key={key}
-                    k={key}
-                    roomID={roomID}
-                    componentId={componentId}
-                    value={contentTable[componentId]}
-                    location={locationTable[componentId]}
-                    handleDeleteComponent={handleDeleteComponent}
-                    handleValueChange={handleValueChange}
-                    handleLocationChange={handleLocationChange}
-                  />
-                );
-              }
-            })}
-          </Grid>
-        </Container>
-      </main>
-    </div>
-  );
+    // let newContentTable = { ...this.contentTable };
+    // newContentTable[component_id] = value;
+
+    // this.setState({
+    //   contentTable: newContentTable
+    // });
+  }
+
+  handleLocationChange = (key, x, y, width, height) => {
+    let location = [x, y, width, height].join(',');
+    let component_type = key.split(',')[0];
+    let component_id = key.split(',')[1];
+
+    socket.emit("update_component", {
+      "room_id": this.state.roomID,
+      "component_id": component_id,
+      "component_type": component_type,
+      "update_type": "update_finished",
+      "update_info": {
+        "location": location,
+        "data": this.state.contentTable[component_id]
+      }
+    });
+
+    // let newLocationTable = { ...locationTable };
+    // newLocationTable[component_id] = location;
+
+    // this.setState({
+    //   locationTable: newLocationTable
+    // });
+  }
+
+  // Listen to any updates on create components
+  // TODO: I do think we can refactor this part
+  userSetAvatar = (e) => {
+    socket.emit("change_avatar", {
+      "room_id": this.roomID,
+      "user_name": this.name,
+      "user_avatar": e
+    });
+
+    this.setState({
+      currentAvatar: e
+    });
+  }
+
+  render() {
+    const { classes } = this.props;
+
+    console.log("components:", this.state.components);
+    console.log("roomID:", this.roomID);
+
+    return (
+    // <p>hello world</p>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar position="absolute" className={clsx(classes.appBar, this.state.open && classes.appBarShift)}>
+          <Toolbar className={classes.toolbar}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={this.handleDrawerOpen}
+              className={clsx(classes.menuButton, this.state.open && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              Room {this.roomName}
+            </Typography>
+            <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: clsx(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
+          }}
+          open={this.state.open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={this.handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          <MenuList handleAddComponent={this.handleAddComponent} roomID={this.roomID} />
+          <Divider />
+          <AttendeeList
+            attendees={this.state.users}
+            userSetAvatar={this.userSetAvatar}
+            userAvatars={this.state.userAvatars}
+            avatars={AVATARS}
+            currentUser={this.state.name}
+          />
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Grid>
+              {this.state.components.map((key) => {
+                let componentType = key.split(',')[0];
+                let componentId = key.split(',')[1];
+                switch (componentType) {
+                  case 'video':
+                    return (
+                      <DraggableVideo
+                        key={key}
+                        k={key}
+                        roomID={this.roomID}
+                        componentId={componentId}
+                        value={this.state.contentTable[componentId]}
+                        location={this.state.locationTable[componentId]}
+                        handleDeleteComponent={this.handleDeleteComponent}
+                        handleValueChange={this.handleValueChange}
+                        handleLocationChange={this.handleLocationChange}
+                      />);
+                  case 'text':
+                    return (
+                      <DraggableText
+                        key={key}
+                        k={key}
+                        roomID={this.roomID}
+                        componentId={componentId}
+                        value={this.state.contentTable[componentId]}
+                        location={this.state.locationTable[componentId]}
+                        handleDeleteComponent={this.handleDeleteComponent}
+                        handleValueChange={this.handleValueChange}
+                        handleLocationChange={this.handleLocationChange}
+                      />
+                    );
+                  case 'whiteboard':
+                    return (
+                      <DraggableWhiteboard
+                        key={key}
+                        k={key}
+                        roomID={this.roomID}
+                        componentId={componentId}
+                        value={this.state.contentTable[componentId]}
+                        imgSrc={this.state.imgSrcTable[componentId]}
+                        location={this.state.locationTable[componentId]}
+                        handleDeleteComponent={this.handleDeleteComponent}
+                        handleValueChange={this.handleValueChange}
+                        handleLocationChange={this.handleLocationChange}
+                      />
+                    );
+                  case 'web':
+                    return (
+                      <DraggableWeb
+                        key={key}
+                        k={key}
+                        roomID={this.roomID}
+                        componentId={componentId}
+                        value={this.state.contentTable[componentId]}
+                        location={this.state.locationTable[componentId]}
+                        handleDeleteComponent={this.handleDeleteComponent}
+                        handleValueChange={this.handleValueChange}
+                        handleLocationChange={this.handleLocationChange}
+                      />
+                    );
+                }
+              })}
+            </Grid>
+          </Container>
+        </main>
+      </div>
+    );
+  }
 }
+
+Room.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(Room); // TODO: unsure about this
+// withStyles(stylesObjectOrCreator, { withTheme: true })
