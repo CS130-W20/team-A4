@@ -131,11 +131,8 @@ class Room extends Component {
       userAvatars: props.location.state.data.user_avatar
     }
 
-    console.log("props:", props);
-
     this.name = props.match.params.name;
     this.roomID = props.match.params.roomID;
-    // TODO: room name
     
     socket.emit("join", { // join room when load this page
       "user_name": this.name,
@@ -287,10 +284,10 @@ class Room extends Component {
   handleDeleteComponent = (key) => {
     let parseObjects = key.split(",");
     let type = parseObjects[0];
-    let component_id = parseObjects[1];
+    let id = parseObjects[1];
     socket.emit("delete_component", {
       "room_id": this.roomID,
-      "component_id": component_id,
+      "component_id": id,
       "component_type": type
     });
   }
@@ -313,9 +310,6 @@ class Room extends Component {
   }
 
   handleLocationChange = (key, x, y, width, height) => {
-    console.log("In handleLocationChange!");
-    // TODO: this reveives no data
-
     let location = [x, y, width, height].join(',');
     let component_type = key.split(',')[0];
     let component_id = key.split(',')[1];
