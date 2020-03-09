@@ -30,6 +30,7 @@ export default function AttendeeList(props) {
   const [open, setOpen] = React.useState(false);
   const [popupVisible, setPopupVisible] = React.useState(false);
   const [userClickedPopup, setUserClickedPopup] = React.useState(0);
+  
   const openModel = (e) => {
     setPopupVisible(true);
     setUserClickedPopup(e);
@@ -43,19 +44,18 @@ export default function AttendeeList(props) {
     <div>
       {popupVisible &&
         <Modal visible={popupVisible} width="400" height="220" effect="fadeInUp" onClickAway={() => closeModel()}>
-          {props.currentUser === userClickedPopup ? 
+          {props.currentUser[0] === userClickedPopup ? 
           <CustomizedAvatars 
             userSetAvatar={props.userSetAvatar} 
             currentUser={props.currentUser}
             avatars={props.avatars} 
             closeModel={closeModel} 
             attendees={props.attendees}
-            userAvatars={props.userAvatars}
           />: 
             <Card className={classes.root}>
               <CardContent>
                 <Typography variant="h5" component="h2">
-                  Hi {props.currentUser}!
+                  Hi {props.currentUser[0]}!
                 </Typography>
                 <br />
                 <Typography variant="body2" component="p">
@@ -71,12 +71,12 @@ export default function AttendeeList(props) {
         </Modal>
       }
       <List>
-        {props.attendees !== undefined && props.attendees.map((name, index) => (
+        {props.attendees !== undefined && props.attendees.map((user, index) => ( // user: <name, avatar>
           <ListItem key={index} button>
             <ListItemAvatar>
-              <Avatar onClick={() => openModel(name)} alt={name} src={props.userAvatars[index]}/>
+              <Avatar onClick={() => openModel(user[0])} alt={user[0]} src={user[1]}/>
             </ListItemAvatar>
-            <ListItemText primary={name} />
+            <ListItemText primary={user[0]} />
           </ListItem>
         ))}
       </List>

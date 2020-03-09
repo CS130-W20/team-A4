@@ -27,8 +27,7 @@ export default class DraggableImage extends Component {
 
   render() {
     const show = this.state.show;
-    console.log("image selected:", this.state.selectedImage);
-    console.log("image file: ", this.state.imageFile);
+
     return (
       <Rnd
         style={style}
