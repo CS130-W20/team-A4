@@ -17,6 +17,8 @@ import socket from "./SocketContext";
 
 const useStyles = makeStyles(styles);
 
+// TODO: when get to half screen, the input box is too small
+
 export default function LoginPage(props) {
   function handleClick(e, field) {
     //const socket = require('./SocketContext.js');
@@ -97,6 +99,9 @@ export default function LoginPage(props) {
   const [buttonStatus, setButtonStatus] = React.useState(0); // 0: unlick, 1: createRoom, 2: joinRoom, 3: start, 4: createNamedRoom
   const { ...rest } = props;
 
+  document.title = "Home - xBoard";
+
+  // TODO: improve this page
   return (
     <div>
       <Header

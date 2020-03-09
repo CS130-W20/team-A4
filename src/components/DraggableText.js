@@ -10,8 +10,41 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 
 export default function DraggableText(props) {
-  const [z, setZ] = useState(0);
+  const [z, setZ] = useState(props.maxZ);
+  console.log("text z:", z, "maxZ:", props.maxZ);
   return (
+    <Rnd
+      style={{...style, zIndex:z}}
+      size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
+      position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
+      onDragStart={() => {
+        if (z <= props.maxZ){
+          let incrementMaxZ = props.maxZ+1;
+          props.updateZ(incrementMaxZ);
+          setZ(incrementMaxZ);
+        }
+      }}
+      onDragStop={(e, d) => {
+        props.handleLocationChange(props.k, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
+      }}
+      onResize={(e, direction, ref, delta, position) => {
+        props.handleLocationChange(
+          props.k,
+          props.location.split(',')[0],
+          props.location.split(',')[1],
+          ref.offsetWidth,
+          ref.offsetHeight
+        );
+      }}
+      default={{
+        x: 0,
+        y: 0,
+        width: 320,
+        height: 250,
+      }}
+      enableUserSelectHack={false}
+      dragHandleClassName="moveable"
+    >
       <Card style={{ width: '100%', height: '100%' }} >
         <CardActions>
           <IconButton aria-label="delete" onClick={() => props.handleDeleteComponent(props.k)} >
@@ -33,5 +66,6 @@ export default function DraggableText(props) {
           />
         </CardContent>
       </Card>
+      </Rnd>
   );
 }

@@ -12,28 +12,24 @@ import OpenWithIcon from '@material-ui/icons/OpenWith';
 import style from "../assets/jss/draggableStyle";
 import { CardContent } from '@material-ui/core';
 
-export default class DraggableVideo extends Component {
-  state = {
-    videoUrl: "",
-    show: false,
-    z: this.props.maxZ
+export default class DraggableWeb extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      webURL: "",
+      show: false,
+      z: this.props.maxZ
+    }
+    this.iframe = React.createRef();
   }
-
+  
   onSubmit = (e) => {
     this.setState({ show: true });
-    this.props.handleValueChange(this.props.k, this.state.videoUrl);
-  }
-
-  convertToEmbedUrl = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = (match && match[2].length === 11) ? match[2] : null;
-    console.log("videoId:", videoId);
-    return "https://www.youtube.com/embed/" + videoId;
+    this.props.handleValueChange(this.props.k, this.state.webURL);
   }
 
   onChange = (e) => {
-    this.setState({ videoUrl: e.target.value });
+    this.setState({ webURL: e.target.value });
   }
 
   validURL = (str) => { // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url/49849482
@@ -51,13 +47,11 @@ export default class DraggableVideo extends Component {
     if (nextProps.value !== undefined &&
       this.validURL(nextProps.value) &&
       this.props.value !== nextProps.value) { // TODO: this is a work-around
-      this.setState({ show: true, videoUrl: nextProps.value });
+      this.setState({ show: true, webURL: nextProps.value });
     }
   }
 
-
   render() {
-    const show = this.state.show;
     return (
       <Rnd
         style={{...style, zIndex:this.state.z}}
@@ -89,7 +83,7 @@ export default class DraggableVideo extends Component {
           );
         }}
       >
-        <Card style={{ width: '100%', height: '100%' }} >
+        <Card style={{ width: '100%', height: '100%' }}>
           <CardActions>
             <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
               <DeleteIcon fontSize="small" />
@@ -101,10 +95,10 @@ export default class DraggableVideo extends Component {
           <CardContent style={{ height: '100%' }}>
             <FormControl style={{ display: 'flex', alignItems: 'center' }}>
               <TextField
-                value={this.state.videoUrl}
+                value={this.state.webURL}
                 style={{ width: "80%", margin: 5 }}
-                id="standard-videoUrl"
-                label="Enter Video URL..."
+                id="standard-weburl"
+                label="Add Web URL..."
                 onChange={this.onChange}
               />
               <Button
@@ -117,10 +111,12 @@ export default class DraggableVideo extends Component {
               </Button>
             </FormControl>
             <br />
-            <Iframe
-              url={this.convertToEmbedUrl(this.props.value)}
-              width="100%"
+            <iframe
+              ref={this.iframe}
+              id="iframe"
+              src={this.props.value}
               height="70%"
+              width="100%"
             />
           </CardContent>
         </Card>

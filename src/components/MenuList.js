@@ -22,6 +22,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import WebIcon from '@material-ui/icons/Web';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -100,7 +101,7 @@ export default function MenuList(props) {
               <Button color="primary" size="medium" onClick={() => closeModel()}>Close</Button>
             </CardActions>
           </Card>
-      </Modal>
+        </Modal>
       }
       <List>
       <ListItem button component={Link} to={'/'}>
@@ -142,11 +143,11 @@ export default function MenuList(props) {
             </ListItemIcon>
             <ListItemText primary="Whiteboard" />
           </ListItem>
-          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("image")}>
+          <ListItem button className={classes.nested} onClick={() => props.handleAddComponent("web")}>
             <ListItemIcon>
-              <ImageIcon />
+              <WebIcon />
             </ListItemIcon>
-            <ListItemText primary="Image" />
+            <ListItemText primary="Web" />
           </ListItem>
         </List>
       </Collapse>
