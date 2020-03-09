@@ -170,7 +170,6 @@ class Room extends Component {
 
         this.setState({
           users: joinResultData.user_info,
-          // avatars: joinResultData.user_avatar,
           components: newComponents,
           contentTable: newContentTable,
           locationTable: newLocationTable,
