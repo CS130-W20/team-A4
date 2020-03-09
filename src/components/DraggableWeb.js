@@ -17,7 +17,8 @@ export default class DraggableWeb extends Component {
     super(props);
     this.state = {
       webURL: "",
-      show: false
+      show: false,
+      z: this.props.maxZ
     }
     this.iframe = React.createRef();
   }
@@ -53,11 +54,18 @@ export default class DraggableWeb extends Component {
   render() {
     return (
       <Rnd
-        style={style}
+        style={{...style, zIndex:this.state.z}}
         enableUserSelectHack={false}
         dragHandleClassName="moveable"
         size={{ width: this.props.location.split(',')[2], height: this.props.location.split(',')[3] }}
         position={{ x: this.props.location.split(',')[0], y: this.props.location.split(',')[1] }}
+        onDragStart={() => {
+          if (this.state.z <= this.props.maxZ){
+            let incrementMaxZ = this.props.maxZ+1;
+            this.props.updateZ(incrementMaxZ);
+            this.setState({z:incrementMaxZ});
+          }
+        }}
         onDragStop={(e, d) => {
           this.props.handleLocationChange(
             this.props.k, d.x, d.y,

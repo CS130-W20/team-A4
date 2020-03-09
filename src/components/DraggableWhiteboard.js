@@ -15,7 +15,8 @@ const DEFAULT_BRUSH_RADIUS = 4;
 export default class DraggableWhiteboard extends Component {
   state = {
     brushColor: "#000000",
-    brushRadius: DEFAULT_BRUSH_RADIUS
+    brushRadius: DEFAULT_BRUSH_RADIUS,
+    z: this.props.maxZ
   }
 
   onChangeComplete = (color, _) => {
@@ -57,10 +58,10 @@ export default class DraggableWhiteboard extends Component {
       '#000000', '#FF6900', '#FCB900', '#7BDCB5', '#00D084', 
       '#8ED1FC', '#0693E3', '#ABB8C3', '#EB144C', '#F78DA7'
     ];
-
+    console.log("whiteboard z:", this.state.z, "maxZ:", this.props.maxZ);
     return (
       <Rnd
-        style={style}
+        style={{...style, zIndex:this.state.z}}
         default={{
           x: 0,
           y: 0,
@@ -69,6 +70,13 @@ export default class DraggableWhiteboard extends Component {
         }}
         size={{ width: this.props.location.split(',')[2], height: this.props.location.split(',')[3] }}
         position={{ x: this.props.location.split(',')[0], y: this.props.location.split(',')[1] }}
+        onDragStart={() => {
+          if (this.state.z <= this.props.maxZ){
+            let incrementMaxZ = this.props.maxZ+1;
+            this.props.updateZ(incrementMaxZ);
+            this.setState({z:incrementMaxZ});
+          }
+        }}
         onDragStop={(e, d) => {
           this.props.handleLocationChange(this.props.componentId, d.x, d.y, this.props.location.split(',')[2], this.props.location.split(',')[3]);
         }}

@@ -24,6 +24,7 @@ import DraggableVideo from './DraggableVideo';
 import DraggableText from './DraggableText';
 import DraggableWeb from './DraggableWeb';
 import socket from "./SocketContext";
+import DraggableComponent from './DraggableComponent';
 
 const drawerWidth = 240;
 const DEFAULT_LOCATION = "0,0,600,500";
@@ -127,6 +128,9 @@ class Room extends Component {
       contentTable: {},
       locationTable: {},
       imgSrcTable: {},
+      currentAvatar: AVATARS[0],
+      userAvatars: props.location.state.data.user_avatar,
+      maxZ:0
     }
 
     props.location.state.data.user_info.forEach(user => {
@@ -341,6 +345,12 @@ class Room extends Component {
     });
   }
 
+  updateZ = (z) => {
+    this.setState({
+      maxZ: z
+    })
+  }
+
   // Listen to any updates on create components
   // TODO: I do think we can refactor this part
   userSetAvatar = (e) => {
@@ -415,6 +425,8 @@ class Room extends Component {
                         handleDeleteComponent={this.handleDeleteComponent}
                         handleValueChange={this.handleValueChange}
                         handleLocationChange={this.handleLocationChange}
+                        maxZ={this.state.maxZ}
+                        updateZ={this.updateZ}
                       />);
                   case 'text':
                     return (
@@ -428,6 +440,8 @@ class Room extends Component {
                         handleDeleteComponent={this.handleDeleteComponent}
                         handleValueChange={this.handleValueChange}
                         handleLocationChange={this.handleLocationChange}
+                        maxZ={this.state.maxZ}
+                        updateZ={this.updateZ}
                       />
                     );
                   case 'whiteboard':
@@ -443,6 +457,8 @@ class Room extends Component {
                         handleDeleteComponent={this.handleDeleteComponent}
                         handleValueChange={this.handleValueChange}
                         handleLocationChange={this.handleLocationChange}
+                        maxZ={this.state.maxZ}
+                        updateZ={this.updateZ}
                       />
                     );
                   case 'web':
@@ -457,6 +473,8 @@ class Room extends Component {
                         handleDeleteComponent={this.handleDeleteComponent}
                         handleValueChange={this.handleValueChange}
                         handleLocationChange={this.handleLocationChange}
+                        maxZ={this.state.maxZ}
+                        updateZ={this.updateZ}
                       />
                     );
                 }

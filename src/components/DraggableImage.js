@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useRef } from 'react'
 import { Rnd } from "react-rnd";
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -27,19 +27,11 @@ export default class DraggableImage extends Component {
 
   render() {
     const show = this.state.show;
+<<<<<<< HEAD
+=======
 
+>>>>>>> dave-branch
     return (
-      <Rnd
-        style={style}
-        default={{
-          x: 0,
-          y: 0,
-          width: 500,
-          height: 400,
-        }}
-        enableUserSelectHack={false}
-        dragHandleClassName="moveable"
-      >
         <Card style={{ width: '100%', height: '100%' }} >
           <CardActions>
             <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
@@ -62,7 +54,6 @@ export default class DraggableImage extends Component {
             }
             </CardContent>
         </Card>
-      </Rnd>
     )
   }
 }

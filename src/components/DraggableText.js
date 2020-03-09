@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component, useState} from 'react'
 import { Rnd } from "react-rnd";
 import style from "../assets/jss/draggableStyle";
 import Card from '@material-ui/core/Card';
@@ -10,14 +10,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 
 export default function DraggableText(props) {
-
-  console.log("in draggabletext, location is: ", props.location);
-
+  const [z, setZ] = useState(props.maxZ);
+  console.log("text z:", z, "maxZ:", props.maxZ);
   return (
     <Rnd
-      style={style}
+      style={{...style, zIndex:z}}
       size={{ width: props.location.split(',')[2],  height: props.location.split(',')[3] }}
       position={{ x: props.location.split(',')[0], y: props.location.split(',')[1] }}
+      onDragStart={() => {
+        if (z <= props.maxZ){
+          let incrementMaxZ = props.maxZ+1;
+          props.updateZ(incrementMaxZ);
+          setZ(incrementMaxZ);
+        }
+      }}
       onDragStop={(e, d) => {
         props.handleLocationChange(props.k, d.x, d.y, props.location.split(',')[2], props.location.split(',')[3]);
       }}
@@ -60,6 +66,6 @@ export default function DraggableText(props) {
           />
         </CardContent>
       </Card>
-    </Rnd>
+      </Rnd>
   );
 }
