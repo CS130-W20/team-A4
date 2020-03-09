@@ -217,6 +217,8 @@ class Room extends Component {
     });
 
     socket.on("update_component", (data) => {
+      console.log("update_component:", data);
+      
       let component_id = data.component_id;
       let update_info = data.update_info;
 
@@ -227,7 +229,7 @@ class Room extends Component {
       newLocationTable[component_id] = update_info.location;
 
       let newImgSrcTable = { ...this.state.imgSrcTable };
-      if (data.component_type === "whiteboard") {
+      if (data.component_type === "whiteboard" && !!data.update_info.image_source) {
         newImgSrcTable[component_id] = data.update_info.image_source
       }
 
