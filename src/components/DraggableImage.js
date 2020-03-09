@@ -27,10 +27,6 @@ export default class DraggableImage extends Component {
 
   render() {
     const show = this.state.show;
-<<<<<<< HEAD
-=======
-
->>>>>>> dave-branch
     return (
         <Card style={{ width: '100%', height: '100%' }} >
           <CardActions>
