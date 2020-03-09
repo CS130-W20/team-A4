@@ -58,7 +58,7 @@ export default class DraggableWhiteboard extends Component {
       '#000000', '#FF6900', '#FCB900', '#7BDCB5', '#00D084', 
       '#8ED1FC', '#0693E3', '#ABB8C3', '#EB144C', '#F78DA7'
     ];
-    console.log("whiteboard z:", this.state.z, "maxZ:", this.props.maxZ);
+
     return (
       <Rnd
         style={{...style, zIndex:this.state.z}}
@@ -78,11 +78,11 @@ export default class DraggableWhiteboard extends Component {
           }
         }}
         onDragStop={(e, d) => {
-          this.props.handleLocationChange(this.props.componentId, d.x, d.y, this.props.location.split(',')[2], this.props.location.split(',')[3]);
+          this.props.handleLocationChange(this.props.k, d.x, d.y, this.props.location.split(',')[2], this.props.location.split(',')[3]);
         }}
         onResize={(e, direction, ref, delta, position) => {
           this.props.handleLocationChange(
-            this.props.componentId,
+            this.props.k,
             this.props.location.split(',')[0],
             this.props.location.split(',')[1],
             ref.offsetWidth,
@@ -91,7 +91,17 @@ export default class DraggableWhiteboard extends Component {
         enableUserSelectHack={false}
         dragHandleClassName="moveable"
       >
-        <Card style={{ width: '100%', height: '100%' }}>
+        <Card
+          style={{ width: '100%', height: '100%' }}
+          onClick={() => {
+            console.log("hii");
+            if (this.state.z <= this.props.maxZ){
+              let incrementMaxZ = this.props.maxZ + 1;
+              this.props.updateZ(incrementMaxZ);
+              this.setState({z:incrementMaxZ});
+            }
+          }}
+        >
           <CardActions>
             <IconButton
               aria-label="delete"

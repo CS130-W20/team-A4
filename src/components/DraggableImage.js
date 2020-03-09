@@ -40,10 +40,10 @@ export default class DraggableImage extends Component {
           <CardContent>
             {show ?
               <img 
-                  src={this.state.selectedImage} 
-                  width="90%" 
-                  height="80%"
-                  alt="image cannot be displayed"
+                src={this.state.selectedImage} 
+                width="90%" 
+                height="80%"
+                alt="image cannot be displayed"
               /> 
             :
               <input type="file" onChange={this.imageSelectedHandler}/>

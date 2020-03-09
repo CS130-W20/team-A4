@@ -11,7 +11,7 @@ import OpenWithIcon from '@material-ui/icons/OpenWith';
 
 export default function DraggableText(props) {
   const [z, setZ] = useState(props.maxZ);
-  console.log("text z:", z, "maxZ:", props.maxZ);
+
   return (
     <Rnd
       style={{...style, zIndex:z}}
@@ -45,7 +45,16 @@ export default function DraggableText(props) {
       enableUserSelectHack={false}
       dragHandleClassName="moveable"
     >
-      <Card style={{ width: '100%', height: '100%' }} >
+      <Card
+        style={{ width: '100%', height: '100%' }}
+        onClick={() => {
+          if (z <= props.maxZ){
+            let incrementMaxZ = props.maxZ+1;
+            props.updateZ(incrementMaxZ);
+            setZ(incrementMaxZ);
+          }
+        }}
+      >
         <CardActions>
           <IconButton aria-label="delete" onClick={() => props.handleDeleteComponent(props.k)} >
             <DeleteIcon fontSize="small" />

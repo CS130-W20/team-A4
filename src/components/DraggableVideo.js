@@ -89,7 +89,16 @@ export default class DraggableVideo extends Component {
           );
         }}
       >
-        <Card style={{ width: '100%', height: '100%' }} >
+        <Card
+          style={{ width: '100%', height: '100%' }}
+          onClick={() => {
+            if (this.state.z <= this.props.maxZ){
+              let incrementMaxZ = this.props.maxZ+1;
+              this.props.updateZ(incrementMaxZ);
+              this.setState({z:incrementMaxZ});
+            }
+          }}
+        >
           <CardActions>
             <IconButton aria-label="delete" onClick={() => this.props.handleDeleteComponent(this.props.k)} >
               <DeleteIcon fontSize="small" />
