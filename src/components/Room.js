@@ -36,7 +36,7 @@ const AVATARS = [
   "https://pmcvariety.files.wordpress.com/2016/05/pooh.jpg?w=700",
   "https://i.pinimg.com/originals/76/65/78/76657870f44b49e13d59cc2fdd52083f.png",
   "https://i.etsystatic.com/6585391/r/il/e55d2a/593973841/il_570xN.593973841_qrbm.jpg"
-]
+];
 
 const styles = theme => ({
   root: {
@@ -124,7 +124,7 @@ class Room extends Component {
     this.state = {
       open: false,
       components: [], // holds an array of keys, each key is "type, componentID"
-      users: props.location.state.data.user_name,
+      users: props.location.state.data.user_info,
       contentTable: {},
       locationTable: {},
       imgSrcTable: {},
@@ -133,11 +133,15 @@ class Room extends Component {
       maxZ:0
     }
 
-    this.name = props.match.params.name;
+    props.location.state.data.user_info.forEach(user => {
+      if (user[0] === props.match.params.name) {
+        this.state.currentUser = [...user];
+      }
+    });
     this.roomID = props.match.params.roomID;
     
     socket.emit("join", { // join room when load this page
-      "user_name": this.name,
+      "user_name": this.state.currentUser[0],
       "room_id": this.roomID,
       // TODO: avatar传过去
     });
@@ -169,8 +173,8 @@ class Room extends Component {
         });
 
         this.setState({
-          users: joinResultData.user_name,
-          avatars: joinResultData.user_avatar,
+          users: joinResultData.user_info,
+          // avatars: joinResultData.user_avatar,
           components: newComponents,
           contentTable: newContentTable,
           locationTable: newLocationTable,
@@ -182,7 +186,7 @@ class Room extends Component {
     socket.on("remove_user", (removeUserData) => { // listen to any leaving user
       if (typeof (removeUserData) == "object") {
         this.setState({
-          users: removeUserData.user_name
+          users: removeUserData.user_info
         });
       } else {
         console.log("INVALID removeUserData");
@@ -214,9 +218,6 @@ class Room extends Component {
     });
 
     socket.on("update_component", (data) => {
-      console.log("update_component:", data);
-      // TODO: the other person cannot get it: happens in dragging only
-
       let component_id = data.component_id;
       let update_info = data.update_info;
 
@@ -268,6 +269,23 @@ class Room extends Component {
         locationTable: newLocationTable,
         contentTable: newContentTable,
         imgSrcTable: newImgSrcTable,
+      });
+    });
+
+    socket.on("room_info", (roomInfoData) => { // only receive when user changes avatar
+      let newCurrentUser = [...this.state.currentUser];
+      
+      for (const index in roomInfoData.user_info) {
+        let user = roomInfoData.user_info[index];
+        if (user[0] === this.state.currentUser[0] && 
+            user[1] !== this.state.currentUser[1]) {
+            newCurrentUser = [...user];
+        }
+      }
+
+      this.setState({
+        users: roomInfoData.user_info,
+        currentUser: newCurrentUser
       });
     });
   }
@@ -339,19 +357,13 @@ class Room extends Component {
   userSetAvatar = (e) => {
     socket.emit("change_avatar", {
       "room_id": this.roomID,
-      "user_name": this.name,
+      "user_name": this.state.currentUser[0],
       "user_avatar": e
-    });
-
-    this.setState({
-      currentAvatar: e
     });
   }
 
   render() {
     const { classes } = this.props;
-
-    console.log("components:", this.state.components);
 
     return (
       <div className={classes.root}>
@@ -390,9 +402,8 @@ class Room extends Component {
           <AttendeeList
             attendees={this.state.users}
             userSetAvatar={this.userSetAvatar}
-            userAvatars={this.state.userAvatars}
             avatars={AVATARS}
-            currentUser={this.state.name}
+            currentUser={this.state.currentUser}
           />
         </Drawer>
         <main className={classes.content}>
