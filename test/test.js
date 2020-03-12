@@ -37,53 +37,22 @@ default_data = {
 
 describe('Socket Connection', function(){
 	beforeEach(function(done){
-		client1 = io.connect(socketURL, options)
-		client2 = io.connect(socketURL, options)
 		done()
 	});
 
 	afterEach(function(done){
+		done()
+	})
+
+
+	it('Test connect/disconnect', function(done){
+		client1 = io.connect(socketURL, options)
+		client1.id.should.not.be.empty()
 		client1.disconnect()
-		client2.disconnect()
 		done()
 	})
 
-
-	it('Test connect', function(done){
-		done()
-	})
-
-	it('Disconnect', function(done){
-		client1.emit("create", {
-			"user_name": "UnitTesterDisconnect", 
-			"room_name": "UnitTestRoomDisconnectRoom"
-		})
-
-		client1.on("create_result", (room_info) =>{
-			room_info.room_name.should.equal("UnitTestRoomDisconnectRoom"),
-			room_info.room_id.should.not.be.empty(), 
-			room_uuid_obj.room_id = room_info.room_id,
-			//console.log(room_uuid_obj.room_id)	
-			//console.log("create room success "),
-			client2.emit("join", {
-				"user_name": "UnitTesterJoin3", 
-				"room_id": room_uuid_obj.room_id
-			}),
-			client2.on("join_result", (room_info) =>{
-				//console.log("join_result"),
-				//console.log(room_info),
-				room_info.should.not.equal("invalid input"),
-				client2.disconnect(),
-				client1.on('remove_user', (user_list) => {
-					user_list.should.not.be.empty(),
-					// console.log("remove_user"),
-					// console.log(user_list),
-					done()
-				})
-			})
-
-		})
-	})
+	
 })
 
 describe('Basic Room Operation', function(){
@@ -138,6 +107,38 @@ describe('Basic Room Operation', function(){
 		})
 		// TODO: Delete Room 
 
+	})
+
+	it('Second User Leave Room', function(done){
+		client1.emit("create", {
+			"user_name": "UnitTesterDisconnect", 
+			"room_name": "UnitTestRoomDisconnectRoom"
+		})
+
+		client1.on("create_result", (room_info) =>{
+			room_info.room_name.should.equal("UnitTestRoomDisconnectRoom"),
+			room_info.room_id.should.not.be.empty(), 
+			room_uuid_obj.room_id = room_info.room_id,
+			//console.log(room_uuid_obj.room_id)	
+			//console.log("create room success "),
+			client2.emit("join", {
+				"user_name": "UnitTesterJoin3", 
+				"room_id": room_uuid_obj.room_id
+			}),
+			client2.on("join_result", (room_info) =>{
+				//console.log("join_result"),
+				//console.log(room_info),
+				room_info.should.not.equal("invalid input"),
+				client2.disconnect(),
+				client1.on('remove_user', (user_list) => {
+					user_list.should.not.be.empty(),
+					// console.log("remove_user"),
+					// console.log(user_list),
+					done()
+				})
+			})
+
+		})
 	})
 })
 
@@ -313,6 +314,11 @@ describe('Basci Compoent Operation', function(){
 	})
 
 	it('Update Image Component', function(done){
+
+		//====================================================================
+		//|          HAS BEEN MOVED TO WHITEBOARD FUNCTION                   |
+		//====================================================================
+
 		// TODO: Maybe it will be same as whiteboard 
 		done()
 		// client2.emit('create_component', {
@@ -429,6 +435,11 @@ describe('Basci Compoent Operation', function(){
 	})
 
 	it('Delete Image Component', function(done){
+
+		//====================================================================
+		//|          HAS BEEN MOVED TO WHITEBOARD FUNCTION                   |
+		//====================================================================
+
 		// TODO: 
 		done()
 		// client2.emit('create_component', {
