@@ -40,7 +40,7 @@ Under the `test` folder, run `npm install` then `npm test`. It will go through a
 
 ## Relevant Links 
 - Documentation link
-- [Working URL](https://master.d113oqii0ijw7a.amplifyapp.com/)
+- [Working URL](https://master.d353hz10afunq5.amplifyapp.com/) (Please allow `Insecure content` in your browser)
 - [Test Folder](https://github.com/CS130-W20/team-A4/tree/master/test)
 
 
