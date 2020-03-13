@@ -17,7 +17,7 @@ var room_uuid_obj = {room_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 var componet_obj = {component_id : "aa7b9618-e140-4262-ae39-86323153b7e8"}
 
 
-var socketURL = 'http://ec2-50-112-33-65.us-west-2.compute.amazonaws.com:8082'
+var socketURL = 'http://ec2-54-212-210-30.us-west-2.compute.amazonaws.com:8080'
 var options ={
 	transports: ['polling','websocket'],
 	'force new connection': false
@@ -28,7 +28,7 @@ var EXPECTED_TIMEOUT = 2000;
 
 default_data = {
 	"text" : "Enter text here",
-	"web"  : "http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com",
+	"web"  : "http://ec2-54-212-210-30.us-west-2.compute.amazonaws.com",
 	"image": "/home/lys/team-A4/backend/images/default_image.jpg",
 	"video": "https://youtu.be/zF9PdMVteOQ",
 	"whiteboard": "default whiteboard",
@@ -419,7 +419,7 @@ describe('Basci Compoent Operation', function(){
 		})
 		client1.on('create_component', (component_info) =>{
 			component_info.component_id.should.not.be.empty(),
-			component_info.component_data.should.equal("http://ec2-54-184-200-244.us-west-2.compute.amazonaws.com"),
+			component_info.component_data.should.equal("http://ec2-54-212-210-30.us-west-2.compute.amazonaws.com"),
 			componet_obj.component_id = component_info.component_id,
 			client2.emit('delete_component', {
 				"room_id": room_uuid_obj.room_id,
